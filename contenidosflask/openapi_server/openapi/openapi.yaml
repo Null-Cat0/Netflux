@@ -1,0 +1,1687 @@
+openapi: 3.0.3
+info:
+  description: API de Netflux realizada por el grupo 3 de la asignatura ASEE. Microservicio
+    de **Contenido**.
+  license:
+    name: Copyleft
+    url: https://url/a/la/licencia
+  title: Netflux Grupo 3 - OpenAPI 3.0
+  version: 0.0.1
+servers:
+- url: https://path/api/v1
+tags:
+- description: "Representa una serie de televisión, que puede contener una o más temporadas.\
+    \ Incluye información como el título, el género, la sinopsis y el año de estreno."
+  name: Serie
+- description: Representa una temporada de una serie de televisión. Cada temporada
+    contiene un conjunto de capítulos y tiene su propio número de temporada y año
+    de lanzamiento.
+  name: Temporada
+- description: "Representa un episodio de una temporada de una serie de televisió\
+    n. Incluye información como el número del capítulo, el título, la duración y una\
+    \ breve sinopsis."
+  name: Capitulo
+- description: "Representa una película. Incluye información como el título, la duració\
+    n, una breve sinopsis o el año de lanzamiento."
+  name: Pelicula
+- description: "Representa un actor que participa en una serie de televisión. Incluye\
+    \ información sobre el nombre del actor, la fecha de nacimiento, el personaje\
+    \ interpretado y una biografía opcional."
+  name: Actor
+paths:
+  /actores:
+    get:
+      description: Obtiene una lista de todos los actores registrados en el sistema.
+      operationId: listar_actores
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Actor'
+                type: array
+          description: Lista de actores obtenida exitosamente
+      summary: Listar todos los actores
+      tags:
+      - Actor
+      x-openapi-router-controller: openapi_server.controllers.actor_controller
+    post:
+      description: Crea un nuevo actor con la información proporcionada.
+      operationId: crear_actor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Actor'
+        description: Objeto del actor a crear
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Actor'
+          description: Actor creado exitosamente
+        "400":
+          description: Solicitud inválida
+        "500":
+          description: Error interno del servidor
+      summary: Crear un nuevo actor
+      tags:
+      - Actor
+      x-openapi-router-controller: openapi_server.controllers.actor_controller
+  /actores/{actorId}:
+    delete:
+      description: Elimina un actor específico por su ID.
+      operationId: eliminar_actor
+      parameters:
+      - description: ID del actor a eliminar
+        explode: false
+        in: path
+        name: actorId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Actor eliminado exitosamente
+        "404":
+          description: Actor no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Eliminar un actor
+      tags:
+      - Actor
+      x-openapi-router-controller: openapi_server.controllers.actor_controller
+    get:
+      description: Obtiene la información detallada de un actor específico por su
+        ID.
+      operationId: obtener_actor
+      parameters:
+      - description: ID del actor a obtener
+        explode: false
+        in: path
+        name: actorId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Actor'
+          description: Actor obtenido exitosamente
+        "404":
+          description: Actor no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Obtener un actor específico
+      tags:
+      - Actor
+      x-openapi-router-controller: openapi_server.controllers.actor_controller
+    put:
+      description: Actualiza la información de un actor específico por su ID.
+      operationId: actualizar_actor
+      parameters:
+      - description: ID del actor a actualizar
+        explode: false
+        in: path
+        name: actorId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActorUpdate'
+        description: Objeto del actor con la información actualizada
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Actor'
+          description: Actor actualizado exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: Actor no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Actualizar un actor existente
+      tags:
+      - Actor
+      x-openapi-router-controller: openapi_server.controllers.actor_controller
+  /actores/{actorId}/peliculas:
+    get:
+      description: Obtiene una lista de todas las películas en las que ha participado
+        un actor.
+      operationId: listar_peliculas_de_actor
+      parameters:
+      - description: ID del actor
+        explode: false
+        in: path
+        name: actorId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Pelicula'
+                type: array
+          description: Lista de películas obtenida exitosamente
+        "404":
+          description: Actor no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Listar películas en las que ha participado un actor en específico.
+      tags:
+      - Actor
+      x-openapi-router-controller: openapi_server.controllers.actor_controller
+  /actores/{actorId}/series:
+    get:
+      description: Obtiene una lista de todas las series en las que ha participado
+        un actor.
+      operationId: listar_series_de_actor
+      parameters:
+      - description: ID del actor
+        explode: false
+        in: path
+        name: actorId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Serie'
+                type: array
+          description: Lista de series obtenida exitosamente
+        "404":
+          description: Actor no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Listar series en las que ha participado un actor en específico.
+      tags:
+      - Actor
+      x-openapi-router-controller: openapi_server.controllers.actor_controller
+  /pelicula:
+    get:
+      description: "Obtiene una lista de todas las películas disponibles en el sistema,\
+        \ incluyendo información básica como el título, género y año de estreno."
+      operationId: listar_peliculas
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Pelicula'
+                type: array
+          description: Lista de películas obtenida exitosamente
+      summary: Listar todas las películas
+      tags:
+      - Pelicula
+      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+    post:
+      description: Crea una nueva película con la información proporcionada.
+      operationId: crear_pelicula
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pelicula'
+        description: Objeto de la película a crear
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pelicula'
+          description: película creada exitosamente
+        "400":
+          description: Solicitud inválida
+        "500":
+          description: Error interno del servidor
+      summary: Crear una nueva película
+      tags:
+      - Pelicula
+      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+  /pelicula/{peliculaId}:
+    delete:
+      description: Elimina una película específica por su ID.
+      operationId: eliminar_pelicula
+      parameters:
+      - description: ID de la película a eliminar
+        explode: false
+        in: path
+        name: peliculaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: película eliminada exitosamente
+        "404":
+          description: película no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Eliminar una película
+      tags:
+      - Pelicula
+      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+    get:
+      description: Obtiene la información detallada de una película específica por
+        su ID.
+      operationId: obtener_pelicula
+      parameters:
+      - description: ID de la película a obtener
+        explode: false
+        in: path
+        name: peliculaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pelicula'
+          description: película obtenida exitosamente
+        "404":
+          description: película no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Obtener una película específica
+      tags:
+      - Pelicula
+      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+    put:
+      description: Actualiza la información de una película específica por su ID.
+      operationId: actualizar_pelicula
+      parameters:
+      - description: ID de la película a actualizar
+        explode: false
+        in: path
+        name: peliculaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeliculaUpdate'
+        description: Objeto de la película con la información actualizada
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pelicula'
+          description: película actualizada exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: película no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Actualizar una película existente
+      tags:
+      - Pelicula
+      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+  /pelicula/{peliculaId}/actores:
+    get:
+      description: Obtiene una lista de todos los actores que participan en una película
+        específica.
+      operationId: listar_actores_de_pelicula
+      parameters:
+      - description: ID de la película
+        explode: false
+        in: path
+        name: peliculaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Actor'
+                type: array
+          description: Lista de actores obtenida exitosamente
+        "404":
+          description: película no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Listar actores de una película específica
+      tags:
+      - Pelicula
+      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+    patch:
+      description: Asigna un actor existente a una película específica.
+      operationId: asignar_actor_a_pelicula
+      parameters:
+      - description: ID de la película
+        explode: false
+        in: path
+        name: peliculaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/asignarActorASerie_request'
+        description: ID del actor a asignar
+        required: true
+      responses:
+        "204":
+          description: Actor asignado a la película exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: película o actor no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Asignar un actor a una película
+      tags:
+      - Pelicula
+      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+  /pelicula/{peliculaId}/actores/{actorId}:
+    delete:
+      description: Elimina un actor existente de una película específica.
+      operationId: eliminar_actor_pelicula
+      parameters:
+      - description: ID de la película
+        explode: false
+        in: path
+        name: peliculaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del actor
+        explode: false
+        in: path
+        name: actorId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Actor eliminado de la película correctamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: Película o actor no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Elimnar un actor de una película
+      tags:
+      - Pelicula
+      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+  /pelicula/{peliculaId}/precuela:
+    get:
+      description: Obtiene la precuela de una película específica
+      operationId: obtener_precuela_pelicula
+      parameters:
+      - description: ID de la película
+        explode: false
+        in: path
+        name: peliculaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pelicula'
+          description: precuela obtenida exitosamente
+        "404":
+          description: precuela no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Obtiene la precuela de una película específica
+      tags:
+      - Pelicula
+      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+  /pelicula/{peliculaId}/secuela:
+    get:
+      description: Obtiene la secuela de una película específica
+      operationId: obtener_secuela_pelicula
+      parameters:
+      - description: ID de la película
+        explode: false
+        in: path
+        name: peliculaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pelicula'
+          description: secuela obtenida exitosamente
+        "404":
+          description: secuela no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Obtiene la secuela de una película específica
+      tags:
+      - Pelicula
+      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+  /series:
+    get:
+      description: "Obtiene una lista de todas las series de televisión disponibles\
+        \ en el sistema, incluyendo información básica como el título, género y añ\
+        o de estreno."
+      operationId: listar_series
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Serie'
+                type: array
+          description: Lista de series obtenida exitosamente
+        "500":
+          description: Error interno del servidor
+      summary: Listar todas las series
+      tags:
+      - Serie
+      x-openapi-router-controller: openapi_server.controllers.serie_controller
+    post:
+      description: Crea una nueva serie de televisión con la información proporcionada.
+      operationId: crear_serie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Serie'
+        description: Objeto de la serie a crear
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Serie'
+          description: Serie creada exitosamente
+        "400":
+          description: Solicitud inválida
+        "500":
+          description: Error interno del servidor
+      summary: Crear una nueva serie
+      tags:
+      - Serie
+      x-openapi-router-controller: openapi_server.controllers.serie_controller
+  /series/{serieId}:
+    delete:
+      description: Elimina una serie específica por su ID.
+      operationId: eliminar_serie
+      parameters:
+      - description: ID de la serie a eliminar
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Serie eliminada exitosamente
+        "404":
+          description: Serie no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Eliminar una serie
+      tags:
+      - Serie
+      x-openapi-router-controller: openapi_server.controllers.serie_controller
+    get:
+      description: Obtiene la información detallada de una serie específica por su
+        ID.
+      operationId: obtener_serie
+      parameters:
+      - description: ID de la serie a obtener
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Serie'
+          description: Serie obtenida exitosamente
+        "404":
+          description: Serie no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Obtener una serie específica
+      tags:
+      - Serie
+      x-openapi-router-controller: openapi_server.controllers.serie_controller
+    put:
+      description: Actualiza la información de una serie específica por su ID.
+      operationId: actualizar_serie
+      parameters:
+      - description: ID de la serie a actualizar
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SerieUpdate'
+        description: Objeto de la serie con la información actualizada
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Serie'
+          description: Serie actualizada exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: Serie no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Actualizar una serie existente
+      tags:
+      - Serie
+      x-openapi-router-controller: openapi_server.controllers.serie_controller
+  /series/{serieId}/actores:
+    get:
+      description: Obtiene una lista de todos los actores que participan en una serie
+        específica.
+      operationId: listar_actores_de_serie
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Actor'
+                type: array
+          description: Lista de actores obtenida exitosamente
+        "404":
+          description: Serie no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Listar los actores de una serie específica
+      tags:
+      - Serie
+      x-openapi-router-controller: openapi_server.controllers.serie_controller
+    patch:
+      description: Asigna un actor existente a una serie específica.
+      operationId: asignar_actor_a_serie
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/asignarActorASerie_request'
+        description: ID del actor a asignar
+        required: true
+      responses:
+        "204":
+          description: Actor asignado a la serie exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: Serie o actor no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Asignar un actor a una serie
+      tags:
+      - Serie
+      x-openapi-router-controller: openapi_server.controllers.serie_controller
+  /series/{serieId}/actores/{actorId}:
+    delete:
+      description: Elimina un actor existente de una serie específica.
+      operationId: eliminar_actor_serie
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del actor
+        explode: false
+        in: path
+        name: actorId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Actor eliminado de la serie correctamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: Serie o actor no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Elimnar un actor de una serie
+      tags:
+      - Serie
+      x-openapi-router-controller: openapi_server.controllers.serie_controller
+  /series/{serieId}/temporadas:
+    get:
+      description: Obtiene una lista de todas las temporadas de una serie específica.
+      operationId: listar_temporadas
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Temporada'
+                type: array
+          description: Lista de temporadas obtenida exitosamente
+        "404":
+          description: Serie no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Listar todas las temporadas de una serie
+      tags:
+      - Temporada
+      x-openapi-router-controller: openapi_server.controllers.temporada_controller
+    post:
+      description: Crea una nueva temporada para una serie específica.
+      operationId: crear_temporada
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Temporada'
+        description: Objeto de la temporada a crear
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Temporada'
+          description: Temporada creada exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: Serie no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Crear una nueva temporada para una serie
+      tags:
+      - Temporada
+      x-openapi-router-controller: openapi_server.controllers.temporada_controller
+  /series/{serieId}/temporadas/{temporadaId}:
+    delete:
+      description: Elimina una temporada específica de una serie.
+      operationId: eliminar_temporada
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID de la temporada
+        explode: false
+        in: path
+        name: temporadaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Temporada eliminada exitosamente
+        "404":
+          description: Serie o temporada no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Eliminar una temporada
+      tags:
+      - Temporada
+      x-openapi-router-controller: openapi_server.controllers.temporada_controller
+    get:
+      description: Obtiene la información detallada de una temporada específica de
+        una serie.
+      operationId: obtener_temporada
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID de la temporada
+        explode: false
+        in: path
+        name: temporadaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Temporada'
+          description: Temporada obtenida exitosamente
+        "404":
+          description: Serie o temporada no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Obtener una temporada específica de una serie
+      tags:
+      - Temporada
+      x-openapi-router-controller: openapi_server.controllers.temporada_controller
+    put:
+      description: Actualiza la información de una temporada específica de una serie.
+      operationId: actualizar_temporada
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID de la temporada
+        explode: false
+        in: path
+        name: temporadaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemporadaUpdate'
+        description: Objeto de la temporada con la información actualizada
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Temporada'
+          description: Temporada actualizada exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: Serie o temporada no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Actualizar una temporada existente
+      tags:
+      - Temporada
+      x-openapi-router-controller: openapi_server.controllers.temporada_controller
+  /series/{serieId}/temporadas/{temporadaId}/capitulos:
+    get:
+      description: Obtiene una lista de todos los capítulos de una temporada específica
+        de una serie.
+      operationId: listar_capitulos
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID de la temporada
+        explode: false
+        in: path
+        name: temporadaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Capitulo'
+                type: array
+          description: Lista de capítulos obtenida exitosamente
+        "404":
+          description: Serie o temporada no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Listar todos los capítulos de una temporada
+      tags:
+      - Capitulo
+      x-openapi-router-controller: openapi_server.controllers.capitulo_controller
+    post:
+      description: Crea un nuevo capítulo para una temporada específica de una serie.
+      operationId: crear_capitulo
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID de la temporada
+        explode: false
+        in: path
+        name: temporadaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Capitulo'
+        description: Objeto del capítulo a crear
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Capitulo'
+          description: Capítulo creado exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: Serie o temporada no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Crear un nuevo capítulo para una temporada
+      tags:
+      - Capitulo
+      x-openapi-router-controller: openapi_server.controllers.capitulo_controller
+  /series/{serieId}/temporadas/{temporadaId}/capitulos/{capituloId}:
+    delete:
+      description: Elimina un capítulo específico de una temporada de una serie.
+      operationId: eliminar_capitulo
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID de la temporada
+        explode: false
+        in: path
+        name: temporadaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del capítulo
+        explode: false
+        in: path
+        name: capituloId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Capítulo eliminado exitosamente
+        "404":
+          description: "Serie, temporada o capítulo no encontrado"
+        "500":
+          description: Error interno del servidor
+      summary: Eliminar un capítulo
+      tags:
+      - Capitulo
+      x-openapi-router-controller: openapi_server.controllers.capitulo_controller
+    get:
+      description: Obtiene la información detallada de un capítulo específico de una
+        temporada de una serie.
+      operationId: obtener_capitulo
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID de la temporada
+        explode: false
+        in: path
+        name: temporadaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del capítulo
+        explode: false
+        in: path
+        name: capituloId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Capitulo'
+          description: Capítulo obtenido exitosamente
+        "404":
+          description: "Serie, temporada o capítulo no encontrado"
+        "500":
+          description: Error interno del servidor
+      summary: Obtener un capítulo específico de una temporada
+      tags:
+      - Capitulo
+      x-openapi-router-controller: openapi_server.controllers.capitulo_controller
+    put:
+      description: Actualiza la información de un capítulo específico de una temporada
+        de una serie.
+      operationId: actualizar_capitulo
+      parameters:
+      - description: ID de la serie
+        explode: false
+        in: path
+        name: serieId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID de la temporada
+        explode: false
+        in: path
+        name: temporadaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del capítulo
+        explode: false
+        in: path
+        name: capituloId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapituloUpdate'
+        description: Objeto del capítulo con la información actualizada
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Capitulo'
+          description: Capítulo actualizado exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: "Serie, temporada o capítulo no encontrado"
+        "500":
+          description: Error interno del servidor
+      summary: Actualizar un capítulo existente
+      tags:
+      - Capitulo
+      x-openapi-router-controller: openapi_server.controllers.capitulo_controller
+components:
+  schemas:
+    Serie:
+      example:
+        actores:
+        - fechaNacimiento: 1956-03-07
+          biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          id: 1
+          nombre: Bryan Cranston
+        - fechaNacimiento: 1956-03-07
+          biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          id: 1
+          nombre: Bryan Cranston
+        temporadas:
+        - capitulos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          numero: 1
+          anioLanzamiento: 2008
+          id: 1
+        - capitulos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          numero: 1
+          anioLanzamiento: 2008
+          id: 1
+        genero: Drama
+        titulo: Breaking Bad
+        anioEstreno: 2008
+        id: 1
+        sinopsis: Un profesor de química se convierte en fabricante de metanfetamina.
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        titulo:
+          example: Breaking Bad
+          title: titulo
+          type: string
+        genero:
+          example: Drama
+          title: genero
+          type: string
+        sinopsis:
+          example: Un profesor de química se convierte en fabricante de metanfetamina.
+          title: sinopsis
+          type: string
+        anioEstreno:
+          example: 2008
+          format: int32
+          title: anioEstreno
+          type: integer
+        temporadas:
+          items:
+            $ref: '#/components/schemas/Temporada'
+          title: temporadas
+          type: array
+        actores:
+          items:
+            $ref: '#/components/schemas/Actor'
+          title: actores
+          type: array
+      required:
+      - anioEstreno
+      - genero
+      - sinopsis
+      - titulo
+      title: Serie
+      type: object
+    SerieUpdate:
+      allOf:
+      - $ref: '#/components/schemas/Serie'
+      - required:
+        - id
+      example:
+        actores:
+        - fechaNacimiento: 1956-03-07
+          biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          id: 1
+          nombre: Bryan Cranston
+        - fechaNacimiento: 1956-03-07
+          biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          id: 1
+          nombre: Bryan Cranston
+        temporadas:
+        - capitulos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          numero: 1
+          anioLanzamiento: 2008
+          id: 1
+        - capitulos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          numero: 1
+          anioLanzamiento: 2008
+          id: 1
+        genero: Drama
+        titulo: Breaking Bad
+        anioEstreno: 2008
+        id: 1
+        sinopsis: Un profesor de química se convierte en fabricante de metanfetamina.
+      title: SerieUpdate
+    Temporada:
+      example:
+        capitulos:
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        numero: 1
+        anioLanzamiento: 2008
+        id: 1
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        numero:
+          description: Número de la temporada
+          example: 1
+          format: int32
+          title: numero
+          type: integer
+        anioLanzamiento:
+          example: 2008
+          format: int32
+          title: anioLanzamiento
+          type: integer
+        capitulos:
+          items:
+            $ref: '#/components/schemas/Capitulo'
+          title: capitulos
+          type: array
+      required:
+      - anioLanzamiento
+      - numero
+      title: Temporada
+      type: object
+    TemporadaUpdate:
+      allOf:
+      - $ref: '#/components/schemas/Temporada'
+      - required:
+        - id
+      example:
+        capitulos:
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        numero: 1
+        anioLanzamiento: 2008
+        id: 1
+      title: TemporadaUpdate
+    Capitulo:
+      example:
+        numero: 1
+        titulo: Piloto
+        duracion: 58
+        id: 1
+        sinopsis: Walter White toma una decisión radical tras ser diagnosticado con
+          cáncer de pulmón.
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        numero:
+          example: 1
+          format: int32
+          title: numero
+          type: integer
+        titulo:
+          example: Piloto
+          title: titulo
+          type: string
+        duracion:
+          description: Duración del capítulo en minutos
+          example: 58
+          format: int32
+          title: duracion
+          type: integer
+        sinopsis:
+          example: Walter White toma una decisión radical tras ser diagnosticado con
+            cáncer de pulmón.
+          title: sinopsis
+          type: string
+      required:
+      - duracion
+      - numero
+      - titulo
+      title: Capitulo
+      type: object
+    CapituloUpdate:
+      allOf:
+      - $ref: '#/components/schemas/Capitulo'
+      - required:
+        - id
+      example:
+        numero: 1
+        titulo: Piloto
+        duracion: 58
+        id: 1
+        sinopsis: Walter White toma una decisión radical tras ser diagnosticado con
+          cáncer de pulmón.
+      title: CapituloUpdate
+    Pelicula:
+      example:
+        actores:
+        - fechaNacimiento: 1956-03-07
+          biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          id: 1
+          nombre: Bryan Cranston
+        - fechaNacimiento: 1956-03-07
+          biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          id: 1
+          nombre: Bryan Cranston
+        temporadas:
+        - capitulos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          numero: 1
+          anioLanzamiento: 2008
+          id: 1
+        - capitulos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          numero: 1
+          anioLanzamiento: 2008
+          id: 1
+        genero: Drama
+        titulo: Breaking Bad
+        duracion: 112
+        anioEstreno: 2008
+        id: 1
+        sinopsis: Un profesor de química se convierte en fabricante de metanfetamina.
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        titulo:
+          example: Breaking Bad
+          title: titulo
+          type: string
+        genero:
+          example: Drama
+          title: genero
+          type: string
+        sinopsis:
+          example: Un profesor de química se convierte en fabricante de metanfetamina.
+          title: sinopsis
+          type: string
+        anioEstreno:
+          example: 2008
+          format: int32
+          title: anioEstreno
+          type: integer
+        duracion:
+          example: 112
+          format: int32
+          title: duracion
+          type: integer
+        temporadas:
+          items:
+            $ref: '#/components/schemas/Temporada'
+          title: temporadas
+          type: array
+        actores:
+          items:
+            $ref: '#/components/schemas/Actor'
+          title: actores
+          type: array
+      required:
+      - anioEstreno
+      - genero
+      - sinopsis
+      - titulo
+      title: Pelicula
+      type: object
+    PeliculaUpdate:
+      allOf:
+      - $ref: '#/components/schemas/Pelicula'
+      - required:
+        - id
+      example:
+        actores:
+        - fechaNacimiento: 1956-03-07
+          biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          id: 1
+          nombre: Bryan Cranston
+        - fechaNacimiento: 1956-03-07
+          biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          id: 1
+          nombre: Bryan Cranston
+        temporadas:
+        - capitulos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          numero: 1
+          anioLanzamiento: 2008
+          id: 1
+        - capitulos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          numero: 1
+          anioLanzamiento: 2008
+          id: 1
+        genero: Drama
+        titulo: Breaking Bad
+        duracion: 112
+        anioEstreno: 2008
+        id: 1
+        sinopsis: Un profesor de química se convierte en fabricante de metanfetamina.
+      title: PeliculaUpdate
+    Actor:
+      example:
+        fechaNacimiento: 1956-03-07
+        biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+        id: 1
+        nombre: Bryan Cranston
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        nombre:
+          example: Bryan Cranston
+          title: nombre
+          type: string
+        fechaNacimiento:
+          example: 1956-03-07
+          format: date
+          title: fechaNacimiento
+          type: string
+        biografia:
+          example: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          title: biografia
+          type: string
+      required:
+      - biografia
+      - fechaNacimiento
+      - nombre
+      title: Actor
+      type: object
+    ActorUpdate:
+      allOf:
+      - $ref: '#/components/schemas/Actor'
+      - required:
+        - id
+      example:
+        fechaNacimiento: 1956-03-07
+        biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+        id: 1
+        nombre: Bryan Cranston
+      title: ActorUpdate
+    asignarActorASerie_request:
+      properties:
+        actorId:
+          example: 1
+          format: int64
+          title: actorId
+          type: integer
+      title: asignarActorASerie_request
+      type: object

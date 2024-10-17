@@ -1,0 +1,1124 @@
+openapi: 3.0.3
+info:
+  description: API de Netflux realizada por el grupo 3 de la asignatura ASEE. Microservicio
+    de **Usuarios**.
+  license:
+    name: Copyleft
+    url: https://url/a/la/licencia
+  title: Netflux Grupo 3 - OpenAPI 3.0
+  version: 0.0.1
+servers:
+- url: https://path/api/v1
+tags:
+- description: Datos sobre el usuario
+  name: Usuario
+- description: Datos sobre el perfil de un usuario
+  name: Perfil
+- description: Información sobre los dispositivos del usuario
+  name: Dispositivo
+paths:
+  /user/{userId}/dispositivos:
+    get:
+      description: Obtiene la lista de dispositivos registrados por el usuario
+      operationId: obtener_dispositivos
+      parameters:
+      - description: ID del usuario
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  enum:
+                  - Movil
+                  - TV
+                  - Ordenador
+                  type: string
+                type: array
+          description: Lista de dispositivos obtenida exitosamente
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error del servidor
+      summary: Obtiene la lista de dispositivos registrados por el usuario
+      tags:
+      - Dispositivo
+      x-openapi-router-controller: openapi_server.controllers.dispositivo_controller
+    patch:
+      description: Actualiza un dispositivo a la lista de dispositivos registrados
+        del usuario
+      operationId: actualizar_dispositivos
+      parameters:
+      - description: ID del usuario
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actualizarDispositivos_request'
+        description: ID del dispositivo a actualizar
+        required: true
+      responses:
+        "204":
+          description: Lista actualizada exitosamente
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error del servidor
+      summary: Actualiza un dispositivo a la lista de dispositivos registrados del
+        usuario
+      tags:
+      - Dispositivo
+      x-openapi-router-controller: openapi_server.controllers.dispositivo_controller
+  /user/{userId}/dispositivos/{dispositivoId}:
+    delete:
+      description: Elimina un dispositivo de la lista de dispositivos registrados
+        del usuario
+      operationId: eliminar_dispositivo
+      parameters:
+      - description: ID del usuario
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del usuario
+        explode: false
+        in: path
+        name: dispositivoId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Lista actualizada exitosamente
+        "404":
+          description: Usuario o dispositivo no encontrado
+        "500":
+          description: Error del servidor
+      summary: Elimina un dispositivo de la lista de dispositivos registrados del
+        usuario
+      tags:
+      - Dispositivo
+      x-openapi-router-controller: openapi_server.controllers.dispositivo_controller
+  /usuario:
+    get:
+      description: Obtiene una lista de todos los usuarios disponibles en el sistema.
+      operationId: listar_usuarios
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Usuario'
+                type: array
+          description: Lista de usuarios obtenida exitosamente
+        "500":
+          description: Error interno del servidor
+      summary: Listar todos los usuarios
+      tags:
+      - Usuario
+      x-openapi-router-controller: openapi_server.controllers.usuario_controller
+    post:
+      description: Crea un nuevo usuario con la información proporcionada.
+      operationId: crear_usuario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+        description: Objeto del usuario a crear
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: Usuario creado exitosamente
+        "400":
+          description: Solicitud inválida
+        "500":
+          description: Error interno del servidor
+      summary: Crear un nuevo usuario
+      tags:
+      - Usuario
+      x-openapi-router-controller: openapi_server.controllers.usuario_controller
+  /usuario/{userId}:
+    delete:
+      description: Elimina un usuario específico por su ID.
+      operationId: eliminar_usuario
+      parameters:
+      - description: ID del usuario a eliminar
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Usuario eliminado exitosamente
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Eliminar un usuario
+      tags:
+      - Usuario
+      x-openapi-router-controller: openapi_server.controllers.usuario_controller
+    get:
+      description: Obtiene la información detallada de un usuario específico por su
+        ID.
+      operationId: obtener_usuario
+      parameters:
+      - description: ID del usuario a obtener
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: Usuario obtenido exitosamente
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Obtener un usuario específico
+      tags:
+      - Usuario
+      x-openapi-router-controller: openapi_server.controllers.usuario_controller
+    put:
+      description: Actualiza la información de un usuario específico por su ID.
+      operationId: actualizar_usuario
+      parameters:
+      - description: ID del usuario a actualizar
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioUpdate'
+        description: Objeto del usuario con la información actualizada
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: Usuario actualizado exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Actualizar un usuario existente
+      tags:
+      - Usuario
+      x-openapi-router-controller: openapi_server.controllers.usuario_controller
+  /usuario/{userId}/perfiles:
+    get:
+      description: Lista los perfiles de un usuario
+      operationId: obtener_perfiles
+      parameters:
+      - description: ID del usuario a eliminar
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Perfil'
+                type: array
+          description: Perfiles obtenidos exitosamente
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Obtiene todos los perfiles del usuario especificado
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+    post:
+      description: Crea un nuevo perfil para el usuario
+      operationId: crear_perfil
+      parameters:
+      - description: ID del usuario a eliminar
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Perfil'
+        description: Objeto del perfil a crear
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: Perfil creado exitosamente
+        "500":
+          description: Error interno del servidor
+      summary: Añade un nuevo perfil al usuario especificado
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+  /usuario/{userId}/perfiles/{profileId}:
+    delete:
+      description: Borra el perfil especificado de un usuario
+      operationId: borrar_perfil_usuario
+      parameters:
+      - description: ID del usuario específicado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del perfil a obtener
+        explode: false
+        in: path
+        name: profileId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Perfil borrado exitosamente
+        "403":
+          description: El cliente no tiene permisos suficientes
+        "404":
+          description: Usuario o perfil no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Borra el perfil especificado
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+    get:
+      description: Obtiene el perfil específico de un usuario concreto
+      operationId: obtener_perfil_usuario
+      parameters:
+      - description: ID del usuario específicado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del perfil a obtener
+        explode: false
+        in: path
+        name: profileId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: Perfil obtenido exitosamente
+        "404":
+          description: Usuario o perfil no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Obtiene el perfil específico de un usuario concreto
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+    put:
+      description: Actualiza el perfil especificado de un usuario
+      operationId: actualizar_perfil_usuario
+      parameters:
+      - description: ID del usuario específicado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del perfil a obtener
+        explode: false
+        in: path
+        name: profileId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerfilUpdate'
+        description: Objeto del perfil con la información actualizada
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: Perfil actualizado exitosamente
+        "404":
+          description: Usuario o perfil no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Actualiza el perfil especificado
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+  /usuario/{userId}/perfiles/{profileId}/historial:
+    get:
+      description: Obtiene el historial de contenido completado por un perfil. Esta
+        lista contendrá las series o películas terminadas de ver por el perfil.
+      operationId: obtener_historial_perfil
+      parameters:
+      - description: ID del usuario específicado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del perfil específico
+        explode: false
+        in: path
+        name: profileId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Serie'
+                type: array
+          description: Historial obtenido exitosamente
+        "404":
+          description: Usuario o perfil no encontrado
+        "500":
+          description: Error del servidor
+      summary: Obtiene el historial de contenido completado por de un perfil
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+  /usuario/{userId}/perfiles/{profileId}/lista:
+    get:
+      description: Obtiene la lista de contenidos guardados para ver de un perfil
+      operationId: obtener_lista_perfil
+      parameters:
+      - description: ID del usuario específicado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del perfil específico
+        explode: false
+        in: path
+        name: profileId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Serie'
+                type: array
+          description: Lista obtenida exitosamente
+        "404":
+          description: Usuario o perfil no encontrado
+        "500":
+          description: Error del servidor
+      summary: Obtiene la lista de un perfil concreto
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+components:
+  schemas:
+    Usuario:
+      example:
+        dispositivos:
+        - Móvil
+        - TV
+        correo_electronico: juan@gmail.com
+        plan_suscripcion: Básico
+        perfiles:
+        - user_id: 3
+          preferencias_contenido:
+            languages:
+            - Espanol
+            genres:
+            - Action
+            - Supernatural
+          foto_perfil: path/to/image
+          id: 1
+          nombre: Euler
+          historial_vistos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          mi_lista:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+        - user_id: 3
+          preferencias_contenido:
+            languages:
+            - Espanol
+            genres:
+            - Action
+            - Supernatural
+          foto_perfil: path/to/image
+          id: 1
+          nombre: Euler
+          historial_vistos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          mi_lista:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+        id: 1
+        nombre: Juan Miguel León Rojas
+        pais: España
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        nombre:
+          example: Juan Miguel León Rojas
+          title: nombre
+          type: string
+        correo_electronico:
+          example: juan@gmail.com
+          format: email
+          title: correo_electronico
+          type: string
+        pais:
+          example: España
+          title: pais
+          type: string
+        plan_suscripcion:
+          enum:
+          - Basico
+          - Estandar
+          - Premium
+          example: Básico
+          title: plan_suscripcion
+          type: string
+        dispositivos:
+          example:
+          - Móvil
+          - TV
+          items:
+            type: string
+          title: dispositivos
+          type: array
+        perfiles:
+          items:
+            $ref: '#/components/schemas/Perfil'
+          title: perfiles
+          type: array
+      required:
+      - correo_electronico
+      - nombre
+      - plan_suscripcion
+      title: Usuario
+      type: object
+    UsuarioUpdate:
+      allOf:
+      - $ref: '#/components/schemas/Usuario'
+      - required:
+        - id
+      example:
+        dispositivos:
+        - Móvil
+        - TV
+        correo_electronico: juan@gmail.com
+        plan_suscripcion: Básico
+        perfiles:
+        - user_id: 3
+          preferencias_contenido:
+            languages:
+            - Espanol
+            genres:
+            - Action
+            - Supernatural
+          foto_perfil: path/to/image
+          id: 1
+          nombre: Euler
+          historial_vistos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          mi_lista:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+        - user_id: 3
+          preferencias_contenido:
+            languages:
+            - Espanol
+            genres:
+            - Action
+            - Supernatural
+          foto_perfil: path/to/image
+          id: 1
+          nombre: Euler
+          historial_vistos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          mi_lista:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+        id: 1
+        nombre: Juan Miguel León Rojas
+        pais: España
+      title: UsuarioUpdate
+    Perfil:
+      example:
+        user_id: 3
+        preferencias_contenido:
+          languages:
+          - Espanol
+          genres:
+          - Action
+          - Supernatural
+        foto_perfil: path/to/image
+        id: 1
+        nombre: Euler
+        historial_vistos:
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        mi_lista:
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+      properties:
+        id:
+          description: ID del perfil en específico
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        user_id:
+          description: ID del usuario al que pertenece el perfil
+          example: 3
+          format: int64
+          title: user_id
+          type: integer
+        nombre:
+          example: Euler
+          title: nombre
+          type: string
+        foto_perfil:
+          example: path/to/image
+          title: foto_perfil
+          type: string
+        historial_vistos:
+          items:
+            $ref: '#/components/schemas/Capitulo'
+          title: historial_vistos
+          type: array
+        mi_lista:
+          description: Lista con el contenido que el usuario ha guardado
+          items:
+            $ref: '#/components/schemas/Capitulo'
+          title: mi_lista
+          type: array
+        preferencias_contenido:
+          $ref: '#/components/schemas/Perfil_preferencias_contenido'
+      required:
+      - nombre
+      title: Perfil
+      type: object
+    PerfilUpdate:
+      allOf:
+      - $ref: '#/components/schemas/Perfil'
+      - required:
+        - id
+        - user_id
+      example:
+        user_id: 3
+        preferencias_contenido:
+          languages:
+          - Espanol
+          genres:
+          - Action
+          - Supernatural
+        foto_perfil: path/to/image
+        id: 1
+        nombre: Euler
+        historial_vistos:
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        mi_lista:
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+      title: PerfilUpdate
+    Serie:
+      example:
+        actores:
+        - fechaNacimiento: 1956-03-07
+          biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          id: 1
+          nombre: Bryan Cranston
+        - fechaNacimiento: 1956-03-07
+          biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          id: 1
+          nombre: Bryan Cranston
+        temporadas:
+        - capitulos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          numero: 1
+          anioLanzamiento: 2008
+          id: 1
+        - capitulos:
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          - numero: 1
+            titulo: Piloto
+            duracion: 58
+            id: 1
+            sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+              con cáncer de pulmón.
+          numero: 1
+          anioLanzamiento: 2008
+          id: 1
+        genero: Drama
+        titulo: Breaking Bad
+        anioEstreno: 2008
+        id: 1
+        sinopsis: Un profesor de química se convierte en fabricante de metanfetamina.
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        titulo:
+          example: Breaking Bad
+          title: titulo
+          type: string
+        genero:
+          example: Drama
+          title: genero
+          type: string
+        sinopsis:
+          example: Un profesor de química se convierte en fabricante de metanfetamina.
+          title: sinopsis
+          type: string
+        anioEstreno:
+          example: 2008
+          format: int32
+          title: anioEstreno
+          type: integer
+        temporadas:
+          items:
+            $ref: '#/components/schemas/Temporada'
+          title: temporadas
+          type: array
+        actores:
+          items:
+            $ref: '#/components/schemas/Actor'
+          title: actores
+          type: array
+      required:
+      - anioEstreno
+      - genero
+      - sinopsis
+      - titulo
+      title: Serie
+      type: object
+    Temporada:
+      example:
+        capitulos:
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        - numero: 1
+          titulo: Piloto
+          duracion: 58
+          id: 1
+          sinopsis: Walter White toma una decisión radical tras ser diagnosticado
+            con cáncer de pulmón.
+        numero: 1
+        anioLanzamiento: 2008
+        id: 1
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        numero:
+          description: Número de la temporada
+          example: 1
+          format: int32
+          title: numero
+          type: integer
+        anioLanzamiento:
+          example: 2008
+          format: int32
+          title: anioLanzamiento
+          type: integer
+        capitulos:
+          items:
+            $ref: '#/components/schemas/Capitulo'
+          title: capitulos
+          type: array
+      required:
+      - anioLanzamiento
+      - numero
+      title: Temporada
+      type: object
+    Capitulo:
+      example:
+        numero: 1
+        titulo: Piloto
+        duracion: 58
+        id: 1
+        sinopsis: Walter White toma una decisión radical tras ser diagnosticado con
+          cáncer de pulmón.
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        numero:
+          example: 1
+          format: int32
+          title: numero
+          type: integer
+        titulo:
+          example: Piloto
+          title: titulo
+          type: string
+        duracion:
+          description: Duración del capítulo en minutos
+          example: 58
+          format: int32
+          title: duracion
+          type: integer
+        sinopsis:
+          example: Walter White toma una decisión radical tras ser diagnosticado con
+            cáncer de pulmón.
+          title: sinopsis
+          type: string
+      required:
+      - duracion
+      - numero
+      - titulo
+      title: Capitulo
+      type: object
+    Actor:
+      example:
+        fechaNacimiento: 1956-03-07
+        biografia: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+        id: 1
+        nombre: Bryan Cranston
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        nombre:
+          example: Bryan Cranston
+          title: nombre
+          type: string
+        fechaNacimiento:
+          example: 1956-03-07
+          format: date
+          title: fechaNacimiento
+          type: string
+        biografia:
+          example: Actor estadounidense conocido por su papel en 'Breaking Bad'.
+          title: biografia
+          type: string
+      required:
+      - biografia
+      - fechaNacimiento
+      - nombre
+      title: Actor
+      type: object
+    actualizarDispositivos_request:
+      properties:
+        dispositivoId:
+          example: 1
+          format: int64
+          title: dispositivoId
+          type: integer
+      title: actualizarDispositivos_request
+      type: object
+    Perfil_preferencias_contenido:
+      description: Preferencias de contenido del usuario
+      example:
+        languages:
+        - Espanol
+        genres:
+        - Action
+        - Supernatural
+      properties:
+        genres:
+          example:
+          - Action
+          - Supernatural
+          items:
+            type: string
+          title: genres
+          type: array
+        languages:
+          example:
+          - Espanol
+          items:
+            enum:
+            - Ingles
+            - Espanol
+            type: string
+          title: languages
+          type: array
+      title: Perfil_preferencias_contenido
+      type: object

@@ -1,0 +1,711 @@
+openapi: 3.0.3
+info:
+  title: Netflux Grupo 3 - OpenAPI 3.0
+  description: API de Netflux realizada por el grupo 3 de la asignatura ASEE. Microservicio de **Usuarios**.
+  license:
+    name: Copyleft
+    url: https://url/a/la/licencia
+  version: 0.0.1
+servers:
+    - url: https://path/api/v1
+tags:
+    - name: Usuario
+      description: Datos sobre el usuario
+    - name: Perfil
+      description: Datos sobre el perfil de un usuario
+    - name: Dispositivo
+      description: Información sobre los dispositivos del usuario
+
+paths:
+  /usuario:
+    get:
+      tags:
+        - Usuario
+      summary: Listar todos los usuarios
+      description: Obtiene una lista de todos los usuarios disponibles en el sistema.
+      operationId: listarUsuarios
+      responses:
+        '200':
+          description: Lista de usuarios obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+        '500':
+          description: Error interno del servidor
+    post:
+      tags:
+        - Usuario
+      summary: Crear un nuevo usuario
+      description: Crea un nuevo usuario con la información proporcionada.
+      operationId: crearUsuario
+      requestBody:
+        description: Objeto del usuario a crear
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Solicitud inválida
+        '500':
+          description: Error interno del servidor
+          
+  /usuario/{userId}:
+    get:
+      tags:
+        - Usuario
+      summary: Obtener un usuario específico
+      description: Obtiene la información detallada de un usuario específico por su ID.
+      operationId: obtenerUsuario
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario a obtener
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Usuario obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error interno del servidor
+          
+    put:
+      tags:
+        - Usuario
+      summary: Actualizar un usuario existente
+      description: Actualiza la información de un usuario específico por su ID.
+      operationId: actualizarUsuario
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario a actualizar
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        description: Objeto del usuario con la información actualizada
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioUpdate'
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Solicitud inválida
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error interno del servidor
+          
+    delete:
+      tags:
+        - Usuario
+      summary: Eliminar un usuario
+      description: Elimina un usuario específico por su ID.
+      operationId: eliminarUsuario
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario a eliminar
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Usuario eliminado exitosamente
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error interno del servidor
+          
+  /usuario/{userId}/perfiles:
+    get:
+      tags:
+        - Perfil
+      summary: Obtiene todos los perfiles del usuario especificado
+      description: Lista los perfiles de un usuario
+      operationId: obtenerPerfiles
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario a eliminar
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Perfiles obtenidos exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Perfil'
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error interno del servidor
+    post:
+      tags:
+        - Perfil
+      summary: Añade un nuevo perfil al usuario especificado
+      description: Crea un nuevo perfil para el usuario
+      operationId: crearPerfil
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario a eliminar
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        description: Objeto del perfil a crear
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Perfil'
+      responses:
+        '201':
+          description: Perfil creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+        '500':
+          description: Error interno del servidor
+              
+  /usuario/{userId}/perfiles/{profileId}:
+    get:
+      tags:
+        - Perfil
+      summary: Obtiene el perfil específico de un usuario concreto
+      description: Obtiene el perfil específico de un usuario concreto
+      operationId: obtenerPerfilUsuario
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario específicado
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: profileId
+          in: path
+          description: ID del perfil a obtener
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Perfil obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+        '404':
+          description: Usuario o perfil no encontrado
+        '500':
+          description: Error interno del servidor
+    put:
+      tags:
+        - Perfil
+      summary: Actualiza el perfil especificado
+      description: Actualiza el perfil especificado de un usuario
+      operationId: actualizarPerfilUsuario
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario específicado
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: profileId
+          in: path
+          description: ID del perfil a obtener
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        description: Objeto del perfil con la información actualizada
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerfilUpdate'
+      responses:
+        '200':
+          description: Perfil actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+        '404':
+          description: Usuario o perfil no encontrado
+        '500':
+          description: Error interno del servidor
+    delete:
+      tags:
+        - Perfil
+      summary: Borra el perfil especificado
+      description: Borra el perfil especificado de un usuario
+      operationId: borrarPerfilUsuario
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario específicado
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: profileId
+          in: path
+          description: ID del perfil a obtener
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Perfil borrado exitosamente
+        '403':
+          description: El cliente no tiene permisos suficientes
+        '404':
+          description: Usuario o perfil no encontrado
+        '500':
+          description: Error interno del servidor
+          
+  /usuario/{userId}/perfiles/{profileId}/lista:
+    get:
+      tags:
+        - Perfil
+      summary: Obtiene la lista de un perfil concreto
+      description: Obtiene la lista de contenidos guardados para ver de un perfil
+      operationId: obtenerListaPerfil
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario específicado
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: profileId
+          in: path
+          description: ID del perfil específico
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Serie'
+        '404':
+          description: Usuario o perfil no encontrado
+        '500':
+          description: Error del servidor
+          
+  /usuario/{userId}/perfiles/{profileId}/historial:
+    get:
+      tags:
+        - Perfil
+      summary: Obtiene el historial de contenido completado por de un perfil
+      description: Obtiene el historial de contenido completado por un perfil. Esta lista contendrá las series o películas terminadas de ver por el perfil.
+      operationId: obtenerHistorialPerfil
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario específicado
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: profileId
+          in: path
+          description: ID del perfil específico
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Historial obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Serie'
+        '404':
+          description: Usuario o perfil no encontrado
+        '500':
+          description: Error del servidor
+          
+  /user/{userId}/dispositivos:
+    get:
+      tags: 
+        - Dispositivo
+      summary: Obtiene la lista de dispositivos registrados por el usuario
+      description: Obtiene la lista de dispositivos registrados por el usuario
+      operationId: obtenerDispositivos
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Lista de dispositivos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - Movil
+                    - TV
+                    - Ordenador
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error del servidor
+    
+    patch:
+      tags: 
+        - Dispositivo
+      summary: Actualiza un dispositivo a la lista de dispositivos registrados del usuario
+      description: Actualiza un dispositivo a la lista de dispositivos registrados del usuario
+      operationId: actualizarDispositivos
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        description: ID del dispositivo a actualizar
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dispositivoId:
+                  type: integer
+                  format: int64
+                  example: 1
+      responses:
+        '204':
+          description: Lista actualizada exitosamente
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error del servidor
+    
+  /user/{userId}/dispositivos/{dispositivoId}:
+    delete:
+      tags: 
+        - Dispositivo
+      summary: Elimina un dispositivo de la lista de dispositivos registrados del usuario
+      description: Elimina un dispositivo de la lista de dispositivos registrados del usuario
+      operationId: eliminarDispositivo
+      parameters:
+        - name: userId
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: dispositivoId
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Lista actualizada exitosamente
+        '404':
+          description: Usuario o dispositivo no encontrado
+        '500':
+          description: Error del servidor
+      
+components:
+  schemas:
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nombre:
+          type: string
+          example: "Juan Miguel León Rojas"
+        correo_electronico:
+          type: string
+          format: email # Importante para el formato
+          example: "juan@gmail.com"
+        pais:
+          type: string
+          example: "España"
+        plan_suscripcion:
+          type: string
+          enum:
+            - Basico
+            - Estandar
+            - Premium
+          example: "Básico"
+        dispositivos:
+          type: array
+          items:
+            type: string
+          example:
+            - "Móvil"
+            - "TV"
+        perfiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Perfil'
+      required:
+        - nombre
+        - correo_electronico
+        - plan_suscripcion
+        
+    UsuarioUpdate:
+      allOf:
+        - $ref: '#/components/schemas/Usuario'
+        - required:
+          - id
+            
+    Perfil:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID del perfil en específico
+          example: 1
+        user_id:
+          type: integer
+          format: int64
+          description: ID del usuario al que pertenece el perfil
+          example: 3
+        nombre:
+          type: string
+          example: "Euler"
+        foto_perfil:
+          type: string
+          example: "path/to/image"
+        historial_vistos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Capitulo'
+        mi_lista:
+          description: Lista con el contenido que el usuario ha guardado
+          type: array
+          items:
+            $ref: '#/components/schemas/Capitulo'
+        preferencias_contenido:
+          type: object
+          description: Preferencias de contenido del usuario
+          properties: # Un par de ejemplos, tiene buena escalabilidad pero no nos volvamos locos
+            genres:
+              type: array
+              items:
+                type: string
+              example:
+                - "Action"
+                - "Supernatural"
+            languages:
+              type: array
+              items:
+                type: string
+                enum:
+                  - Ingles
+                  - Espanol
+              example:
+                - "Espanol"
+      required:
+        - nombre
+        
+    PerfilUpdate:
+      allOf:
+        - $ref: '#/components/schemas/Perfil'
+        - required:
+          - id
+          - user_id
+
+    Serie:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        titulo:
+          type: string
+          example: "Breaking Bad"
+        genero:
+          type: string
+          example: "Drama"
+        sinopsis:
+          type: string
+          example: "Un profesor de química se convierte en fabricante de metanfetamina."
+        anioEstreno:
+          type: integer
+          format: int32
+          example: 2008
+        temporadas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Temporada'
+        actores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Actor'
+      required:
+        - titulo
+        - genero
+        - sinopsis
+        - anioEstreno
+
+    Temporada:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        numero:
+          type: integer
+          format: int32
+          description: Número de la temporada
+          example: 1
+        anioLanzamiento:
+          type: integer
+          format: int32
+          example: 2008
+        capitulos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Capitulo'
+      required:
+        - numero
+        - anioLanzamiento
+
+    Capitulo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        numero:
+          type: integer
+          format: int32
+          example: 1
+        titulo:
+          type: string
+          example: "Piloto"
+        duracion:
+          type: integer
+          format: int32
+          description: Duración del capítulo en minutos
+          example: 58
+        sinopsis:
+          type: string
+          example: "Walter White toma una decisión radical tras ser diagnosticado con cáncer de pulmón."
+      required:
+        - numero
+        - titulo
+        - duracion
+
+    Actor:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nombre:
+          type: string
+          example: "Bryan Cranston"
+        fechaNacimiento:
+          type: string
+          format: date
+          example: "1956-03-07"
+        biografia:
+          type: string
+          example: "Actor estadounidense conocido por su papel en 'Breaking Bad'."
+      required:
+        - nombre
+        - fechaNacimiento
+        - biografia
