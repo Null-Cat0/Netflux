@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Crear un nuevo usuario</h2>
+    <form method="POST" action="{{ url_for('crear_usuario') }}">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese su nombre" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="correo_electronico" class="form-label">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="correo_electronico" name="correo_electronico" placeholder="Ingrese su correo electrónico">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="pais" class="form-label">País</label>
+                    <input type="text" class="form-control" id="pais" name="pais" placeholder="Ingrese su país">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="plan_suscripcion" class="form-label">Plan de Suscripción</label>
+                    <select class="form-select" id="plan_suscripcion" name="plan_suscripcion" required>
+                        <option value="" disabled selected>Seleccione un plan</option>
+                        <option value="gratis">Gratis</option>
+                        <option value="basico">Básico</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="dispositivos" class="form-label">Dispositivos</label>
+            <select class="form-select" id="dispositivos" name="dispositivos" required>
+                <option value="" disabled selected>Seleccione un dispositivo</option>
+                <option value="pc">PC</option>
+                <option value="movil">Móvil</option>
+                <option value="tv">TV</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Crear Cuenta</button>
+    </form>
+</div>
+{% endblock %}

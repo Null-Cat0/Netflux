@@ -13,6 +13,5 @@ def home():
 if __name__ == '__main__':
     # Crear las tablas de la base de datos al inicio de la app
     with app.app_context():
-        db.drop_all()
         db.create_all()
     connex_app.run(port=8080)
