@@ -3,6 +3,8 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
+from sqlalchemy.util import methods_equivalent
+
 
 from openapi_server.models.usuario import Usuario  # noqa: E501
 from openapi_server.models.usuario_update import UsuarioUpdate  # noqa: E501
@@ -14,7 +16,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from openapi_server.models.perfil import Perfil
 
-
+from openapi_server import connex_app, app
 
 def actualizar_usuario(user_id, usuario_update):  # noqa: E501
     """Actualizar un usuario existente
@@ -32,7 +34,8 @@ def actualizar_usuario(user_id, usuario_update):  # noqa: E501
         usuario_update = UsuarioUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
-
+# Esto no tira con el parametro de usuario colocado, el resto si
+@app.route('/crear_usuario', methods=['GET'])
 def crear_usuario(usuario):  # noqa: E501
     """Crear un nuevo usuario
 
@@ -43,11 +46,11 @@ def crear_usuario(usuario):  # noqa: E501
 
     :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
     """
+
     if connexion.request.is_json:
         usuario = Usuario.from_dict(connexion.request.get_json())  # noqa: E501
-        return 'do some magic!'
 
-
+    return "do some magic!"
 
 def eliminar_usuario(user_id):  # noqa: E501
     """Eliminar un usuario

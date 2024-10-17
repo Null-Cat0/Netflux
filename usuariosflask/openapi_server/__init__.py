@@ -12,7 +12,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicialización de la base de datos
 db = SQLAlchemy(app)
-from openapi_server.controllers import usuario_controller
+
+# from openapi_server.controllers import usuario_controller
+
 # Usar el codificador personalizado
 app.json_encoder = CustomJSONEncoder
 
