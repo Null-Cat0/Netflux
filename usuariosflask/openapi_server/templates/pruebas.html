@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Iniciar sesión</h2>
+        <form method="POST" action="{{ url_for('obtener_usuario')}}">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="correo" class="form-label">Correo electrónico</label>
+                    <input type="email" id="correo" name="correo" class="form-control" placeholder="example@gmail.com">
+                </div>
+                <div class="col-md-12">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" id="password" name="password" class="form-control">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+        </form>
+    </div>
+</body>
+
+</html>
