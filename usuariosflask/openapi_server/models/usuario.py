@@ -17,12 +17,13 @@ class Usuario(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(255), nullable=False)
     correo_electronico = db.Column(db.String(255))
+    password = db.Column(db.String(255))
     pais = db.Column(db.String(255))
     plan_suscripcion = db.Column(db.String(255))
     dispositivos = db.Column(db.String(255))
     # perfiles = db.relationship('Perfil', backref='usuario', lazy=True)
 
-    def __init__(self, nombre, correo_electronico, pais, plan_suscripcion, dispositivos):  # noqa: E501
+    def __init__(self, nombre, correo_electronico, password, pais, plan_suscripcion, dispositivos):  # noqa: E501
         """Usuario - a model defined in OpenAPI
 
         :param id: The id of this Usuario.  # noqa: E501
@@ -44,6 +45,7 @@ class Usuario(db.Model):
             'user_id': int,
             'nombre': str,
             'correo_electronico': str,
+            'password': str,
             'pais': str,
             'plan_suscripcion': str,
             'dispositivos': List[str],
@@ -54,6 +56,7 @@ class Usuario(db.Model):
             'user_id': 'user_id',
             'nombre': 'nombre',
             'correo_electronico': 'correo_electronico',
+            'password': str,
             'pais': 'pais',
             'plan_suscripcion': 'plan_suscripcion',
             'dispositivos': 'dispositivos',
@@ -62,6 +65,7 @@ class Usuario(db.Model):
 
         self.nombre = nombre
         self.correo_electronico = correo_electronico
+        self.password = password
         self.pais = pais
         self.plan_suscripcion = plan_suscripcion
         self.dispositivos = dispositivos

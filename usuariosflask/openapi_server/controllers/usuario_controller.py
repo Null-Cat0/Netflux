@@ -20,8 +20,6 @@ from openapi_server.models.usuario import Usuario
 
 from openapi_server import connex_app, app
 
-
-
 def actualizar_usuario(user_id, usuario_update):  # noqa: E501
     """Actualizar un usuario existente
 
@@ -57,6 +55,7 @@ def crear_usuario():  # noqa: E501
         # Procesar el formulario cuando se hace el submit
         nombre = request.form.get('nombre')
         correo_electronico = request.form.get('correo_electronico')
+        password=request.form.get('password')
         pais = request.form.get('pais')
         plan_suscripcion = request.form.get('plan_suscripcion')
         dispositivos = request.form.get('dispositivos')
@@ -65,6 +64,7 @@ def crear_usuario():  # noqa: E501
         nuevo_usuario = Usuario(
             nombre=nombre,
             correo_electronico=correo_electronico,
+            password=password,
             pais=pais,
             plan_suscripcion=plan_suscripcion,
             dispositivos=dispositivos
@@ -104,7 +104,7 @@ def listar_usuarios():  # noqa: E501
     return 'do some magic!'
 
 
-@app.route('/usuario', methods=['GET', 'POST'])
+@app.route('/usuario/<user_id>', methods=['GET', 'POST'])
 def obtener_usuario(user_id):  # noqa: E501
     """Obtener un usuario específico
 
@@ -115,4 +115,4 @@ def obtener_usuario(user_id):  # noqa: E501
 
     :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    return f'do some magic, {user_id}!'
