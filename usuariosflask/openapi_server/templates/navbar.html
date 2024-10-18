@@ -1,0 +1,44 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <!-- Logotipo de Netflux -->
+        <a class="navbar-brand">
+            <img src="{{ url_for('static', filename='images/netflux-logo.png') }}" alt="Netflux Logo" width="100">
+        </a>
+
+        <!-- Botón para pantallas pequeñas -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Enlaces de la navbar -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('home') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Series</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Películas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Novedades</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Mi lista</a>
+                </li>
+            </ul>
+
+            <!-- Menú de usuario -->
+            <div class="dropdown">
+                <a class="nav-link dropdown-toggle text-white" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                <ul class="dropdown-menu dropdown-menu-end bg-dark" aria-labelledby="dropdownMenuLink">
+                    <li><a class="dropdown-item text-white" href="#">Cuenta</a></li>
+                    <li><a class="dropdown-item text-white" href="#">Centro de ayuda</a></li>
+                    <li><a class="dropdown-item text-white" href="#">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

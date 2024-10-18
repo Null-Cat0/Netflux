@@ -74,7 +74,7 @@ def crear_usuario():  # noqa: E501
         db.session.commit()
 
         flash('Usuario creado con éxito', 'success')
-        return redirect(url_for('crear_usuario'))
+        return redirect(url_for('login'))
 
     # Si el método es GET, renderizamos el formulario
     return render_template('crear_usuario.html')

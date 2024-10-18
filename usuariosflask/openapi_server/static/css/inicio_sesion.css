@@ -1,0 +1,53 @@
+/* Asegura que el fondo sea negro para toda la página */
+body, html {
+    height: 100%;
+    margin: 0;
+    background-color: #000;  /* Fondo negro completo */
+}
+
+/* Alineación completa del contenido al centro */
+.d-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Estilos para el formulario de inicio de sesión */
+.login-card {
+    max-width: 400px;
+    width: 100%;
+    background-color: #141414;  /* Fondo oscuro para la tarjeta del formulario */
+    padding: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Sombra suave */
+}
+
+/* Estilos para el formulario */
+.form-control {
+    background-color: #222;  /* Fondo oscuro para los campos de entrada */
+    color: #fff;
+    border: 1px solid #444;  /* Borde oscuro */
+}
+
+.form-control::placeholder {
+    color: #777;  /* Color para el placeholder */
+}
+
+/* Texto del formulario */
+.text-white {
+    color: #fff;
+}
+
+/* Enlaces con estilo */
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-decoration-none {
+    text-decoration: none;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}

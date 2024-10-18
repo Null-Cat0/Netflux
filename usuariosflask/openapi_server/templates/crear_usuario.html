@@ -1,58 +1,48 @@
 {% extends 'base.html' %}
 
-{% block title %}Crear Usuario{% endblock %}
+{% block title %}Crear Usuario - Netflux{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Crear un nuevo usuario</h2>
-    <form method="POST" action="{{ url_for('crear_usuario') }}">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese su nombre" required>
-                </div>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
+    <div class="card p-5 shadow-lg" style="max-width: 400px; width: 100%; background-color: #000;">
+        <h2 class="mb-4 text-center text-white">Crea tu cuenta</h2>
+        <form method="POST" action="{{ url_for('crear_usuario') }}">
+            <div class="mb-3">
+                <label for="nombre" class="form-label text-white">Nombre</label>
+                <input type="text" class="form-control bg-dark text-white border-secondary" id="nombre" name="nombre" placeholder="Nombre" required>
             </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="correo_electronico" class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" id="correo_electronico" name="correo_electronico" placeholder="Ingrese su correo electrónico">
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="password" name="password">
-                </div>
+            <div class="mb-3">
+                <label for="correo_electronico" class="form-label text-white">Correo Electrónico</label>
+                <input type="email" class="form-control bg-dark text-white border-secondary" id="correo_electronico" name="correo_electronico" placeholder="Correo Electrónico">
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="pais" class="form-label">País</label>
-                    <input type="text" class="form-control" id="pais" name="pais" placeholder="Ingrese su país">
-                </div>
+            <div class="mb-3">
+                <label for="password" class="form-label text-white">Contraseña</label>
+                <input type="password" class="form-control bg-dark text-white border-secondary" id="contrasena" name="password" placeholder="Contraseña" required>
             </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="plan_suscripcion" class="form-label">Plan de Suscripción</label>
-                    <select class="form-select" id="plan_suscripcion" name="plan_suscripcion" required>
-                        <option value="" disabled selected>Seleccione un plan</option>
-                        <option value="gratis">Gratis</option>
-                        <option value="basico">Básico</option>
-                        <option value="premium">Premium</option>
-                    </select>
-                </div>
+            <div class="mb-3">
+                <label for="pais" class="form-label text-white">País</label>
+                <input type="text" class="form-control bg-dark text-white border-secondary" id="pais" name="pais" placeholder="País">
             </div>
-        </div>
-        <div class="mb-3">
-            <label for="dispositivos" class="form-label">Dispositivos</label>
-            <select class="form-select" id="dispositivos" name="dispositivos" required>
-                <option value="" disabled selected>Seleccione un dispositivo</option>
-                <option value="pc">PC</option>
-                <option value="movil">Móvil</option>
-                <option value="tv">TV</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Crear Cuenta</button>
-    </form>
+            <div class="mb-3">
+                <label for="plan_suscripcion" class="form-label text-white">Plan de Suscripción</label>
+                <select class="form-select bg-dark text-white border-secondary" id="plan_suscripcion" name="plan_suscripcion" required>
+                    <option value="" disabled selected>Selecciona un plan</option>
+                    <option value="gratis">Gratis</option>
+                    <option value="basico">Básico</option>
+                    <option value="premium">Premium</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="dispositivos" class="form-label text-white">Dispositivos</label>
+                <select class="form-select bg-dark text-white border-secondary" id="dispositivos" name="dispositivos" required>
+                    <option value="" disabled selected>Selecciona un dispositivo</option>
+                    <option value="pc">PC</option>
+                    <option value="movil">Móvil</option>
+                    <option value="tv">TV</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-danger w-100">Crear Cuenta</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
