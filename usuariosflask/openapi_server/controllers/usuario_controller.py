@@ -104,6 +104,7 @@ def listar_usuarios():  # noqa: E501
     return 'do some magic!'
 
 
+@app.route('/usuario', methods=['GET', 'POST'])
 def obtener_usuario(user_id):  # noqa: E501
     """Obtener un usuario específico
 

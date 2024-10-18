@@ -2,7 +2,6 @@
 Proyecto de la Uni o7
 
 ## Dependencias
----
 - Python=3.12.X
 - Connexion
   - "connexion[flask]"
