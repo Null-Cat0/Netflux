@@ -5,35 +5,33 @@ from openapi_server.controllers import usuario_controller
 from openapi_server import db
 from openapi_server import connex_app, app
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 
 from openapi_server.models import usuario
 from openapi_server.models.usuario import Usuario
 
 # Definir una ruta básica para verificar que la app funcione
-@app.route('/iniciar_sesion', methods=['GET', 'POST'])
-def login():
-    if request.method == 'GET':
-        return render_template("inicio_sesion.html")
+@app.route('/iniciar_sesion', methods=['POST'])
+def iniciar_sesion():
+    """Verifica las credenciales del usuario y responde con un mensaje JSON."""
+    data = request.json
+    correo_electronico = data.get('correo_electronico')
+    password = data.get('password')
 
-    if request.method == 'POST':
-        correo_electronico = request.form.get('correo')
-        password = request.form.get('password')
+    usuario = Usuario.query.filter_by(correo_electronico=correo_electronico).first()
 
-        usuario_encontrado = Usuario.query.filter_by(correo_electronico=correo_electronico).first()
+    if usuario is None:
+        return jsonify({"message": "El correo introducido no existe", "status": "error"}), 404
+    elif usuario.password != password:
+        return jsonify({"message": "Contraseña inválida", "status": "error"}), 401
+    else:
+        return jsonify({"message": "Inicio de sesión exitoso", "status": "success", "user_id": usuario.user_id}), 200
 
-        if usuario_encontrado == None:
-            flash("El correo introducido no existe", "danger")
-        elif usuario_encontrado.password != password:
-            flash("CONTRASEÑA INVÁLIDA (COMO TÚ)", "danger")
-        else:
-            return redirect(url_for('obtener_usuario', user_id=usuario_encontrado.user_id))
-
-    return render_template("inicio_sesion.html")
-
+"""
 @app.route('/')
 def home():
     return redirect(url_for('login'))
+"""
 
 # Punto de entrada principal
 if __name__ == '__main__':

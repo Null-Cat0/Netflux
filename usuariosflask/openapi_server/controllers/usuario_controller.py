@@ -12,13 +12,14 @@ from openapi_server import util
 from openapi_server import db
 
 # Importa la app de Flask
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 from openapi_server.models.perfil import Perfil
 from openapi_server.models.usuario import Usuario
 
 from openapi_server import connex_app, app
+
 
 def actualizar_usuario(user_id, usuario_update):  # noqa: E501
     """Actualizar un usuario existente
@@ -36,8 +37,6 @@ def actualizar_usuario(user_id, usuario_update):  # noqa: E501
         usuario_update = UsuarioUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
-# Esto no tira con el parametro de usuario colocado, el resto si
-
 
 @app.route('/crear_usuario', methods=['GET', 'POST'])
 def crear_usuario():  # noqa: E501
@@ -51,33 +50,29 @@ def crear_usuario():  # noqa: E501
     :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
     """
 
-    if request.method == 'POST':
-        # Procesar el formulario cuando se hace el submit
-        nombre = request.form.get('nombre')
-        correo_electronico = request.form.get('correo_electronico')
-        password=request.form.get('password')
-        pais = request.form.get('pais')
-        plan_suscripcion = request.form.get('plan_suscripcion')
-        dispositivos = request.form.get('dispositivos')
+   # Capturar los datos enviados en el JSON
+    data = request.json
+    nombre = data.get('nombre')
+    correo_electronico = data.get('correo_electronico')
+    password = data.get('password')
+    pais = data.get('pais')
+    plan_suscripcion = data.get('plan_suscripcion')
+    dispositivos = data.get('dispositivos')
 
-        # Aquí puedes crear un objeto de usuario y guardarlo en la base de datos
-        nuevo_usuario = Usuario(
-            nombre=nombre,
-            correo_electronico=correo_electronico,
-            password=password,
-            pais=pais,
-            plan_suscripcion=plan_suscripcion,
-            dispositivos=dispositivos
-        )
+    # Crear un nuevo usuario en la base de datos
+    nuevo_usuario = Usuario(
+        nombre=nombre,
+        correo_electronico=correo_electronico,
+        password=password,
+        pais=pais,
+        plan_suscripcion=plan_suscripcion,
+        dispositivos=dispositivos
+    )
 
-        db.session.add(nuevo_usuario)
-        db.session.commit()
+    db.session.add(nuevo_usuario)
+    db.session.commit()
 
-        flash('Usuario creado con éxito', 'success')
-        return redirect(url_for('login'))
-
-    # Si el método es GET, renderizamos el formulario
-    return render_template('crear_usuario.html')
+    return jsonify({"message": "Usuario creado con éxito", "status": "success"}), 201
 
 
 def eliminar_usuario(user_id):  # noqa: E501
