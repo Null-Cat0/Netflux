@@ -14,7 +14,7 @@ class UsuarioUpdate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, nombre=None, correo_electronico=None, pais=None, plan_suscripcion=None, dispositivos=None, perfiles=None):  # noqa: E501
+    def __init__(self, id=None, nombre=None, correo_electronico=None, password=None, pais=None, plan_suscripcion=None, dispositivos=None, perfiles=None):  # noqa: E501
         """UsuarioUpdate - a model defined in OpenAPI
 
         :param id: The id of this UsuarioUpdate.  # noqa: E501
@@ -36,9 +36,10 @@ class UsuarioUpdate(Model):
             'id': int,
             'nombre': str,
             'correo_electronico': str,
+            'password': str,
             'pais': str,
             'plan_suscripcion': str,
-            'dispositivos': List[str],
+            'dispositivos': str,
             'perfiles': List[Perfil]
         }
 
@@ -46,6 +47,7 @@ class UsuarioUpdate(Model):
             'id': 'id',
             'nombre': 'nombre',
             'correo_electronico': 'correo_electronico',
+            'password': 'password',
             'pais': 'pais',
             'plan_suscripcion': 'plan_suscripcion',
             'dispositivos': 'dispositivos',
@@ -55,6 +57,7 @@ class UsuarioUpdate(Model):
         self._id = id
         self._nombre = nombre
         self._correo_electronico = correo_electronico
+        self._password = password
         self._pais = pais
         self._plan_suscripcion = plan_suscripcion
         self._dispositivos = dispositivos

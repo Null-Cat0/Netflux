@@ -21,7 +21,8 @@ from openapi_server.models.usuario import Usuario
 from openapi_server import connex_app, app
 
 
-def actualizar_usuario(user_id, usuario_update):  # noqa: E501
+@app.route('/actualizar_usuario/<user_id>', methods=['PUT'])
+def actualizar_usuario(user_id):  # noqa: E501
     """Actualizar un usuario existente
 
     Actualiza la información de un usuario específico por su ID. # noqa: E501
@@ -33,9 +34,23 @@ def actualizar_usuario(user_id, usuario_update):  # noqa: E501
 
     :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        usuario_update = UsuarioUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    if request.is_json:
+        usuario_update = UsuarioUpdate.from_dict(request.get_json())  # noqa: E501
+    
+    usuario = Usuario.query.filter_by(user_id=user_id).first()
+    if usuario is None:
+        return jsonify({"message": "El usuario no existe", "status": "error"}), 404
+
+    usuario.nombre = usuario_update.nombre
+    usuario.correo_electronico = usuario_update.correo_electronico
+    usuario.password = usuario_update.password
+    usuario.pais = usuario_update.pais
+    usuario.plan_suscripcion = usuario_update.plan_suscripcion
+    usuario.dispositivos = usuario_update.dispositivos
+
+    db.session.commit()
+
+    return jsonify({"message": "Usuario actualizado con éxito", "status": "success"}), 200
 
 
 @app.route('/crear_usuario', methods=['GET', 'POST'])
@@ -74,7 +89,7 @@ def crear_usuario():  # noqa: E501
 
     return jsonify({"message": "Usuario creado con éxito", "status": "success"}), 201
 
-
+@app.route('/eliminar_usuario/<user_id>', methods=['DELETE'])
 def eliminar_usuario(user_id):  # noqa: E501
     """Eliminar un usuario
 
@@ -85,9 +100,18 @@ def eliminar_usuario(user_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
 
+    usuario = Usuario.query.filter_by(user_id=user_id).first()
 
+    if usuario is None:
+        return jsonify({"message": "El usuario no existe", "status": "error"}), 404
+    else:
+        db.session.delete(usuario)
+        db.session.commit()
+        return jsonify({"message": "Usuario eliminado con éxito", "status": "success"}), 200
+    
+
+@app.route('/listar_usuarios', methods=['GET'])
 def listar_usuarios():  # noqa: E501
     """Listar todos los usuarios
 
@@ -96,10 +120,12 @@ def listar_usuarios():  # noqa: E501
 
     :rtype: Union[List[Usuario], Tuple[List[Usuario], int], Tuple[List[Usuario], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    
+    usuarios = Usuario.query.all()
+    return jsonify([usuario.serialize() for usuario in usuarios]), 200
 
 
-@app.route('/usuario/<user_id>', methods=['GET', 'POST'])
+@app.route('/usuario/<user_id>', methods=['GET'])
 def obtener_usuario(user_id):  # noqa: E501
     """Obtener un usuario específico
 
@@ -110,4 +136,10 @@ def obtener_usuario(user_id):  # noqa: E501
 
     :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
     """
-    return f'do some magic, {user_id}!'
+    
+    usuario = Usuario.query.filter_by(user_id=user_id).first()
+    
+    if usuario is None:
+        return jsonify({"message": "El usuario no existe", "status": "error"}), 404
+    else:
+        return jsonify(usuario.serialize()), 200

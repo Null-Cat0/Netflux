@@ -21,7 +21,7 @@ class Usuario(db.Model):
     pais = db.Column(db.String(255))
     plan_suscripcion = db.Column(db.String(255))
     dispositivos = db.Column(db.String(255))
-    # perfiles = db.relationship('Perfil', backref='usuario', lazy=True)
+    #perfiles = db.relationship('Perfil', backref='usuario', lazy=True)
 
     def __init__(self, nombre, correo_electronico, password, pais, plan_suscripcion, dispositivos):  # noqa: E501
         """Usuario - a model defined in OpenAPI
@@ -70,7 +70,16 @@ class Usuario(db.Model):
         self.plan_suscripcion = plan_suscripcion
         self.dispositivos = dispositivos
         # self.perfiles = perfiles
-
+    
+    def serialize(self):
+        return {
+            'user_id': self.user_id,
+            'nombre': self.nombre,
+            'correo_electronico': self.correo_electronico,
+            'pais': self.pais,
+            'plan_suscripcion': self.plan_suscripcion,
+            'dispositivos': self.dispositivos
+        }
 
     @classmethod
     def from_dict(cls, dikt) -> 'Usuario':
