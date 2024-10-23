@@ -47,7 +47,7 @@ class Usuario(Model):
             #'user_id': 'user_id',
             'nombre': 'nombre',
             'correo_electronico': 'correo_electronico',
-            'password': str,
+            'password': 'password',
             'pais': 'pais',
             'plan_suscripcion': 'plan_suscripcion',
             'dispositivos': 'dispositivos',

@@ -74,7 +74,7 @@ def crear_usuario():  # noqa: E501
         nuevo_usuario = UsuarioDB(
             nombre=usuario_nuevo.nombre,
             correo_electronico=usuario_nuevo.correo_electronico,
-            password='admin',
+            password=usuario_nuevo.password,
             pais=usuario_nuevo.pais,
             plan_suscripcion=usuario_nuevo.plan_suscripcion,
             dispositivos=usuario_nuevo.dispositivos
