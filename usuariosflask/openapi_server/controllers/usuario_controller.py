@@ -17,6 +17,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from openapi_server.models.perfil import Perfil
 from openapi_server.models.usuario import Usuario
+from openapi_server.models.usuario_db import UsuarioDB
 
 from openapi_server import connex_app, app
 
@@ -66,23 +67,21 @@ def crear_usuario():  # noqa: E501
     """
 
    # Capturar los datos enviados en el JSON
-    data = request.json
-    nombre = data.get('nombre')
-    correo_electronico = data.get('correo_electronico')
-    password = data.get('password')
-    pais = data.get('pais')
-    plan_suscripcion = data.get('plan_suscripcion')
-    dispositivos = data.get('dispositivos')
+    if request.is_json:
+        usuario_nuevo = Usuario.from_dict(request.get_json())  # noqa: E501
 
-    # Crear un nuevo usuario en la base de datos
-    nuevo_usuario = Usuario(
-        nombre=nombre,
-        correo_electronico=correo_electronico,
-        password=password,
-        pais=pais,
-        plan_suscripcion=plan_suscripcion,
-        dispositivos=dispositivos
-    )
+    if (usuario_nuevo):
+        nuevo_usuario = UsuarioDB(
+            nombre=usuario_nuevo.nombre,
+            correo_electronico=usuario_nuevo.correo_electronico,
+            password='admin',
+            pais=usuario_nuevo.pais,
+            plan_suscripcion=usuario_nuevo.plan_suscripcion,
+            dispositivos=usuario_nuevo.dispositivos
+        )
+        print(nuevo_usuario.nombre)
+        print(nuevo_usuario.correo_electronico)
+        print(nuevo_usuario.password)
 
     db.session.add(nuevo_usuario)
     db.session.commit()
@@ -137,8 +136,8 @@ def obtener_usuario(user_id):  # noqa: E501
     :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
     """
     
-    usuario = Usuario.query.filter_by(user_id=user_id).first()
-    
+    usuario = UsuarioDB.query.filter_by(user_id=user_id).first()
+
     if usuario is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 404
     else:
