@@ -1,0 +1,84 @@
+/* Estilo general de la página */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #141414;  /* Fondo oscuro */
+    color: white;  /* Texto en blanco */
+    
+}
+
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #e50914; /* Rojo característico de Netflix */
+}
+
+/* Contenedor principal del formulario */
+.profile-form-container {
+    background-color: #222; /* Fondo más claro que el body */
+    width: 400px;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Sombra suave */
+    text-align: center;
+}
+
+/* Estilo de la imagen de perfil */
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 2px solid #e50914; /* Borde rojo */
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Estilo de los inputs del formulario */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 20px;
+    margin-top: 30px;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #333; /* Bordes oscuros */
+    background-color: #444; /* Fondo oscuro */
+    color: white;
+}
+
+.form-group input[type="text"]::placeholder {
+    color: #ccc; /* Color gris para el placeholder */
+}
+
+/* Estilo del botón */
+.btn {
+    background-color: #e50914; /* Rojo vibrante de Netflix */
+    border: none;
+    padding: 12px 20px;
+    color: white;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #f6121d; /* Un tono más claro de rojo al pasar el ratón */
+}

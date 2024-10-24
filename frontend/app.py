@@ -28,8 +28,8 @@ def login():
             data = response.json()
             flash(data['message'], 'success')
             # Redirigir al perfil del usuario usando el user_id
-            #return redirect(url_for('obtener_usuario', user_id=data['user_id']))
-            print(data)
+            return redirect(url_for('obtener_perfiles'))
+            # print(data)
         else:
             data = response.json()
             flash(data['message'], 'danger')
@@ -73,6 +73,12 @@ def crear_usuario():
             flash(f"Error: {data['message']}", 'danger')
 
     return render_template("crear_usuario.html")
+
+#Obtener perfiles
+@app.route('/perfiles')
+def obtener_perfiles():
+    return render_template("crear_perfil.html")
+    
 
 @app.route('/')
 def home():
