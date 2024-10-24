@@ -77,8 +77,52 @@ def crear_usuario():
 #Obtener perfiles
 @app.route('/perfiles')
 def obtener_perfiles():
-    return render_template("crear_perfil.html")
+    # Se obtiene el usuario_id del usuario que se encuentra en la sesión
+    usuario_id = 1
+
+    # Hacer la solicitud GET al microservicio para obtener los perfiles del usuario
+    response = requests.get('http://localhost:8080/usuario/' + str(usuario_id) + '/perfiles')
+
+    # Manejar la respuesta del microservicio
+    if response.status_code == 200:
+        data = response.json()
+        return render_template("perfiles.html", perfiles=data)
+    else:
+        data = response.json()
+        flash(f"Error: {data['message']}", 'danger')
+
+
+#Crear perfil
+@app.route('/crear_perfil', methods=['GET', 'POST'])
+def crear_perfil():
+    if request.method == 'GET':
+        return render_template("crear_perfil.html")
     
+    if request.method == 'POST':
+        # Capturar datos del formulario
+        nombre = request.form.get('nombre')
+        
+        # Se obtiene el usuario_id del usuario que se encuentra en la sesión    
+        usuario_id = 1
+
+        # Crear el payload para enviar al microservicio
+        perfil_data = {
+            'nombre': nombre,
+            'user_id': usuario_id,
+        }
+
+        # Hacer la solicitud POST al microservicio para crear el perfil
+        response = requests.post('http://localhost:8080/usuario/' + str(usuario_id) + '/perfiles', json=perfil_data)
+
+        # Manejar la respuesta del microservicio
+        if response.status_code == 201:
+            flash('Perfil creado con éxito', 'success')
+            return redirect(url_for('obtener_perfiles'))
+        else:
+            data = response.json()
+            flash(f"Error: {data['message']}", 'danger')
+    
+    return render_template("crear_perfil.html")
 
 @app.route('/')
 def home():

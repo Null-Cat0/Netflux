@@ -42,7 +42,7 @@ def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
     """
     return 'do some magic!'
 
-
+@app.route('usuario/<user_id>/perfiles', methods=['POST'])
 def crear_perfil(user_id, perfil):  # noqa: E501
     """Añade un nuevo perfil al usuario especificado
 
@@ -104,7 +104,7 @@ def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
     """
     return 'do some magic!'
 
-
+@app.route('usuario/<user_id>/perfiles', methods=['GET'])
 def obtener_perfiles(user_id):  # noqa: E501
     """Obtiene todos los perfiles del usuario especificado
 
@@ -115,4 +115,12 @@ def obtener_perfiles(user_id):  # noqa: E501
 
     :rtype: Union[List[Perfil], Tuple[List[Perfil], int], Tuple[List[Perfil], int, Dict[str, str]]
     """
+    
+    # perfiles = Perfil.query.filter_by(user_id=user_id).all()
+    
+    # if perfiles is None:
+    #     return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
+    # else:
+    #     return jsonify([perfil.serialize() for perfil in perfiles]), 200    
+    
     return 'do some magic!'

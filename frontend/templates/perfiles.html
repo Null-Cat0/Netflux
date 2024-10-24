@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
 {% block title %}Selecciona tu perfil - Netflux{% endblock %}
-
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/perfiles.css') }}"> -->
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
     <div class="container text-center">
         <h1 class="text-white mb-5">¿Quién está viendo Netflux?</h1>
         <div class="row justify-content-center">
             <div class="col-6 col-sm-4 col-md-3 mb-4">
-                <a href="{{ url_for('perfil_usuario', perfil_id=1) }}">
+                <a href="">
                     <div class="card bg-dark border-0">
                         <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle" alt="Perfil 1">
                         <div class="card-body">
@@ -18,7 +18,7 @@
                 </a>
             </div>
             <div class="col-6 col-sm-4 col-md-3 mb-4">
-                <a href="{{ url_for('perfil_usuario', perfil_id=2) }}">
+                <a href="">
                     <div class="card bg-dark border-0">
                         <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle" alt="Perfil 2">
                         <div class="card-body">
@@ -28,7 +28,7 @@
                 </a>
             </div>
             <div class="col-6 col-sm-4 col-md-3 mb-4">
-                <a href="{{ url_for('perfil_usuario', perfil_id=3) }}">
+                <a href="">
                     <div class="card bg-dark border-0">
                         <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle" alt="Perfil 3">
                         <div class="card-body">
@@ -38,7 +38,7 @@
                 </a>
             </div>
             <div class="col-6 col-sm-4 col-md-3 mb-4">
-                <a href="{{ url_for('perfil_usuario', perfil_id=4) }}">
+                <a href="">
                     <div class="card bg-dark border-0">
                         <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle" alt="Perfil 4">
                         <div class="card-body">
@@ -48,7 +48,7 @@
                 </a>
             </div>
         </div>
-        <a href="{{ url_for('crear_perfil') }}" class="btn btn-outline-light mt-4">Agregar un perfil</a>
+        <a href="{{url_for('crear_perfil')}}" class="btn btn-outline-light mt-4">Agregar un perfil</a>
     </div>
 </div>
 {% endblock %}
