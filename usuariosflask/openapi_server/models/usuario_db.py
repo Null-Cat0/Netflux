@@ -20,10 +20,10 @@ class UsuarioDB(db.Model):
     password = db.Column(db.String(255))
     pais = db.Column(db.String(255))
     plan_suscripcion = db.Column(db.String(255))
-    dispositivos = db.Column(db.String(255))
+    #dispositivos = db.Column(db.String(255))
     #perfiles = db.relationship('Perfil', backref='usuario', lazy=True)
 
-    def __init__(self, nombre, correo_electronico, password, pais, plan_suscripcion, dispositivos):  # noqa: E501
+    def __init__(self, nombre, correo_electronico, password, pais, plan_suscripcion):  # noqa: E501
         """Usuario - a model defined in OpenAPI
 
         :param id: The id of this Usuario.  # noqa: E501
@@ -48,7 +48,7 @@ class UsuarioDB(db.Model):
             'password': str,
             'pais': str,
             'plan_suscripcion': str,
-            'dispositivos': List[str],
+            # 'dispositivos': str,
             'perfiles': List[Perfil]
         }
 
@@ -59,7 +59,7 @@ class UsuarioDB(db.Model):
             'password': 'password',
             'pais': 'pais',
             'plan_suscripcion': 'plan_suscripcion',
-            'dispositivos': 'dispositivos',
+            # 'dispositivos': 'dispositivos',
             'perfiles': 'perfiles'
         }
 
@@ -68,7 +68,7 @@ class UsuarioDB(db.Model):
         self.password = password
         self.pais = pais
         self.plan_suscripcion = plan_suscripcion
-        self.dispositivos = dispositivos
+        # self.dispositivos = dispositivos
         # self.perfiles = perfiles
     
     def serialize(self):

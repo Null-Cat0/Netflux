@@ -43,13 +43,14 @@ def crear_usuario():
         return render_template("crear_usuario.html")
 
     if request.method == 'POST':
+        dispositivos = []
         # Capturar datos del formulario
         nombre = request.form.get('nombre')
         correo_electronico = request.form.get('correo_electronico')
         password = request.form.get('password')
         pais = request.form.get('pais')
         plan_suscripcion = request.form.get('plan_suscripcion')
-        dispositivos = request.form.get('dispositivos')
+        dispositivos.append(request.form.get('dispositivos'))
 
         # Crear el payload para enviar al microservicio
         usuario_data = {

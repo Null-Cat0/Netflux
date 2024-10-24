@@ -3,12 +3,13 @@ from sqlalchemy import values
 from openapi_server.controllers import usuario_controller
 
 from openapi_server import db
+from openapi_server import util
 from openapi_server import connex_app, app
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 
 from openapi_server.models import usuario
-from openapi_server.models.usuario import Usuario
+from openapi_server.models.usuario_db import UsuarioDB
 
 # Definir una ruta básica para verificar que la app funcione
 @app.route('/iniciar_sesion', methods=['POST'])
@@ -18,7 +19,7 @@ def iniciar_sesion():
     correo_electronico = data.get('correo_electronico')
     password = data.get('password')
 
-    usuario = Usuario.query.filter_by(correo_electronico=correo_electronico).first()
+    usuario = UsuarioDB.query.filter_by(correo_electronico=correo_electronico).first()
 
     if usuario is None:
         return jsonify({"message": "El correo introducido no existe", "status": "error"}), 404
@@ -37,5 +38,11 @@ def home():
 if __name__ == '__main__':
     # Crear las tablas de la base de datos al inicio de la app
     with app.app_context():
-        db.create_all()
+        # Mock up
+        if not db.inspect(db.engine).has_table('dispositivos_usuario_db'):
+            db.create_all()
+            util.populate_dispositivosDB()
+        else:
+            db.create_all()
+
     connex_app.run(port=8080)

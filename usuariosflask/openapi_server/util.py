@@ -145,3 +145,14 @@ def _deserialize_dict(data, boxed_type):
     """
     return {k: _deserialize(v, boxed_type)
             for k, v in data.items() }
+
+def populate_dispositivosDB():
+    from openapi_server.models.dispositivo_db import DispositivoDB
+    from openapi_server import db
+
+    list_dispositivos = ["pc", "tv", "movil"]
+
+    for dispositivo in list_dispositivos:
+        dispositivoDB = DispositivoDB(nombre=dispositivo)
+        db.session.add(dispositivoDB)
+        db.session.commit()

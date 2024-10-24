@@ -39,7 +39,7 @@ class Usuario(Model):
             'password': str,
             'pais': str,
             'plan_suscripcion': str,
-            'dispositivos': str,
+            'dispositivos': List[str],
             'perfiles': List[Perfil]
         }
 

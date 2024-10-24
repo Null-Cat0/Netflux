@@ -5,7 +5,6 @@ from typing import Union
 
 from sqlalchemy.util import methods_equivalent
 
-
 from openapi_server.models.usuario import Usuario  # noqa: E501
 from openapi_server.models.usuario_update import UsuarioUpdate  # noqa: E501
 from openapi_server import util
@@ -17,7 +16,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 from openapi_server.models.perfil import Perfil
 from openapi_server.models.usuario import Usuario
+
+from openapi_server.models.dispositivo import Dispositivo
+
 from openapi_server.models.usuario_db import UsuarioDB
+from openapi_server.models.dispositivo_db import DispositivoDB
+from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
 from openapi_server import connex_app, app
 
@@ -68,25 +72,36 @@ def crear_usuario():  # noqa: E501
 
    # Capturar los datos enviados en el JSON
     if request.is_json:
-        usuario_nuevo = Usuario.from_dict(request.get_json())  # noqa: E501
+        usuario_api = Usuario.from_dict(request.get_json())  # noqa: E501
 
-    if (usuario_nuevo):
-        nuevo_usuario = UsuarioDB(
-            nombre=usuario_nuevo.nombre,
-            correo_electronico=usuario_nuevo.correo_electronico,
-            password=usuario_nuevo.password,
-            pais=usuario_nuevo.pais,
-            plan_suscripcion=usuario_nuevo.plan_suscripcion,
-            dispositivos=usuario_nuevo.dispositivos
+    if (usuario_api):
+        usuario_db = UsuarioDB(
+            nombre=usuario_api.nombre,
+            correo_electronico=usuario_api.correo_electronico,
+            password=usuario_api.password,
+            pais=usuario_api.pais,
+            plan_suscripcion=usuario_api.plan_suscripcion
         )
-        print(nuevo_usuario.nombre)
-        print(nuevo_usuario.correo_electronico)
-        print(nuevo_usuario.password)
 
-    db.session.add(nuevo_usuario)
-    db.session.commit()
+        existe_dispositivo = DispositivoDB.query.filter_by(nombre=usuario_api.dispositivos[0]).first()
+        if existe_dispositivo is None:
+            return jsonify({"message": "Ha habido un error con su solicitud, inténtelo de nuevo más tarde", "status": "error"}), 404
 
-    return jsonify({"message": "Usuario creado con éxito", "status": "success"}), 201
+        db.session.add(usuario_db)
+        db.session.commit()
+
+        for dispositivo_nombre in usuario_api.dispositivos:
+            disp_enc = DispositivoDB.query.filter_by(nombre=dispositivo_nombre).first()
+            if disp_enc is not None:
+                dispositivos_usuario_db = DispositivosUsuarioDB(
+                    dispositivo_id=disp_enc.dispositivo_id,
+                    user_id=usuario_db.user_id,
+                )
+                db.session.add(dispositivos_usuario_db)
+
+        db.session.commit()
+        return jsonify({"message": "Usuario creado con éxito", "status": "success"}), 201
+
 
 @app.route('/eliminar_usuario/<user_id>', methods=['DELETE'])
 def eliminar_usuario(user_id):  # noqa: E501
@@ -100,7 +115,8 @@ def eliminar_usuario(user_id):  # noqa: E501
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
 
-    usuario = Usuario.query.filter_by(user_id=user_id).first()
+    usuario = UsuarioDB.query.filter_by(user_id=user_id).first()
+
 
     if usuario is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 404
@@ -120,8 +136,18 @@ def listar_usuarios():  # noqa: E501
     :rtype: Union[List[Usuario], Tuple[List[Usuario], int], Tuple[List[Usuario], int, Dict[str, str]]
     """
     
-    usuarios = Usuario.query.all()
-    return jsonify([usuario.serialize() for usuario in usuarios]), 200
+    list_usuarios_db = UsuarioDB.query.all()
+
+    list_usuarios_api = [Usuario(
+        nombre=usuario.nombre,
+        correo_electronico=usuario.correo_electronico,
+        password=usuario.password,
+        pais=usuario.pais,
+        plan_suscripcion=usuario.plan_suscripcion,
+        dispositivos=usuario.dispositivos
+    ) for usuario in list_usuarios_db]
+
+    return jsonify([usuario.serialize() for usuario in list_usuarios_api]), 200
 
 
 @app.route('/usuario/<user_id>', methods=['GET'])
@@ -136,9 +162,18 @@ def obtener_usuario(user_id):  # noqa: E501
     :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
     """
     
-    usuario = UsuarioDB.query.filter_by(user_id=user_id).first()
+    usuario_db = UsuarioDB.query.filter_by(user_id=user_id).first()
 
-    if usuario is None:
-        return jsonify({"message": "El usuario no existe", "status": "error"}), 404
-    else:
-        return jsonify(usuario.serialize()), 200
+    if usuario_db is None:
+        return jsonify({"message": "El usuario no existe", "status": "error"}), 405
+
+    usuario_api = Usuario(
+        nombre=usuario_db.nombre,
+        correo_electronico=usuario_db.correo_electronico,
+        password=usuario_db.password,
+        pais=usuario_db.pais,
+        plan_suscripcion=usuario_db.plan_suscripcion,
+        dispositivos=usuario_db.dispositivos
+    )
+
+    return jsonify(usuario_api.serialize()), 200
