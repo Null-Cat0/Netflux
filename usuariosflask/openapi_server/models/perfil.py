@@ -16,7 +16,7 @@ class Perfil(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, user_id=None, nombre=None, foto_perfil=None, historial_vistos=None, mi_lista=None, preferencias_contenido=None):  # noqa: E501
+    def __init__(self, user_id=None, nombre=None, foto_perfil=None, historial_vistos=None, mi_lista=None, preferencias_contenido=None):  # noqa: E501
         """Perfil - a model defined in OpenAPI
 
         :param id: The id of this Perfil.  # noqa: E501
@@ -35,7 +35,7 @@ class Perfil(Model):
         :type preferencias_contenido: PerfilPreferenciasContenido
         """
         self.openapi_types = {
-            'id': int,
+            # 'id': int,
             'user_id': int,
             'nombre': str,
             'foto_perfil': str,
@@ -45,7 +45,7 @@ class Perfil(Model):
         }
 
         self.attribute_map = {
-            'id': 'id',
+            # 'id': 'id',
             'user_id': 'user_id',
             'nombre': 'nombre',
             'foto_perfil': 'foto_perfil',
@@ -54,7 +54,7 @@ class Perfil(Model):
             'preferencias_contenido': 'preferencias_contenido'
         }
 
-        self._id = id
+        # self._id = id
         self._user_id = user_id
         self._nombre = nombre
         self._foto_perfil = foto_perfil

@@ -8,6 +8,25 @@ from openapi_server.models.perfil_update import PerfilUpdate  # noqa: E501
 from openapi_server.models.serie import Serie  # noqa: E501
 from openapi_server import util
 
+from sqlalchemy.util import methods_equivalent
+from openapi_server import db
+
+# Importa la app de Flask
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
+from openapi_server.models.perfil import Perfil
+from openapi_server.models.usuario import Usuario
+
+from openapi_server.models.dispositivo import Dispositivo
+
+from openapi_server.models.usuario_db import UsuarioDB
+from openapi_server.models.perfil_db import PerfilDB
+from openapi_server.models.dispositivo_db import DispositivoDB
+from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
+
+from openapi_server import connex_app, app
+
 
 def actualizar_perfil_usuario(user_id, profile_id, perfil_update):  # noqa: E501
     """Actualiza el perfil especificado
@@ -23,8 +42,8 @@ def actualizar_perfil_usuario(user_id, profile_id, perfil_update):  # noqa: E501
 
     :rtype: Union[Perfil, Tuple[Perfil, int], Tuple[Perfil, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        perfil_update = PerfilUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+    if request.is_json:
+        perfil_update = PerfilUpdate.from_dict(request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
@@ -42,8 +61,8 @@ def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
     """
     return 'do some magic!'
 
-@app.route('usuario/<user_id>/perfiles', methods=['POST'])
-def crear_perfil(user_id, perfil):  # noqa: E501
+@app.route('/usuario/<user_id>/perfiles', methods=['POST'])
+def crear_perfil(user_id):  # noqa: E501
     """Añade un nuevo perfil al usuario especificado
 
     Crea un nuevo perfil para el usuario # noqa: E501
@@ -55,8 +74,18 @@ def crear_perfil(user_id, perfil):  # noqa: E501
 
     :rtype: Union[Perfil, Tuple[Perfil, int], Tuple[Perfil, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        perfil = Perfil.from_dict(connexion.request.get_json())  # noqa: E501
+    if request.is_json:
+        print(request.get_json())
+        perfil_api = Perfil.from_dict(request.get_json())  # noqa: E501
+
+    if (perfil_api):
+        perfil_db = PerfilDB(
+            user_id=perfil_api.user_id,
+            nombre=perfil_api.nombre,
+        )
+        db.session.add(perfil_db)
+        db.session.commit()
+        return jsonify(perfil_db.serialize()), 201
     return 'do some magic!'
 
 
@@ -104,7 +133,7 @@ def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
     """
     return 'do some magic!'
 
-@app.route('usuario/<user_id>/perfiles', methods=['GET'])
+@app.route('/usuario/<user_id>/perfiles', methods=['GET'])
 def obtener_perfiles(user_id):  # noqa: E501
     """Obtiene todos los perfiles del usuario especificado
 
@@ -116,11 +145,11 @@ def obtener_perfiles(user_id):  # noqa: E501
     :rtype: Union[List[Perfil], Tuple[List[Perfil], int], Tuple[List[Perfil], int, Dict[str, str]]
     """
     
-    # perfiles = Perfil.query.filter_by(user_id=user_id).all()
+    perfiles = PerfilDB.query.filter_by(user_id=user_id).all()
     
-    # if perfiles is None:
-    #     return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
-    # else:
-    #     return jsonify([perfil.serialize() for perfil in perfiles]), 200    
+    if perfiles is None:
+        return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
+    else:
+        return jsonify([perfil.serialize() for perfil in perfiles]), 200    
     
     return 'do some magic!'

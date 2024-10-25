@@ -11,6 +11,8 @@ class DispositivosUsuarioDB(db.Model):
     	Do not edit the class manually.
     """
 
+    __tablename__ = 'dispositivos_usuario'
+
     # Primary key composed by two columns
     dispositivo_id = db.Column(db.Integer, nullable=False, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False, primary_key=True)

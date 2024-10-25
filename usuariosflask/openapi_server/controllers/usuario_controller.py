@@ -20,6 +20,7 @@ from openapi_server.models.usuario import Usuario
 from openapi_server.models.dispositivo import Dispositivo
 
 from openapi_server.models.usuario_db import UsuarioDB
+from openapi_server.models.perfil_db import PerfilDB
 from openapi_server.models.dispositivo_db import DispositivoDB
 from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
@@ -80,7 +81,7 @@ def crear_usuario():  # noqa: E501
             correo_electronico=usuario_api.correo_electronico,
             password=usuario_api.password,
             pais=usuario_api.pais,
-            plan_suscripcion=usuario_api.plan_suscripcion
+            plan_suscripcion=usuario_api.plan_suscripcion,
         )
 
         existe_dispositivo = DispositivoDB.query.filter_by(nombre=usuario_api.dispositivos[0]).first()
@@ -99,6 +100,12 @@ def crear_usuario():  # noqa: E501
                 )
                 db.session.add(dispositivos_usuario_db)
 
+        # Añadimos un perfil por defecto al usuario
+        perfiles_db = PerfilDB(nombre=usuario_db.nombre, user_id=usuario_db.user_id)
+        print(f"Datos del perfil_db:{perfiles_db.nombre}, {perfiles_db.user_id}")
+
+        db.session.add(perfiles_db)
+        # db.session.update(usuario_db)
         db.session.commit()
         return jsonify({"message": "Usuario creado con éxito", "status": "success"}), 201
 
@@ -168,6 +175,7 @@ def obtener_usuario(user_id):  # noqa: E501
         return jsonify({"message": "El usuario no existe", "status": "error"}), 405
 
     usuario_api = Usuario(
+        user_id=usuario_db.user_id,
         nombre=usuario_db.nombre,
         correo_electronico=usuario_db.correo_electronico,
         password=usuario_db.password,

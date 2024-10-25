@@ -11,6 +11,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from openapi_server.models import usuario
 from openapi_server.models.usuario_db import UsuarioDB
 
+from openapi_server.models import perfil
+from openapi_server.models.perfil_db import PerfilDB
+
 # Definir una ruta básica para verificar que la app funcione
 @app.route('/iniciar_sesion', methods=['POST'])
 def iniciar_sesion():

@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
 import requests
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from datetime import timedelta
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
+app.permanent_session_lifetime = timedelta(minutes=30)
 
 @app.route('/iniciar_sesion', methods=['GET', 'POST'])
 def login():
@@ -27,6 +29,10 @@ def login():
         if response.status_code == 200:
             data = response.json()
             flash(data['message'], 'success')
+
+            session.permanent = True
+            session['logged_user_id'] = data['user_id']
+
             # Redirigir al perfil del usuario usando el user_id
             return redirect(url_for('obtener_perfiles'))
             # print(data)
@@ -79,7 +85,7 @@ def crear_usuario():
 @app.route('/perfiles')
 def obtener_perfiles():
     # Se obtiene el usuario_id del usuario que se encuentra en la sesión
-    usuario_id = 1
+    usuario_id = session.get('logged_user_id')
 
     # Hacer la solicitud GET al microservicio para obtener los perfiles del usuario
     response = requests.get('http://localhost:8080/usuario/' + str(usuario_id) + '/perfiles')
@@ -87,6 +93,7 @@ def obtener_perfiles():
     # Manejar la respuesta del microservicio
     if response.status_code == 200:
         data = response.json()
+        print(data)
         return render_template("perfiles.html", perfiles=data)
     else:
         data = response.json()
@@ -101,15 +108,15 @@ def crear_perfil():
     
     if request.method == 'POST':
         # Capturar datos del formulario
-        nombre = request.form.get('nombre')
+        nombre = request.form.get('name')
         
         # Se obtiene el usuario_id del usuario que se encuentra en la sesión    
-        usuario_id = 1
+        usuario_id = session.get('logged_user_id')
 
         # Crear el payload para enviar al microservicio
         perfil_data = {
-            'nombre': nombre,
             'user_id': usuario_id,
+            'nombre': nombre,
         }
 
         # Hacer la solicitud POST al microservicio para crear el perfil

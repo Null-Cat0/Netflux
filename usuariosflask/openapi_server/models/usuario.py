@@ -14,7 +14,7 @@ class Usuario(Model):
     	Do not edit the class manually.
     """
 
-    def __init__(self, nombre=None, correo_electronico=None, password=None, pais=None, plan_suscripcion=None, dispositivos=None):  # noqa: E501
+    def __init__(self, user_id=None, nombre=None, correo_electronico=None, password=None, pais=None, plan_suscripcion=None, dispositivos=None, perfiles=None):  # noqa: E501
         """Usuario - a model defined in OpenAPI
 
         :param id: The id of this Usuario.  # noqa: E501
@@ -33,7 +33,7 @@ class Usuario(Model):
         :type perfiles: List[Perfil]
         """
         self.openapi_types = {
-            #'user_id': int,
+            'user_id': int,
             'nombre': str,
             'correo_electronico': str,
             'password': str,
@@ -44,7 +44,7 @@ class Usuario(Model):
         }
 
         self.attribute_map = {
-            #'user_id': 'user_id',
+            'user_id': 'user_id',
             'nombre': 'nombre',
             'correo_electronico': 'correo_electronico',
             'password': 'password',
@@ -54,19 +54,19 @@ class Usuario(Model):
             'perfiles': 'perfiles'
         }
 
-        self._id = None
+        self._id = user_id
         self._nombre = nombre
         self._correo_electronico = correo_electronico
         self._password = password
         self._pais = pais
         self._plan_suscripcion = plan_suscripcion
         self._dispositivos = dispositivos
-        self._perfiles = []
+        self._perfiles = perfiles
 
 
     def serialize(self):
         return {
-            #'user_id': self.user_id,
+            'user_id': self.user_id,
             'nombre': self.nombre,
             'correo_electronico': self.correo_electronico,
             'password': self.password,

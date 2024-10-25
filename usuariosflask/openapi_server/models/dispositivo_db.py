@@ -11,6 +11,8 @@ class DispositivoDB(db.Model):
     	Do not edit the class manually.
     """
 
+    __tablename__ = 'dispositivo'
+
     dispositivo_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(255), nullable=False)
 
