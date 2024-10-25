@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Netflux{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Hero Section: Carrusel de contenido destacado -->
+    <div id="heroCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://via.placeholder.com/1920x600" class="d-block w-100" alt="Hero 1">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Contenido Destacado 1</h5>
+                    <p>Descripción breve del contenido destacado.</p>
+                    <a href="#" class="btn btn-danger">Ver ahora</a>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://via.placeholder.com/1920x600" class="d-block w-100" alt="Hero 2">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Contenido Destacado 2</h5>
+                    <p>Descripción breve del contenido destacado.</p>
+                    <a href="#" class="btn btn-danger">Ver ahora</a>
+                </div>
+            </div>
+            <!-- Puedes añadir más carousel-items según desees -->
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
+
+    <!-- Sección de Tendencias -->
+    <h3 class="text-white mb-3">Tendencias</h3>
+    <div class="row mb-5">
+        {% for i in range(6) %}
+            <div class="col-md-2">
+                <div class="card bg-dark text-white">
+                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Tendencia {{ i }}">
+                    <div class="card-body">
+                        <h5 class="card-title">Título {{ i + 1 }}</h5>
+                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Sección Mi Lista -->
+    <h3 class="text-white mb-3">Mi Lista</h3>
+    <div class="row mb-5">
+        {% for i in range(6) %}
+            <div class="col-md-2">
+                <div class="card bg-dark text-white">
+                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Mi Lista {{ i }}">
+                    <div class="card-body">
+                        <h5 class="card-title">Mi Película {{ i + 1 }}</h5>
+                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Secciones de Categorías -->
+    <h3 class="text-white mb-3">Películas</h3>
+    <div class="row mb-5">
+        {% for i in range(6) %}
+            <div class="col-md-2">
+                <div class="card bg-dark text-white">
+                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Película {{ i }}">
+                    <div class="card-body">
+                        <h5 class="card-title">Película {{ i + 1 }}</h5>
+                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h3 class="text-white mb-3">Series</h3>
+    <div class="row mb-5">
+        {% for i in range(6) %}
+            <div class="col-md-2">
+                <div class="card bg-dark text-white">
+                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Serie {{ i }}">
+                    <div class="card-body">
+                        <h5 class="card-title">Serie {{ i + 1 }}</h5>
+                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Sección de Contenido Recomendado -->
+    <h3 class="text-white mb-3">Recomendado para ti</h3>
+    <div class="row mb-5">
+        {% for i in range(6) %}
+            <div class="col-md-2">
+                <div class="card bg-dark text-white">
+                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Recomendación {{ i }}">
+                    <div class="card-body">
+                        <h5 class="card-title">Recomendado {{ i + 1 }}</h5>
+                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

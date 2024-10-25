@@ -7,48 +7,20 @@
     <div class="container text-center">
         <h1 class="text-white mb-5">¿Quién está viendo Netflux?</h1>
         <div class="row justify-content-center">
-            <div class="col-6 col-sm-4 col-md-3 mb-4">
-                <a href="">
-                    <div class="card bg-dark border-0">
-                        <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle" alt="Perfil 1">
-                        <div class="card-body">
-                            <h5 class="text-white">Perfil 1</h5>
+            {% for perfil in perfiles %}
+                <div class="col-6 col-sm-4 col-md-3 mb-4">
+                    <a href="{{ url_for('pagina_inicio', perfil_id=perfil.perfil_id) }}">
+                        <div class="card bg-dark border-0">
+                            <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle" alt="{{ perfil.nombre }}">
+                            <div class="card-body">
+                                <h5 class="text-white">{{ perfil.nombre }}</h5>
+                            </div>
                         </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-6 col-sm-4 col-md-3 mb-4">
-                <a href="">
-                    <div class="card bg-dark border-0">
-                        <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle" alt="Perfil 2">
-                        <div class="card-body">
-                            <h5 class="text-white">Perfil 2</h5>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-6 col-sm-4 col-md-3 mb-4">
-                <a href="">
-                    <div class="card bg-dark border-0">
-                        <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle" alt="Perfil 3">
-                        <div class="card-body">
-                            <h5 class="text-white">Perfil 3</h5>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-6 col-sm-4 col-md-3 mb-4">
-                <a href="">
-                    <div class="card bg-dark border-0">
-                        <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle" alt="Perfil 4">
-                        <div class="card-body">
-                            <h5 class="text-white">Perfil 4</h5>
-                        </div>
-                    </div>
-                </a>
-            </div>
+                    </a>
+                </div>
+            {% endfor %}
         </div>
-        <a href="{{ url_for('crear_perfil') }}" class="btn btn-outline-light mt-4">Agregar un perfil</a>
+        <a href="{{ url_for('crear_perfil', is_edit=false) }}" class="btn btn-outline-light mt-4">Agregar un perfil</a>
     </div>
 </div>
 {% endblock %}

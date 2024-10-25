@@ -98,6 +98,8 @@ def obtener_perfiles():
     else:
         data = response.json()
         flash(f"Error: {data['message']}", 'danger')
+        
+    return render_template("perfiles.html")
 
 
 #Crear perfil
@@ -129,8 +131,30 @@ def crear_perfil():
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
+            
+    is_edit_str = request.args.get('is_edit', default='false')
     
-    return render_template("crear_perfil.html")
+    # Convierte el string a booleano
+    is_edit = is_edit_str.lower() == 'true'
+    
+    return render_template("crear_perfil.html", is_edit=is_edit)
+
+@app.route('/inicio', methods=['GET'])
+def pagina_inicio():
+    
+    # perfil_id = request.args.get('perfil_id', default='')
+    # usuario_id = session.get('logged_user_id')
+    
+    # response = requests.get('http://localhost:8080/usuario/' + str(usuario_id) + '/perfiles/' + perfil_id)
+    
+    # if response.status_code == 200:
+    #     data = response.json()
+    #     return render_template("pagina_inicio.html", perfil=data)
+    # else:
+    #     data = response.json()
+    #     flash(f"Error: {data['message']}", 'danger')
+        
+    return render_template("pagina_inicio.html")
 
 @app.route('/')
 def home():

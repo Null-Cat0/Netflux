@@ -32,7 +32,9 @@
 
             <!-- Menú de usuario -->
             <div class="dropdown">
-                <a class="nav-link dropdown-toggle text-white" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                <a class="nav-link dropdown-toggle text-white" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if perfil_nombre %} {{ perfil_nombre }} {% else %} Usuario {% endif %}
+                </a>
                 <ul class="dropdown-menu dropdown-menu-end bg-dark" aria-labelledby="dropdownMenuLink">
                     <li><a class="dropdown-item text-white" href="#">Cuenta</a></li>
                     <li><a class="dropdown-item text-white" href="#">Centro de ayuda</a></li>

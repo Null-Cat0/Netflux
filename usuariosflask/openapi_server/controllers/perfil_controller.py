@@ -118,7 +118,7 @@ def obtener_lista_perfil(user_id, profile_id):  # noqa: E501
     """
     return 'do some magic!'
 
-
+@app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['GET'])
 def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
     """Obtiene el perfil específico de un usuario concreto
 
@@ -131,6 +131,14 @@ def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
 
     :rtype: Union[Perfil, Tuple[Perfil, int], Tuple[Perfil, int, Dict[str, str]]
     """
+    
+    perfil = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+    
+    if perfil is None:
+        return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
+    else:
+        return jsonify(perfil.serialize()), 200
+    
     return 'do some magic!'
 
 @app.route('/usuario/<user_id>/perfiles', methods=['GET'])
