@@ -22,7 +22,7 @@ def iniciar_sesion():
     elif usuario.password != password:
         return jsonify({"message": "Contraseña inválida", "status": "error"}), 401
     else:
-        return jsonify({"message": "Inicio de sesión exitoso", "status": "success", "user_id": usuario.user_id}), 200
+        return jsonify({"message": "Inicio de sesión exitoso", "status": "success", "user_id": usuario.user_id, "nombre": usuario.nombre}), 200
 
 """
 @app.route('/')

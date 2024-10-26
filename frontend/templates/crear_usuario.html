@@ -9,11 +9,11 @@
         <form method="POST" action="{{ url_for('crear_usuario') }}">
             <div class="mb-3">
                 <label for="nombre" class="form-label text-white">Nombre</label>
-                <input type="text" class="form-control bg-dark text-white border-secondary" id="nombre" name="nombre" placeholder="Nombre" required>
+                <input type="text" class="form-control bg-dark text-white border-secondary" id="nombre" name="nombre" placeholder="Nombre" value="{{ cuenta['nombre'] if cuenta else '' }}" required>
             </div>
             <div class="mb-3">
                 <label for="correo_electronico" class="form-label text-white">Correo Electrónico</label>
-                <input type="email" class="form-control bg-dark text-white border-secondary" id="correo_electronico" name="correo_electronico" placeholder="Correo Electrónico">
+                <input type="email" class="form-control bg-dark text-white border-secondary" id="correo_electronico" name="correo_electronico" placeholder="Correo Electrónico" value="{{ cuenta['correo_electronico'] if cuenta else '' }}">
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label text-white">Contraseña</label>
@@ -21,24 +21,24 @@
             </div>
             <div class="mb-3">
                 <label for="pais" class="form-label text-white">País</label>
-                <input type="text" class="form-control bg-dark text-white border-secondary" id="pais" name="pais" placeholder="País">
+                <input type="text" class="form-control bg-dark text-white border-secondary" id="pais" name="pais" placeholder="País" value="{{ cuenta['pais'] if cuenta else '' }}">
             </div>
             <div class="mb-3">
                 <label for="plan_suscripcion" class="form-label text-white">Plan de Suscripción</label>
                 <select class="form-select bg-dark text-white border-secondary" id="plan_suscripcion" name="plan_suscripcion" required>
-                    <option value="" disabled selected>Selecciona un plan</option>
-                    <option value="Basico">Básico</option>
-                    <option value="Estandar">Estándar</option>
-                    <option value="Premium">Premium</option>
+                    <option value="" disabled {{ 'selected' if not cuenta else '' }}>Selecciona un plan</option>
+                    <option value="Basico" {{ 'selected' if cuenta and cuenta['plan_suscripcion'] == 'Basico' else '' }}>Básico</option>
+                    <option value="Estandar" {{ 'selected' if cuenta and cuenta['plan_suscripcion'] == 'Estandar' else '' }}>Estándar</option>
+                    <option value="Premium" {{ 'selected' if cuenta and cuenta['plan_suscripcion'] == 'Premium' else '' }}>Premium</option>
                 </select>
             </div>
             <div class="mb-3">
                 <label for="dispositivos" class="form-label text-white">Dispositivos</label>
                 <select class="form-select bg-dark text-white border-secondary" id="dispositivos" name="dispositivos" required>
-                    <option value="" disabled selected>Selecciona un dispositivo</option>
-                    <option value="pc">PC</option>
-                    <option value="movil">Móvil</option>
-                    <option value="tv">TV</option>
+                    <option value="" disabled {{ 'selected' if not cuenta else '' }}>Selecciona un dispositivo</option>
+                    <option value="pc" {{ 'selected' if cuenta and cuenta['dispositivos'] == 'pc' else '' }}>PC</option>
+                    <option value="movil" {{ 'selected' if cuenta and cuenta['dispositivos'] == 'movil' else '' }}>Móvil</option>
+                    <option value="tv" {{ 'selected' if cuenta and cuenta['dispositivos'] == 'tv' else '' }}>TV</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-danger w-100">Crear Cuenta</button>

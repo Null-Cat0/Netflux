@@ -32,6 +32,7 @@ def login():
 
             session.permanent = True
             session['logged_user_id'] = data['user_id']
+            session['logged_user_name'] = data['nombre']
 
             # Redirigir al perfil del usuario usando el user_id
             return redirect(url_for('obtener_perfiles'))
@@ -42,10 +43,18 @@ def login():
 
     return render_template("inicio_sesion.html")
 
+@app.route('/cerrar_sesion')
+def cerrar_sesion():
+    # Elimina 'logged_user_id' de la sesión para cerrar sesión
+    session.pop('logged_user_id', None)
+    flash("Has cerrado sesión con éxito.", "info")  # Mensaje opcional para el usuario
+    return redirect(url_for('login'))  # Redirige a la página de inicio de sesión o a la página principal
+
 @app.route('/crear_usuario', methods=['GET', 'POST'])
 def crear_usuario():
     if request.method == 'GET':
         # Renderiza el formulario de creación de cuenta
+
         return render_template("crear_usuario.html")
 
     if request.method == 'POST':
@@ -141,20 +150,35 @@ def crear_perfil():
 
 @app.route('/inicio', methods=['GET'])
 def pagina_inicio():
+    perfil_id = request.args.get('perfil_id', default='')
+    usuario_id = session.get('logged_user_id')
     
-    # perfil_id = request.args.get('perfil_id', default='')
-    # usuario_id = session.get('logged_user_id')
+    response = requests.get('http://localhost:8080/usuario/' + str(usuario_id) + '/perfiles/' + perfil_id)
     
-    # response = requests.get('http://localhost:8080/usuario/' + str(usuario_id) + '/perfiles/' + perfil_id)
-    
-    # if response.status_code == 200:
-    #     data = response.json()
-    #     return render_template("pagina_inicio.html", perfil=data)
-    # else:
-    #     data = response.json()
-    #     flash(f"Error: {data['message']}", 'danger')
+    if response.status_code == 200:
+        data = response.json()
+        return render_template("pagina_inicio.html", perfil=data)
+    else:
+        data = response.json()
+        flash(f"Error: {data['message']}", 'danger')
         
     return render_template("pagina_inicio.html")
+
+@app.route('/cuenta', methods=['GET'])
+def cuenta():
+    perfil_id = request.args.get('perfil_id', default='')
+    usuario_id = session.get('logged_user_id')
+    
+    response = requests.get('http://localhost:8080/usuario/' + str(usuario_id))
+    
+    if response.status_code == 200:
+        data = response.json()
+        return render_template("perfil.html", cuenta=data)
+    else:
+        data = response.json()
+        flash(f"Error: {data['message']}", 'danger')
+        
+    return render_template("crear_cuenta.html")
 
 @app.route('/')
 def home():

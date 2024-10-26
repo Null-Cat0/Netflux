@@ -57,6 +57,7 @@ def crear_perfil(user_id):  # noqa: E501
 
     :rtype: Union[Perfil, Tuple[Perfil, int], Tuple[Perfil, int, Dict[str, str]]
     """
+
     if request.is_json:
         print(request.get_json())
         perfil_api = Perfil.from_dict(request.get_json())  # noqa: E501
