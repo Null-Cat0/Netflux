@@ -150,9 +150,9 @@ def populate_dispositivosDB():
     from openapi_server.models.dispositivo_db import DispositivoDB
     from openapi_server import db
 
-    list_dispositivos = ["pc", "tv", "movil"]
-
-    for dispositivo in list_dispositivos:
-        dispositivoDB = DispositivoDB(nombre=dispositivo)
-        db.session.add(dispositivoDB)
+    if DispositivoDB.query.first() is None:
+        list_dispositivos = ["pc", "tv", "movil"]
+        for dispositivo in list_dispositivos:
+            dispositivoDB = DispositivoDB(nombre=dispositivo)
+            db.session.add(dispositivoDB)
         db.session.commit()
