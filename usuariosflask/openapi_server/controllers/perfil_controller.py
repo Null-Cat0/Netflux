@@ -1,31 +1,14 @@
-import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
-
 from openapi_server.models.perfil import Perfil  # noqa: E501
 from openapi_server.models.perfil_update import PerfilUpdate  # noqa: E501
-from openapi_server.models.serie import Serie  # noqa: E501
-from openapi_server import util
 
-from sqlalchemy.util import methods_equivalent
 from openapi_server import db
 
-# Importa la app de Flask
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from flask import request, jsonify
 
 from openapi_server.models.perfil import Perfil
-from openapi_server.models.usuario import Usuario
-
-from openapi_server.models.dispositivo import Dispositivo
-
-from openapi_server.models.usuario_db import UsuarioDB
 from openapi_server.models.perfil_db import PerfilDB
-from openapi_server.models.dispositivo_db import DispositivoDB
-from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
-from openapi_server import connex_app, app
+from openapi_server import app
 
 
 def actualizar_perfil_usuario(user_id, profile_id, perfil_update):  # noqa: E501

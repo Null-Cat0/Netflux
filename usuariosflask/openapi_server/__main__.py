@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
-from sqlalchemy import values
-from openapi_server.controllers import usuario_controller
-
 from openapi_server import db
 from openapi_server import util
 from openapi_server import connex_app, app
 
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import request, jsonify
 
-from openapi_server.models import usuario
 from openapi_server.models.usuario_db import UsuarioDB
-
-from openapi_server.models import perfil
-from openapi_server.models.perfil_db import PerfilDB
 
 # Definir una ruta básica para verificar que la app funcione
 @app.route('/iniciar_sesion', methods=['POST'])

@@ -1,7 +1,3 @@
-from datetime import date, datetime  # noqa: F401
-
-from typing import List, Dict
-
 from openapi_server import util
 from openapi_server import db
 

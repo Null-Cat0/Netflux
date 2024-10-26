@@ -1,9 +1,4 @@
-from datetime import date, datetime  # noqa: F401
-
-from typing import List, Dict
-
 from openapi_server.models.base_model import Model
-from openapi_server.models.perfil import Perfil  # noqa: E501
 
 from openapi_server import util
 
