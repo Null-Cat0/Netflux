@@ -33,9 +33,9 @@ def actualizar_usuario(user_id):  # noqa: E501
     :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
     """
     if request.is_json:
-        usuario_update = UsuarioUpdate.from_dict(request.get_json())  # noqa: E501
+        usuario_update = UsuarioUpdate.from_dict(request.get_json())
     
-    usuario = Usuario.query.filter_by(user_id=user_id).first()
+    usuario = UsuarioDB.query.filter_by(user_id=user_id).first()
     if usuario is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 404
 
@@ -162,6 +162,17 @@ def obtener_usuario(user_id):  # noqa: E501
     """
     
     usuario_db = UsuarioDB.query.filter_by(user_id=user_id).first()
+    # Hacer
+    dispositivos_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
+
+    dispositivos = []
+    for dispositivo_usuario_db in dispositivos_usuario_db:
+        dispositivo = DispositivoDB.query.filter_by(dispositivo_id=dispositivo_usuario_db.dispositivo_id).first()
+        if dispositivo:  # Solo agrega si el dispositivo existe
+            dispositivos.append(dispositivo.nombre)
+
+    print(dispositivos)  # Verificamos que la lista de dispositivos sea correcta
+
 
     if usuario_db is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 405
@@ -173,7 +184,7 @@ def obtener_usuario(user_id):  # noqa: E501
         password=usuario_db.password,
         pais=usuario_db.pais,
         plan_suscripcion=usuario_db.plan_suscripcion,
-        dispositivos=usuario_db.dispositivos
+        dispositivos=dispositivos 
     )
 
     return jsonify(usuario_api.serialize()), 200

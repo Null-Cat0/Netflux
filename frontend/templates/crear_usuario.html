@@ -1,23 +1,50 @@
 {% extends 'base.html' %}
 
-{% block title %}Crear Usuario - Netflux{% endblock %}
+
+{% block head %}
+    {% block title %}
+        {% if session['logged_user_id'] %}
+            Editar Usuario - Netflux
+        {% else %}
+            Crear cuenta - Netflux
+        {% endif %}
+    {% endblock %}
+{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
     <div class="card p-5 shadow-lg" style="max-width: 400px; width: 100%; background-color: #000;">
-        <h2 class="mb-4 text-center text-white">Crea tu cuenta</h2>
-        <form method="POST" action="{{ url_for('crear_usuario') }}">
+        {% if session['logged_user_id'] %}
+            <h2 class="mb-4 text-center text-white">Editar Usuario</h2>
+        {% else %}
+            <h2 class="mb-4 text-center text-white">Crea tu cuenta</h2>
+        {% endif %}
+        {% if session['logged_user_id'] %}
+            <form method="POST" action="{{ url_for('editar_usuario') }}">
+        {% else %}
+            <form method="POST" action="{{ url_for('crear_usuario') }}">
+        {% endif %}
             <div class="mb-3">
                 <label for="nombre" class="form-label text-white">Nombre</label>
                 <input type="text" class="form-control bg-dark text-white border-secondary" id="nombre" name="nombre" placeholder="Nombre" value="{{ cuenta['nombre'] if cuenta else '' }}" required>
             </div>
             <div class="mb-3">
                 <label for="correo_electronico" class="form-label text-white">Correo Electrónico</label>
-                <input type="email" class="form-control bg-dark text-white border-secondary" id="correo_electronico" name="correo_electronico" placeholder="Correo Electrónico" value="{{ cuenta['correo_electronico'] if cuenta else '' }}">
+                {% if session['logged_user_id'] %}
+                    <input type="email" class="form-control bg-dark text-white border-secondary" id="correo_electronico" name="correo_electronico" placeholder="Correo Electrónico" value="{{ cuenta['correo_electronico'] if cuenta else '' }}" disabled>
+                    <input type="hidden" name="correo_electronico" value="{{ cuenta['correo_electronico'] if cuenta else '' }}">
+                {% else %}
+                    <input type="email" class="form-control bg-dark text-white border-secondary" id="correo_electronico" name="correo_electronico" placeholder="Correo Electrónico" required>
+                {% endif %}
+
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label text-white">Contraseña</label>
-                <input type="password" class="form-control bg-dark text-white border-secondary" id="contrasena" name="password" placeholder="Contraseña" required>
+                {% if session['logged_user_id'] %}
+                    <input type="password" class="form-control bg-dark text-white border-secondary" id="contrasena" name="password" placeholder="Contraseña" value="{{ cuenta['password'] if cuenta else '' }}">
+                {% else %}
+                    <input type="password" class="form-control bg-dark text-white border-secondary" id="contrasena" name="password" placeholder="Contraseña" required>
+                {% endif %}
             </div>
             <div class="mb-3">
                 <label for="pais" class="form-label text-white">País</label>

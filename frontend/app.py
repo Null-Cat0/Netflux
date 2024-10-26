@@ -164,21 +164,65 @@ def pagina_inicio():
         
     return render_template("pagina_inicio.html")
 
-@app.route('/cuenta', methods=['GET'])
-def cuenta():
+
+@app.route('/cuenta', methods=['GET', 'POST'])
+def editar_usuario():
     perfil_id = request.args.get('perfil_id', default='')
     usuario_id = session.get('logged_user_id')
-    
-    response = requests.get('http://localhost:8080/usuario/' + str(usuario_id))
-    
-    if response.status_code == 200:
-        data = response.json()
-        return render_template("perfil.html", cuenta=data)
-    else:
-        data = response.json()
-        flash(f"Error: {data['message']}", 'danger')
-        
-    return render_template("crear_cuenta.html")
+
+    if request.method == 'GET':
+        response = requests.get(f'http://localhost:8080/usuario/{usuario_id}')
+        if response.status_code == 200:
+            data = response.json()
+            return render_template("crear_usuario.html", cuenta=data)
+        else:
+            data = response.json()
+            flash(f"Error: {data['message']}", 'danger')
+            return redirect(url_for('some_error_handling_view'))  # Redirigir a una vista de error si es necesario
+
+    if request.method == 'POST':
+        dispositivos = []
+        # Capturar datos del formulario
+        nombre = request.form.get('nombre')
+        correo_electronico = request.form.get('correo_electronico')
+        password = request.form.get('password')
+        pais = request.form.get('pais')
+        plan_suscripcion = request.form.get('plan_suscripcion')
+        dispositivos.append(request.form.get('dispositivos'))
+
+        # Verificación de campos obligatorios
+        if not nombre or not correo_electronico or not password:
+            flash("Todos los campos son obligatorios.", 'danger')
+            return redirect(url_for('editar_usuario'))  # Redirigir a la misma página para corregir
+
+        # Crear el payload para enviar al microservicio
+        usuario_data = {
+            'nombre': nombre,
+            'correo_electronico': correo_electronico,
+            'password': password,
+            'pais': pais,
+            'plan_suscripcion': plan_suscripcion,
+            'dispositivos': dispositivos
+        }
+
+        print("Data usuario")
+        print(usuario_data)
+
+        # Hacer la solicitud PUT al microservicio para actualizar el usuario
+        response = requests.put(f'http://localhost:8080/actualizar_usuario/{usuario_id}', json=usuario_data)
+
+        if response.status_code == 200:
+            session['logged_user_name'] = nombre
+            flash("Usuario actualizado con éxito", 'success')
+            return redirect(url_for('obtener_perfiles'))  # Redirigir a la vista de perfiles
+        else:
+            data = response.json()
+            flash(f"Error: {data['message']}", 'danger')
+            return redirect(url_for('editar_usuario'))  # Redirigir a la misma página para corregir
+
+    # Si no se maneja el método, retornar a la página de cuenta o un error
+    return redirect(url_for('some_default_view'))  # Cambia esto según sea necesario
+
 
 @app.route('/')
 def home():

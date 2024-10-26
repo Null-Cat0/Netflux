@@ -85,7 +85,7 @@ class Usuario(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def id(self) -> int:
+    def user_id(self) -> int:
          """Gets the id of this Usuario.
 
 
@@ -94,8 +94,8 @@ class Usuario(Model):
          """
          return self._id
 
-    @id.setter
-    def id(self, id: int):
+    @user_id.setter
+    def user_id(self, id: int):
          """Sets the id of this Usuario.
     
     
