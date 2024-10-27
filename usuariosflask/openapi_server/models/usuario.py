@@ -70,7 +70,8 @@ class Usuario(Model):
             'password': self.password,
             'pais': self.pais,
             'plan_suscripcion': self.plan_suscripcion,
-            'dispositivos': self.dispositivos
+            'dispositivos': self.dispositivos,
+            'perfiles': self.perfiles
         }
     
     def to_db_model(self):
