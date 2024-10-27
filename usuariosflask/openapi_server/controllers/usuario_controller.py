@@ -68,13 +68,7 @@ def crear_usuario():  # noqa: E501
         usuario_api = Usuario.from_dict(request.get_json())  # noqa: E501
 
     if (usuario_api):
-        usuario_db = UsuarioDB(
-            nombre=usuario_api.nombre,
-            correo_electronico=usuario_api.correo_electronico,
-            password=usuario_api.password,
-            pais=usuario_api.pais,
-            plan_suscripcion=usuario_api.plan_suscripcion,
-        )
+        usuario_db = usuario_api.to_db_model()
 
         existe_dispositivo = DispositivoDB.query.filter_by(nombre=usuario_api.dispositivos[0]).first()
         if existe_dispositivo is None:
@@ -136,16 +130,7 @@ def listar_usuarios():  # noqa: E501
     """
     
     list_usuarios_db = UsuarioDB.query.all()
-
-    list_usuarios_api = [Usuario(
-        nombre=usuario.nombre,
-        correo_electronico=usuario.correo_electronico,
-        password=usuario.password,
-        pais=usuario.pais,
-        plan_suscripcion=usuario.plan_suscripcion,
-        dispositivos=usuario.dispositivos
-    ) for usuario in list_usuarios_db]
-
+    list_usuarios_api = [usuario.to_api_model() for usuario in list_usuarios_db]
     return jsonify([usuario.serialize() for usuario in list_usuarios_api]), 200
 
 
@@ -173,18 +158,9 @@ def obtener_usuario(user_id):  # noqa: E501
 
     print(dispositivos)  # Verificamos que la lista de dispositivos sea correcta
 
-
     if usuario_db is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 405
 
-    usuario_api = Usuario(
-        user_id=usuario_db.user_id,
-        nombre=usuario_db.nombre,
-        correo_electronico=usuario_db.correo_electronico,
-        password=usuario_db.password,
-        pais=usuario_db.pais,
-        plan_suscripcion=usuario_db.plan_suscripcion,
-        dispositivos=dispositivos 
-    )
+    usuario_api = usuario_db.to_api_model()
 
     return jsonify(usuario_api.serialize()), 200

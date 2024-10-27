@@ -29,14 +29,14 @@ def login():
         if response.status_code == 200:
             data = response.json()
             flash(data['message'], 'success')
+            #print(data['usuario'])
 
             session.permanent = True
-            session['logged_user_id'] = data['user_id']
-            session['logged_user_name'] = data['nombre']
+            session['logged_user_id'] = data['usuario']['user_id']
+            session['logged_user_name'] = data['usuario']['nombre']
 
             # Redirigir al perfil del usuario usando el user_id
             return redirect(url_for('obtener_perfiles'))
-            # print(data)
         else:
             data = response.json()
             flash(data['message'], 'danger')

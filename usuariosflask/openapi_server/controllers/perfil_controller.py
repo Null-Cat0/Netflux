@@ -63,16 +63,13 @@ def crear_perfil(user_id):  # noqa: E501
         perfil_api = Perfil.from_dict(request.get_json())  # noqa: E501
 
     if (perfil_api):
-        perfil_db = PerfilDB(
-            user_id=perfil_api.user_id,
-            nombre=perfil_api.nombre,
-        )
+        perfil_db = perfil_api.to_db_model()
         db.session.add(perfil_db)
         db.session.commit()
-        return jsonify(perfil_db.serialize()), 201
-    return 'do some magic!'
-
-
+        return jsonify(perfil_api.serialize()), 201
+    else:
+        return jsonify({"message": "Ha habido un error con su solicitud, inténtelo de nuevo más tarde", "status": "error"}), 404
+ 
 def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
     """Obtiene el historial de contenido completado por de un perfil
 
@@ -116,14 +113,14 @@ def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
     :rtype: Union[Perfil, Tuple[Perfil, int], Tuple[Perfil, int, Dict[str, str]]
     """
     
-    perfil = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
-    
+    perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+    perfil = perfil_db.to_api_model()
+
     if perfil is None:
         return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
     else:
         return jsonify(perfil.serialize()), 200
     
-    return 'do some magic!'
 
 @app.route('/usuario/<user_id>/perfiles', methods=['GET'])
 def obtener_perfiles(user_id):  # noqa: E501
@@ -137,11 +134,10 @@ def obtener_perfiles(user_id):  # noqa: E501
     :rtype: Union[List[Perfil], Tuple[List[Perfil], int], Tuple[List[Perfil], int, Dict[str, str]]
     """
     
-    perfiles = PerfilDB.query.filter_by(user_id=user_id).all()
-    
+    perfiles_db = PerfilDB.query.filter_by(user_id=user_id).all()
+    perfiles = [perfil.to_api_model() for perfil in perfiles_db]
+
     if perfiles is None:
         return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
     else:
         return jsonify([perfil.serialize() for perfil in perfiles]), 200    
-    
-    return 'do some magic!'

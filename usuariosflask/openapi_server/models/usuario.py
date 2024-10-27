@@ -72,6 +72,16 @@ class Usuario(Model):
             'plan_suscripcion': self.plan_suscripcion,
             'dispositivos': self.dispositivos
         }
+    
+    def to_db_model(self):
+        from openapi_server.models.usuario_db import UsuarioDB
+        return UsuarioDB(
+            nombre=self.nombre,
+            correo_electronico=self.correo_electronico,
+            password=self.password,
+            pais=self.pais,
+            plan_suscripcion=self.plan_suscripcion,
+        )
 
     @classmethod
     def from_dict(cls, dikt) -> 'Usuario':

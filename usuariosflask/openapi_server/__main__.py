@@ -15,14 +15,15 @@ def iniciar_sesion():
     correo_electronico = data.get('correo_electronico')
     password = data.get('password')
 
-    usuario = UsuarioDB.query.filter_by(correo_electronico=correo_electronico).first()
+    usuario_db = UsuarioDB.query.filter_by(correo_electronico=correo_electronico).first()
+    usuario = usuario_db.to_api_model()
 
     if usuario is None:
         return jsonify({"message": "El correo introducido no existe", "status": "error"}), 404
     elif usuario.password != password:
         return jsonify({"message": "Contraseña inválida", "status": "error"}), 401
     else:
-        return jsonify({"message": "Inicio de sesión exitoso", "status": "success", "user_id": usuario.user_id, "nombre": usuario.nombre}), 200
+        return jsonify({"message": "Inicio de sesión exitoso", "status": "success", "usuario": usuario.serialize()}), 200
 
 """
 @app.route('/')
