@@ -102,7 +102,6 @@ def obtener_perfiles():
     # Manejar la respuesta del microservicio
     if response.status_code == 200:
         data = response.json()
-        print(data)
         return render_template("perfiles.html", perfiles=data)
     else:
         data = response.json()
@@ -150,9 +149,9 @@ def crear_perfil():
 
 @app.route('/inicio', methods=['GET'])
 def pagina_inicio():
-    perfil_id = request.args.get('perfil_id', default='')
+    perfil_id = request.args.get('perfil_id')
     usuario_id = session.get('logged_user_id')
-    
+
     response = requests.get('http://localhost:8080/usuario/' + str(usuario_id) + '/perfiles/' + perfil_id)
     
     if response.status_code == 200:
@@ -205,9 +204,6 @@ def editar_usuario():
             'dispositivos': dispositivos
         }
 
-        print("Data usuario")
-        print(usuario_data)
-
         # Hacer la solicitud PUT al microservicio para actualizar el usuario
         response = requests.put(f'http://localhost:8080/actualizar_usuario/{usuario_id}', json=usuario_data)
 
@@ -223,6 +219,50 @@ def editar_usuario():
     # Si no se maneja el método, retornar a la página de cuenta o un error
     return redirect(url_for('some_default_view'))  # Cambia esto según sea necesario
 
+@app.route('/editar_perfil/<perfil_id>', methods=['GET', 'POST'])
+def editar_perfil(perfil_id):
+    usuario_id = session.get('logged_user_id')
+    if request.method == 'GET':
+        # Cargar los datos del perfil
+        response = requests.get(f'http://localhost:8080/usuario/{usuario_id}/perfiles/{perfil_id}')
+        if response.status_code == 200:
+            data = response.json()
+            return render_template("crear_perfil.html", perfil=data, is_edit=True)
+        else:
+            data = response.json()
+            flash(f"Error: {data['message']}", 'danger')
+            return redirect(url_for('obtener_perfiles'))
+    
+
+
+@app.route('/eliminar_perfil/<perfil_id>', methods=['GET', 'POST'])
+def eliminar_perfil(perfil_id):
+    usuario_id = session.get('logged_user_id')
+
+    if request.method == 'GET':
+        print(perfil_id)
+        # Cargar los datos del perfil con disabilitado=True
+        response = requests.get(f'http://localhost:8080/usuario/{usuario_id}/perfiles/{perfil_id}')
+        if response.status_code == 200:
+            data = response.json()
+            return render_template("crear_perfil.html", perfil=data, is_delete=True)
+        else:
+            data = response.json()
+            flash(f"Error: {data['message']}", 'danger')
+            return redirect(url_for('obtener_perfiles'))
+    
+    if request.method == 'POST':
+        # Hacer la solicitud DELETE al microservicio para eliminar el perfil
+        response = requests.delete(f'http://localhost:8080/usuario/{usuario_id}/perfiles/{perfil_id}')
+        print (response)
+        if response.status_code == 200:
+            flash("Perfil eliminado con éxito", 'success')
+            return redirect(url_for('obtener_perfiles'))
+        else:
+            data = response.json()
+            flash(f"Error: {data['message']}", 'danger')
+            return redirect(url_for('obtener_perfiles'))
+            
 
 @app.route('/')
 def home():

@@ -25,6 +25,7 @@ class PerfilDB(db.Model):
     def to_api_model(self):
         from openapi_server.models.perfil import Perfil
         return Perfil(
+            perfil_id=self.perfil_id,
             user_id=self.user_id,
             nombre=self.nombre,
             foto_perfil=self.foto_perfil,

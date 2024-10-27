@@ -15,11 +15,11 @@ class Perfil(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, user_id=None, nombre=None, foto_perfil=None, historial_vistos=None, mi_lista=None, preferencias_contenido=None):  # noqa: E501
+    def __init__(self, perfil_id=None, user_id=None, nombre=None, foto_perfil=None, historial_vistos=None, mi_lista=None, preferencias_contenido=None):  # noqa: E501
         """Perfil - a model defined in OpenAPI
 
-        :param id: The id of this Perfil.  # noqa: E501
-        :type id: int
+        :param perfil_id: The id of this Perfil.  # noqa: E501
+        :type perfil_id: int
         :param user_id: The user_id of this Perfil.  # noqa: E501
         :type user_id: int
         :param nombre: The nombre of this Perfil.  # noqa: E501
@@ -34,7 +34,7 @@ class Perfil(Model):
         :type preferencias_contenido: PerfilPreferenciasContenido
         """
         self.openapi_types = {
-            # 'id': int,
+            'perfil_id': int,
             'user_id': int,
             'nombre': str,
             'foto_perfil': str,
@@ -44,7 +44,7 @@ class Perfil(Model):
         }
 
         self.attribute_map = {
-            # 'id': 'id',
+            'perfil_id': 'perfil_id',
             'user_id': 'user_id',
             'nombre': 'nombre',
             'foto_perfil': 'foto_perfil',
@@ -53,16 +53,17 @@ class Perfil(Model):
             'preferencias_contenido': 'preferencias_contenido'
         }
 
-        # self._id = id
+        self._perfil_id = perfil_id
         self._user_id = user_id
         self._nombre = nombre
         self._foto_perfil = foto_perfil
         self._historial_vistos = historial_vistos
         self._mi_lista = mi_lista
         self._preferencias_contenido = preferencias_contenido
-    
+
     def serialize(self):
         return {
+            'perfil_id': self.perfil_id,
             'user_id': self.user_id,
             'nombre': self.nombre,
             'foto_perfil': self.foto_perfil,
@@ -88,7 +89,7 @@ class Perfil(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def id(self) -> int:
+    def perfil_id(self) -> int:
         """Gets the id of this Perfil.
 
         ID del perfil en específico  # noqa: E501
@@ -96,10 +97,10 @@ class Perfil(Model):
         :return: The id of this Perfil.
         :rtype: int
         """
-        return self._id
+        return self._perfil_id
 
-    @id.setter
-    def id(self, id: int):
+    @perfil_id.setter
+    def perfil_id(self, id: int):
         """Sets the id of this Perfil.
 
         ID del perfil en específico  # noqa: E501
@@ -108,7 +109,7 @@ class Perfil(Model):
         :type id: int
         """
 
-        self._id = id
+        self._perfil_id = id
 
     @property
     def user_id(self) -> int:

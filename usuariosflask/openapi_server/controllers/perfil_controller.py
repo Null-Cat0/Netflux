@@ -29,7 +29,7 @@ def actualizar_perfil_usuario(user_id, profile_id, perfil_update):  # noqa: E501
         perfil_update = PerfilUpdate.from_dict(request.get_json())  # noqa: E501
     return 'do some magic!'
 
-
+@app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['DELETE'])
 def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
     """Borra el perfil especificado
 
@@ -42,6 +42,14 @@ def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
+    perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+    if perfil_db is not None:
+        db.session.delete(perfil_db)
+        db.session.commit()
+        return jsonify({"message": "Perfil eliminado con éxito", "status": "success"}), 200
+    else:
+        return jsonify({"message": "No se ha podido eliminar el perfil", "status": "error"}), 404
+    
     return 'do some magic!'
 
 @app.route('/usuario/<user_id>/perfiles', methods=['POST'])
@@ -114,12 +122,13 @@ def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
     """
     
     perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
-    perfil = perfil_db.to_api_model()
-
-    if perfil is None:
-        return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
-    else:
-        return jsonify(perfil.serialize()), 200
+    print(PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first())
+    if perfil_db is not None:
+        perfil = perfil_db.to_api_model()
+        if perfil is None:
+            return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
+        else:
+            return jsonify(perfil.serialize()), 200
     
 
 @app.route('/usuario/<user_id>/perfiles', methods=['GET'])

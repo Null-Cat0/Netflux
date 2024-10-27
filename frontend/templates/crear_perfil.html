@@ -5,49 +5,61 @@
 {% endblock %}
 
 {% block title %}
-    {% if is_edit %}
-        Editar Perfil - Netflux
+    {% if is_delete %}
+        Borrar perfil - Netflux
     {% else %}
-        Crear Perfil - Netflux
+        {% if is_edit %}
+            Editar Perfil - Netflux
+            {% else %}
+            Crear Perfil - Netflux
+        {% endif %}
     {% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" style="min-height: 73.5vh; background-color: #141414;">
-<div class="profile-form-container">
-    <h1>
-        {% if is_edit %}
-            Editar Perfil
-        {% else %}
-            Crear Perfil
-        {% endif %}
-    </h1>
-
-    <!-- Imagen de perfil -->
-    <div class="profile-image">
-        <img src="{{ profile.image if profile else 'https://via.placeholder.com/120' }}" alt="Imagen de perfil">
-    </div>
-    <input type="file" accept="image/*">
-
-    <!-- Formulario de creación/edición -->
-    <form action="" method="POST">
-        <div class="form-group">
-            <label for="name">Nombre del perfil</label>
-            <input type="text" id="name" name="name" 
-                   value="{{ profile.name if profile else '' }}"
-                   placeholder="Nombre del perfil">
-        </div>
-
-        <!-- Botón de crear o guardar -->
-        <button type="submit" class="btn">
-            {% if is_edit %}
-                Guardar cambios
+    <div class="profile-form-container">
+        <h1>
+            {% if is_delete %}
+                Borrar perfil
             {% else %}
-                Crear perfil
+                {% if is_edit %}
+                    Editar perfil
+                {% else %}
+                    Crear perfil 
+                {% endif %}
+            {% endif %}
+        </h1>
+
+        <!-- Imagen de perfil -->
+        <div class="profile-image">
+            <img src="{{ profile.image if profile else 'https://via.placeholder.com/120' }}" alt="Imagen de perfil">
+        </div>
+        <input type="file" accept="image/*">
+
+        <!-- Formulario de creación/edición -->
+        <form action="" method="POST">
+            <div class="form-group">
+                <label for="name">Nombre del perfil</label>
+                <input type="text" id="name" name="name" 
+                    value="{{ perfil.nombre if perfil else '' }}"
+                    placeholder="Nombre del perfil">
+            </div>
+
+        <button type="submit" class="btn btn-primary">
+
+            {% if is_delete %}
+                Borrar perfil
+            {% else %}
+                {% if is_edit %}
+                    Guardar cambios
+                {% else %}
+                    Crear perfil
+                {% endif %}
             {% endif %}
         </button>
-    </form>
-</div>
+        </form>
+    </div>
 </div>
 {% endblock %}
 
