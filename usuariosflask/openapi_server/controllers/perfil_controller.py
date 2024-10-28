@@ -10,24 +10,44 @@ from openapi_server.models.perfil_db import PerfilDB
 
 from openapi_server import app
 
-
-def actualizar_perfil_usuario(user_id, profile_id, perfil_update):  # noqa: E501
+@app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['PUT'])
+def actualizar_perfil_usuario(user_id, profile_id):  
     """Actualiza el perfil especificado
 
     Actualiza el perfil especificado de un usuario # noqa: E501
 
-    :param user_id: ID del usuario específicado
+    :param user_id: ID del usuario especificado
     :type user_id: int
     :param profile_id: ID del perfil a obtener
     :type profile_id: int
-    :param perfil_update: Objeto del perfil con la información actualizada
-    :type perfil_update: dict | bytes
 
     :rtype: Union[Perfil, Tuple[Perfil, int], Tuple[Perfil, int, Dict[str, str]]
     """
+
+    # Verifica si la solicitud contiene JSON
     if request.is_json:
-        perfil_update = PerfilUpdate.from_dict(request.get_json())  # noqa: E501
-    return 'do some magic!'
+        # Carga los datos JSON enviados en la solicitud
+        perfil_data = request.get_json()
+        
+        # Convierte el JSON en un objeto `Perfil`
+        perfil_api = Perfil.from_dict(perfil_data)
+        
+        # Busca el perfil en la base de datos
+        perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+        
+        if perfil_db is not None:
+            # Actualiza los campos del perfil
+            perfil_db.nombre = perfil_api.nombre
+            # Guarda los cambios en la base de datos
+            db.session.commit()
+            
+            # Devuelve el perfil actualizado
+            return jsonify(perfil_api.serialize()), 200
+        else:
+            return jsonify({"message": "No se ha podido actualizar el perfil", "status": "error"}), 404
+    
+    # Respuesta en caso de que no se envíe JSON en la solicitud
+    return jsonify({"message": "La solicitud debe contener datos JSON"}), 400
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['DELETE'])
 def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501

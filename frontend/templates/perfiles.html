@@ -23,7 +23,7 @@
                         <div class="card-body">
                             <h5 class="text-white">{{ perfil.nombre }}</h5>
                             <div class="d-flex justify-content-between mt-2">
-                                <a href="" class="text-light" title="Editar perfil de {{ perfil.nombre }}" aria-label="Editar perfil">
+                                <a href="{{url_for('editar_perfil', perfil_id=perfil.perfil_id)}}" class="text-light" title="Editar perfil de {{ perfil.nombre }}" aria-label="Editar perfil">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
                                 <a href="{{url_for('eliminar_perfil', perfil_id=perfil.perfil_id)}}" class="text-light" title="Eliminar perfil de {{ perfil.nombre }}" aria-label="Eliminar perfil" onclick="return confirm('¿Estás seguro de que quieres eliminar este perfil?');">

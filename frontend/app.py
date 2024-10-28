@@ -218,20 +218,49 @@ def editar_usuario():
 
     # Si no se maneja el método, retornar a la página de cuenta o un error
     return redirect(url_for('some_default_view'))  # Cambia esto según sea necesario
-
 @app.route('/editar_perfil/<perfil_id>', methods=['GET', 'POST'])
 def editar_perfil(perfil_id):
     usuario_id = session.get('logged_user_id')
+    
+    # Método GET para cargar los datos del perfil
     if request.method == 'GET':
-        # Cargar los datos del perfil
         response = requests.get(f'http://localhost:8080/usuario/{usuario_id}/perfiles/{perfil_id}')
+        
         if response.status_code == 200:
             data = response.json()
             return render_template("crear_perfil.html", perfil=data, is_edit=True)
         else:
-            data = response.json()
-            flash(f"Error: {data['message']}", 'danger')
+            # Manejar error en caso de no obtener datos del perfil
+            try:
+                data = response.json()
+                flash(f"Error: {data.get('message', 'No se pudo cargar el perfil.')}", 'danger')
+            except ValueError:
+                # Si no hay JSON en la respuesta (por ejemplo, error 500)
+                flash("Error al cargar el perfil. El servidor no proporcionó una respuesta válida.", 'danger')
             return redirect(url_for('obtener_perfiles'))
+    
+    # Método POST para actualizar los datos del perfil
+    if request.method == 'POST':
+        nombre = request.form.get('name')
+        
+        # Crear el payload para enviar al microservicio
+        perfil_data = {'nombre': nombre}
+        
+        # Hacer la solicitud PUT para actualizar el perfil
+        response = requests.put(f'http://localhost:8080/usuario/{usuario_id}/perfiles/{perfil_id}', json=perfil_data)
+        
+        if response.status_code == 200:
+            flash("Perfil actualizado con éxito", 'success')
+            return redirect(url_for('obtener_perfiles'))
+        else:
+            # Manejar error en caso de no poder actualizar el perfil
+            try:
+                data = response.json()
+                flash(f"Error: {data.get('message', 'No se pudo actualizar el perfil.')}", 'danger')
+            except ValueError:
+                flash("Error al actualizar el perfil. El servidor no proporcionó una respuesta válida.", 'danger')
+            return redirect(url_for('obtener_perfiles'))
+
     
 
 
