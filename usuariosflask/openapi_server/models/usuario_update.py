@@ -39,7 +39,7 @@ class UsuarioUpdate(Model):
             'password': str,
             'pais': str,
             'plan_suscripcion': str,
-            'dispositivos': str,
+            'dispositivos': List[str],
             'perfiles': List[Perfil]
         }
 
@@ -73,6 +73,16 @@ class UsuarioUpdate(Model):
         :rtype: UsuarioUpdate
         """
         return util.deserialize_model(dikt, cls)
+    
+    def to_db_model(self):
+        from openapi_server.models.usuario_db import UsuarioDB
+        return UsuarioDB(
+            nombre=self.nombre,
+            correo_electronico=self.correo_electronico,
+            password=self.password,
+            pais=self.pais,
+            plan_suscripcion=self.plan_suscripcion,
+        )
 
     @property
     def id(self) -> int:
@@ -142,6 +152,29 @@ class UsuarioUpdate(Model):
             raise ValueError("Invalid value for `correo_electronico`, must not be `None`")  # noqa: E501
 
         self._correo_electronico = correo_electronico
+    
+    @property
+    def password(self) -> str:
+        """Gets the password of this UsuarioUpdate.
+
+
+        :return: The password of this UsuarioUpdate.
+        :rtype: str
+        """
+        return self._password
+    
+    @password.setter
+    def password(self, password: str):
+        """Sets the password of this UsuarioUpdate.
+
+
+        :param password: The password of this UsuarioUpdate.
+        :type password: str
+        """
+        if password is None:
+            raise ValueError("Invalid value for `password`, must not be `None`")  # noqa: E501
+
+        self._password = password
 
     @property
     def pais(self) -> str:

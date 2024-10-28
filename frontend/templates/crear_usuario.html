@@ -68,7 +68,9 @@
                     <option value="tv" {{ 'selected' if cuenta and cuenta['dispositivos'] == 'tv' else '' }}>TV</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-danger w-100">Crear Cuenta</button>
+            <button type="submit" class="btn btn-danger w-100">
+                {{ "Editar Cuenta" if session['logged_user_id'] else "Crear Cuenta" }}
+            </button>
         </form>
     </div>
 </div>

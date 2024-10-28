@@ -38,13 +38,26 @@ def actualizar_usuario(user_id):  # noqa: E501
     usuario = UsuarioDB.query.filter_by(user_id=user_id).first()
     if usuario is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 404
+    
+    usuario_db = usuario_update.to_db_model()
 
-    usuario.nombre = usuario_update.nombre
-    usuario.correo_electronico = usuario_update.correo_electronico
-    usuario.password = usuario_update.password
-    usuario.pais = usuario_update.pais
-    usuario.plan_suscripcion = usuario_update.plan_suscripcion
-    usuario.dispositivos = usuario_update.dispositivos
+    usuario.nombre = usuario_db.nombre
+    usuario.correo_electronico = usuario_db.correo_electronico
+    usuario.password = usuario_db.password
+    usuario.pais = usuario_db.pais
+    usuario.plan_suscripcion = usuario_db.plan_suscripcion
+
+    dispositivos_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
+    for dispositivo_usuario_db in dispositivos_usuario_db:
+        db.session.delete(dispositivo_usuario_db)
+    for dispositivo_nombre in usuario_update.dispositivos:
+        disp_enc = DispositivoDB.query.filter_by(nombre=dispositivo_nombre).first()
+        if disp_enc is not None:
+            dispositivos_usuario_db = DispositivosUsuarioDB(
+                dispositivo_id=disp_enc.dispositivo_id,
+                user_id=usuario.user_id,
+            )
+            db.session.add(dispositivos_usuario_db)
 
     db.session.commit()
 
