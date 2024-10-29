@@ -53,19 +53,19 @@
             <div class="mb-3">
                 <label for="plan_suscripcion" class="form-label text-white">Plan de Suscripción</label>
                 <select class="form-select bg-dark text-white border-secondary" id="plan_suscripcion" name="plan_suscripcion" required>
-                    <option value="" disabled {{ 'selected' if not cuenta else '' }}>Selecciona un plan</option>
-                    <option value="Basico" {{ 'selected' if cuenta and cuenta['plan_suscripcion'] == 'Basico' else '' }}>Básico</option>
-                    <option value="Estandar" {{ 'selected' if cuenta and cuenta['plan_suscripcion'] == 'Estandar' else '' }}>Estándar</option>
-                    <option value="Premium" {{ 'selected' if cuenta and cuenta['plan_suscripcion'] == 'Premium' else '' }}>Premium</option>
+                    <option value="" disabled {% if not cuenta or not cuenta.get('plan_suscripcion') %}selected{% endif %}>Selecciona un plan</option>
+                    <option value="Basico" {% if cuenta and cuenta.get('plan_suscripcion') == 'Basico' %}selected{% endif %}>Básico</option>
+                    <option value="Estandar" {% if cuenta and cuenta.get('plan_suscripcion') == 'Estandar' %}selected{% endif %}>Estándar</option>
+                    <option value="Premium" {% if cuenta and cuenta.get('plan_suscripcion') == 'Premium' %}selected{% endif %}>Premium</option>
                 </select>
             </div>
             <div class="mb-3">
                 <label for="dispositivos" class="form-label text-white">Dispositivos</label>
                 <select class="form-select bg-dark text-white border-secondary" id="dispositivos" name="dispositivos" required>
-                    <option value="" disabled {{ 'selected' if not cuenta else '' }}>Selecciona un dispositivo</option>
-                    <option value="pc" {{ 'selected' if cuenta and cuenta['dispositivos'] == 'pc' else '' }}>PC</option>
-                    <option value="movil" {{ 'selected' if cuenta and cuenta['dispositivos'] == 'movil' else '' }}>Móvil</option>
-                    <option value="tv" {{ 'selected' if cuenta and cuenta['dispositivos'] == 'tv' else '' }}>TV</option>
+                    <option value="" disabled {% if not cuenta or not cuenta.get('dispositivos') %}selected{% endif %}>Selecciona un dispositivo</option>
+                    <option value="pc" {% if cuenta and 'pc' in cuenta.get('dispositivos', []) %}selected{% endif %}>PC</option>
+                    <option value="movil" {% if cuenta and 'movil' in cuenta.get('dispositivos', []) %}selected{% endif %}>Móvil</option>
+                    <option value="tv" {% if cuenta and 'tv' in cuenta.get('dispositivos', []) %}selected{% endif %}>TV</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-danger w-100">

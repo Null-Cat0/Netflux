@@ -14,7 +14,8 @@ class UsuarioDB(db.Model):
     password = db.Column(db.String(255))
     pais = db.Column(db.String(255))
     plan_suscripcion = db.Column(db.String(255))
-    perfiles = db.relationship('PerfilDB', backref='usuario', lazy=True)
+    perfiles = db.relationship('PerfilDB', backref='usuario', cascade='all, delete')
+    dispositivos = db.relationship('DispositivosUsuarioDB', backref='usuario', cascade='all, delete')
 
     def __init__(self, nombre, correo_electronico, password, pais, plan_suscripcion):  # noqa: E501
         self.nombre = nombre
@@ -24,8 +25,8 @@ class UsuarioDB(db.Model):
         self.plan_suscripcion = plan_suscripcion
     
     def get_dispositivos(self):
-        dispositivo_id = DispositivosUsuarioDB.query.filter_by(user_id=self.user_id).first().dispositivo_id
-        dispositivos = [nombre for (nombre,) in db.session.query(DispositivoDB.nombre).filter_by(dispositivo_id=dispositivo_id).all()]
+        dispositivos_ids = [dispositivo.dispositivo_id for dispositivo in self.dispositivos]
+        dispositivos = [tipo_dispositivo for (tipo_dispositivo,) in db.session.query(DispositivoDB.tipo_dispositivo).filter(DispositivoDB.dispositivo_id.in_(dispositivos_ids)).all()]
         return dispositivos
     
     def to_api_model(self):

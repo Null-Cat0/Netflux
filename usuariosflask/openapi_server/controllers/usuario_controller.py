@@ -50,12 +50,13 @@ def actualizar_usuario(user_id):  # noqa: E501
     dispositivos_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
     for dispositivo_usuario_db in dispositivos_usuario_db:
         db.session.delete(dispositivo_usuario_db)
-    for dispositivo_nombre in usuario_update.dispositivos:
-        disp_enc = DispositivoDB.query.filter_by(nombre=dispositivo_nombre).first()
+    for nombre in usuario_update.dispositivos:
+        disp_enc = DispositivoDB.query.filter_by(tipo_dispositivo=nombre).first()
         if disp_enc is not None:
             dispositivos_usuario_db = DispositivosUsuarioDB(
                 dispositivo_id=disp_enc.dispositivo_id,
                 user_id=usuario.user_id,
+                nombre_dispositivo=disp_enc.tipo_dispositivo + " de " + usuario.nombre
             )
             db.session.add(dispositivos_usuario_db)
 
@@ -83,19 +84,20 @@ def crear_usuario():  # noqa: E501
     if (usuario_api):
         usuario_db = usuario_api.to_db_model()
 
-        existe_dispositivo = DispositivoDB.query.filter_by(nombre=usuario_api.dispositivos[0]).first()
+        existe_dispositivo = DispositivoDB.query.filter_by(tipo_dispositivo=usuario_api.dispositivos[0]).first()
         if existe_dispositivo is None:
             return jsonify({"message": "Ha habido un error con su solicitud, inténtelo de nuevo más tarde", "status": "error"}), 404
 
         db.session.add(usuario_db)
         db.session.commit()
 
-        for dispositivo_nombre in usuario_api.dispositivos:
-            disp_enc = DispositivoDB.query.filter_by(nombre=dispositivo_nombre).first()
+        for nombre in usuario_api.dispositivos:
+            disp_enc = DispositivoDB.query.filter_by(tipo_dispositivo=nombre).first()
             if disp_enc is not None:
                 dispositivos_usuario_db = DispositivosUsuarioDB(
                     dispositivo_id=disp_enc.dispositivo_id,
                     user_id=usuario_db.user_id,
+                    nombre_dispositivo=disp_enc.tipo_dispositivo + " de " + usuario_db.nombre
                 )
                 db.session.add(dispositivos_usuario_db)
 
@@ -167,7 +169,7 @@ def obtener_usuario(user_id):  # noqa: E501
     for dispositivo_usuario_db in dispositivos_usuario_db:
         dispositivo = DispositivoDB.query.filter_by(dispositivo_id=dispositivo_usuario_db.dispositivo_id).first()
         if dispositivo:  # Solo agrega si el dispositivo existe
-            dispositivos.append(dispositivo.nombre)
+            dispositivos.append(dispositivo.tipo_dispositivo)
 
     print(dispositivos)  # Verificamos que la lista de dispositivos sea correcta
 

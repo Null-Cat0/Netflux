@@ -153,6 +153,6 @@ def populate_dispositivosDB():
     if DispositivoDB.query.first() is None:
         list_dispositivos = ["pc", "tv", "movil"]
         for dispositivo in list_dispositivos:
-            dispositivoDB = DispositivoDB(nombre=dispositivo)
+            dispositivoDB = DispositivoDB(tipo_dispositivo=dispositivo)
             db.session.add(dispositivoDB)
         db.session.commit()

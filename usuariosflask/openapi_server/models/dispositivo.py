@@ -9,25 +9,25 @@ class Dispositivo(Model):
     	Do not edit the class manually.
     """
 
-    def __init__(self, nombre=None):  # noqa: E501
+    def __init__(self, tipo_dispositivo=None):  # noqa: E501
         """Dispositivo - a model defined in OpenAPI
 
         :param nombre: The nombre of this Dispositivo.  # noqa: E501
         :type nombre: str
         """
         self.openapi_types = {
-            'nombre': str,
+            'tipo_dispositivo': str,
         }
 
         self.attribute_map = {
-            'nombre': 'nombre',
+            'tipo_dispositivo': 'tipo',
         }
 
-        self._nombre = nombre
+        self._tipo_dispositivo = tipo_dispositivo
 
     def serialize(self):
         return {
-            'nombre': self.nombre,
+            'tipo_dispositivo': self._tipo_dispositivo
         }
 
     @classmethod
@@ -42,22 +42,22 @@ class Dispositivo(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def nombre(self) -> str:
+    def tipo_dispositivo(self) -> str:
          """Gets the nombre of this Dispositivo.
     
          :return: The nombre of this Dispositivo.
          :rtype: str
          """
-         return self._nombre
+         return self._tipo_dispositivo
     
-    @nombre.setter
-    def nombre(self, nombre: str):
+    @tipo_dispositivo.setter
+    def nombre(self, tipo_dispositivo: str):
          """Sets the nombre of this Dispositivo.
     
          :param nombre: The nombre of this Dispositivo.
          :type nombre: str
          """
-         if nombre is None:
+         if tipo_dispositivo is None:
              raise ValueError("Invalid value for `nombre`, must not be `None`")  # noqa: E501
     
-         self._nombre = nombre
+         self._tipo_dispositivo = tipo_dispositivo
