@@ -3,8 +3,12 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
+from flask import app
+
 from openapi_server.models.actualizar_dispositivos_request import ActualizarDispositivosRequest  # noqa: E501
 from openapi_server import util
+from usuariosflask.openapi_server.models.dispositivo_db import DispositivoDB
+from usuariosflask.openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
 
 def actualizar_dispositivos(user_id, actualizar_dispositivos_request):  # noqa: E501
@@ -38,7 +42,7 @@ def eliminar_dispositivo(user_id, dispositivo_id):  # noqa: E501
     """
     return 'do some magic!'
 
-
+@app.route('/usuario/<user_id>/dispositivos', methods=['GET'])
 def obtener_dispositivos(user_id):  # noqa: E501
     """Obtiene la lista de dispositivos registrados por el usuario
 
@@ -49,4 +53,14 @@ def obtener_dispositivos(user_id):  # noqa: E501
 
     :rtype: Union[List[str], Tuple[List[str], int], Tuple[List[str], int, Dict[str, str]]
     """
+    dispositivos_usuarios_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
+    if dispositivos_usuarios_db is not None:
+        for dispositivo_usuario_db in dispositivos_usuarios_db:
+            DispositivoDB.query.filter_by(dispositivo_id=dispositivo_usuario_db.dispositivo_id).first() # Tipo de dispositivo
+            dispositivo = {
+                "dispositivo_id": dispositivo.dispositivo_id,
+                "nombre": dispositivo.nombre,
+                "tipo": dispositivo.tipo
+            }
+
     return 'do some magic!'
