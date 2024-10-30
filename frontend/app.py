@@ -7,6 +7,9 @@ app.secret_key = 'secret_key'
 app.permanent_session_lifetime = timedelta(minutes=30)
 
 
+from flask import session, flash, render_template, request, redirect, url_for
+import requests
+
 @app.route('/iniciar_sesion', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -29,19 +32,25 @@ def login():
 
         # Manejar la respuesta del microservicio
         if response.status_code == 200:
-            data = response.json()
-            flash(data['message'], 'success')
-            # print(data['usuario'])
+            try:
+                data = response.json()
+                flash(data['message'], 'success')
+                # Almacenar datos en la sesión
+                session.permanent = True
+                session['logged_user_id'] = data['usuario']['user_id']
+                session['logged_user_name'] = data['usuario']['nombre']
 
-            session.permanent = True
-            session['logged_user_id'] = data['usuario']['user_id']
-            session['logged_user_name'] = data['usuario']['nombre']
-
-            # Redirigir al perfil del usuario usando el user_id
-            return redirect(url_for('obtener_perfiles'))
+                # Redirigir al perfil del usuario
+                return redirect(url_for('obtener_perfiles'))
+            except requests.exceptions.JSONDecodeError:
+                flash("Error al procesar la respuesta del servidor.", 'danger')
+                return render_template("inicio_sesion.html")
         else:
-            data = response.json()
-            flash(data['message'], 'danger')
+            try:
+                data = response.json()
+                flash(data['message'], 'danger')
+            except requests.exceptions.JSONDecodeError:
+                flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
 
     return render_template("inicio_sesion.html")
 
@@ -340,11 +349,11 @@ def dispositivos():
     if request.method == 'GET':
         user_id = session.get('logged_user_id')
         response = requests.get(
-            f'http://localhost:8080/usuario/{user_id}')
+            f'http://localhost:8080/usuario/{user_id}/dispositivos')
         if response.status_code == 200:
             data = response.json()
             print (data)
-            return render_template("dispositivos.html", dispositivos=data['dispositivos'])
+            return render_template("dispositivos.html", dispositivos=data)
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')

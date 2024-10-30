@@ -11,8 +11,9 @@
     <div class="container my-5">
         <h1 class="text-center text-white mb-4">Crear Nuevo Dispositivo</h1>
 
+        <div class="row justify-content-center">
         <!-- Formulario para crear dispositivo -->
-        <form action="" method="POST">
+        <form class="col-5" action="" method="POST">
             <div class="mb-3">
                 <label for="nombre" class="form-label text-white">Nombre del Dispositivo</label>
                 <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese el nombre del dispositivo" required>
@@ -31,6 +32,7 @@
             <button type="submit" class="btn btn-danger w-100">
                 <i class="fas fa-save me-2"></i>Guardar Dispositivo
             </button>
+        </div>
         </form>
     </div>
 {% endblock %}

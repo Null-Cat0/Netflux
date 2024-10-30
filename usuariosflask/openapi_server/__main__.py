@@ -6,13 +6,13 @@ from openapi_server.models.usuario_db import UsuarioDB
 @app.route('/iniciar_sesion', methods=['POST'])
 def iniciar_sesion():
     """Verifica las credenciales del usuario y responde con un mensaje JSON."""
-    data = request.get_json()  # Usa get_json() en lugar de request.json para un manejo más explícito
+    data = request.json
     correo_electronico = data.get('correo_electronico')
     password = data.get('password')
 
     # Buscar el usuario en la base de datos
     usuario_db = UsuarioDB.query.filter_by(correo_electronico=correo_electronico).first()
-
+    print(f"Usuario {usuario_db}")
     if usuario_db:
         usuario = usuario_db.to_api_model()
 
