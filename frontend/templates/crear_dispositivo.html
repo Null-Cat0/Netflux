@@ -8,31 +8,31 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container my-5">
-        <h1 class="text-center text-white mb-4">Crear Nuevo Dispositivo</h1>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
+    <div class="card p-5 shadow-lg" style="max-width: 450px; width: 100%; background-color: #1c1c1c; border-radius: 12px;">
+        <h2 class="text-center text-white mb-4">Añadir Dispositivo</h2>
 
-        <div class="row justify-content-center">
         <!-- Formulario para crear dispositivo -->
-        <form class="col-5" action="" method="POST">
-            <div class="mb-3">
+        <form action="" method="POST">
+            <div class="mb-4">
                 <label for="nombre" class="form-label text-white">Nombre del Dispositivo</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese el nombre del dispositivo" required>
+                <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="nombre" name="nombre" placeholder="Ingrese el nombre del dispositivo" required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-4">
                 <label for="tipo" class="form-label text-white">Tipo de Dispositivo</label>
-                <select class="form-select" id="tipo" name="tipo" required>
-                    <option value="">Seleccione el tipo</option>
+                <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="tipo" name="tipo" required>
+                    <option value="" disabled selected>Seleccione el tipo</option>
                     <option value="PC">PC</option>
                     <option value="Móvil">Móvil</option>
                     <option value="TV">TV</option>
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-danger w-100">
+            <button type="submit" class="btn btn-danger w-100 rounded-pill">
                 <i class="fas fa-save me-2"></i>Guardar Dispositivo
             </button>
-        </div>
         </form>
     </div>
+</div>
 {% endblock %}
