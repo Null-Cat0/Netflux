@@ -25,7 +25,6 @@ def pagina_inicio():
     usuario_id = session.get('logged_user_id')
 
     response = requests.get(
-        # 'http://localhost:8080/usuario/' + str(usuario_id) + '/perfiles/' + perfil_id)
         f"{USUARIOS_BASE_URL}/{str(usuario_id)}/perfiles/{perfil_id}")
 
     if response.status_code == 200:
