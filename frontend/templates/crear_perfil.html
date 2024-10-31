@@ -32,6 +32,16 @@
 
         <!-- Formulario de creación/edición -->
         <form action="" method="POST">
+            <!-- Imagen de perfil clicable para abrir el modal -->
+            <div class="form-group text-center mb-4">
+                <label for="foto_perfil" class="d-block text-white">Imagen de perfil</label>
+                <div class="profile-image" style="cursor: pointer;" data-toggle="modal" data-target="#imageSelectModal">
+                    <img src="{{ url_for('static', filename='images/' + (perfil.foto_perfil if perfil and perfil.foto_perfil else 'netflux_rojo.png')) }}" alt="Imagen de perfil" class="rounded-circle" width="100" height="100">
+                </div>
+                <!-- Campo oculto para almacenar la imagen seleccionada -->
+                <input type="hidden" id="foto_perfil" name="foto_perfil" value="{{ perfil.foto_perfil if perfil and perfil.foto_perfil else 'netflux_rojo.png' }}">
+            </div>
+
             <div class="mb-3">
                 <label for="name" class="form-label text-white">Nombre del perfil</label>
                 <input type="text" id="name" name="name" 
@@ -50,4 +60,53 @@
         </form>
     </div>
 </div>
+<!-- Modal para seleccionar imagen de perfil -->
+<div class="modal fade" id="imageSelectModal" tabindex="-1" role="dialog" aria-labelledby="imageSelectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="imageSelectModalLabel">Selecciona una imagen de perfil</h5>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex justify-content-around flex-wrap">
+            {% set image_options = ['netflux_amarillo.png', 'netflux_azul.png', 'netflux_rojo.png', 'netflux_verde.png'] %}
+            {% for img in image_options %}
+              <img src="{{ url_for('static', filename='images/' + img) }}" class="img-thumbnail selectable-image" data-image="{{ img }}" alt="{{ img }}">
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+<!-- Incluye jQuery y Bootstrap JS si no están ya incluidos en base.html -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        // Evento al seleccionar una imagen en el modal
+        $('.selectable-image').on('click', function(){
+            const selectedImage = $(this).data('image');
+            // Actualizar la imagen mostrada
+            $('.profile-image img').attr('src', "{{ url_for('static', filename='images/') }}" + selectedImage);
+            // Actualizar el campo oculto
+            $('#foto_perfil').val(selectedImage);
+            // Cerrar el modal
+            $('#imageSelectModal').modal('hide');
+        });
+
+        // Manejar el envío del formulario
+        $('form').on('submit', function(e){
+            // Asegurar que 'foto_perfil' tiene un valor
+            if(!$('#foto_perfil').val()){
+                $('#foto_perfil').val('netflux_rojo.png');
+            }
+        });
+    });
+</script>
 {% endblock %}

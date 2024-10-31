@@ -89,6 +89,14 @@ def crear_perfil(user_id):  # noqa: E501
         print(request.get_json())
         perfil_api = Perfil.from_dict(request.get_json())  # noqa: E501
 
+    # Obtener el campo 'foto_perfil', si no existe, usar 'netflux_rojo.png'
+    foto_perfil = perfil_api.get('foto_perfil') or 'netflux_rojo.png'
+
+    # Validar que la imagen es una de las permitidas
+    imagenes_permitidas = ['netflux_amarillo.png', 'netflux_azul.png', 'netflux_rojo.png', 'netflux_verde.png']
+    if foto_perfil not in imagenes_permitidas:
+        return jsonify({"message": "Imagen no válida.", "status": "error"}), 400
+
     if (perfil_api):
         perfil_db = perfil_api.to_db_model()
         db.session.add(perfil_db)

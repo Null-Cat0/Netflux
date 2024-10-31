@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi lista - Netflux{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Sección Mi Lista -->
+    <!-- Sección de Tendencias -->
+    <h3 class="text-white mb-3">Mi Lista</h3>
+    <div class="row mb-5">
+        {% for i in range() %}
+            <div class="col-md-2">
+                <div class="card bg-dark text-white">
+                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Tendencia {{ i }}">
+                    <div class="card-body">
+                        <h5 class="card-title">Título {{ i + 1 }}</h5>
+                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

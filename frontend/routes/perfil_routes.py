@@ -32,14 +32,32 @@ def crear_perfil():
     if request.method == 'POST':
         # Capturar datos del formulario
         nombre = request.form.get('name')
+        foto_perfil = request.form.get('foto_perfil') or 'netflux_rojo.png'  # Asignar por defecto si está vacío
 
+        # Validar que el nombre no esté vacío
+        if not nombre:
+            flash('El nombre del perfil es obligatorio.', 'danger')
+            return redirect(url_for('crear_perfil'))
+
+        # Validar 'foto_perfil' contra las imágenes permitidas
+        imagenes_permitidas = ['netflux_amarillo.png', 'netflux_azul.png', 'netflux_rojo.png', 'netflux_verde.png']
+        if foto_perfil not in imagenes_permitidas:
+            flash("Imagen no válida.", 'danger')
+            return redirect(url_for('crear_perfil'))
+        
         # Se obtiene el usuario_id del usuario que se encuentra en la sesión
         usuario_id = session.get('logged_user_id')
+        
+        if not usuario_id:
+            flash("Usuario no autenticado.", 'danger')
+            return redirect(url_for('login'))  # Asegúrate de tener una ruta de login
+
 
         # Crear el payload para enviar al microservicio
         perfil_data = {
             'user_id': usuario_id,
             'nombre': nombre,
+            'foto_perfil': foto_perfil
         }
 
         # Hacer la solicitud POST al microservicio para crear el perfil

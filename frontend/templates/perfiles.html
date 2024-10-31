@@ -17,7 +17,7 @@
                 <article class="col-6 col-sm-4 col-md-3 mb-4">
                     <div class="card p-3 shadow-lg bg-dark border-0" style="border-radius: 10px;">
                         <a href="{{ url_for('pagina_inicio', perfil_id=perfil.perfil_id) }}" aria-label="Perfil de {{ perfil.nombre }}">
-                            <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle mx-auto d-block mb-3" style="width: 120px; height: 120px; object-fit: cover;" alt="Imagen de perfil de {{ perfil.nombre }}">
+                            <img src="{{ url_for('static', filename='images/' + perfil.foto_perfil) if perfil.foto_perfil else 'https://via.placeholder.com/200' }}" class="card-img-top rounded-circle" alt="Imagen de perfil de {{ perfil.nombre }}">
                         </a>
                         <div class="card-body">
                             <h5 class="text-white">{{ perfil.nombre }}</h5>

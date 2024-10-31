@@ -82,3 +82,15 @@ h1 {
 .btn:hover {
     background-color: #f6121d; /* Un tono más claro de rojo al pasar el ratón */
 }
+
+.selectable-image {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    object-fit: cover;
+    border: 2px solid transparent;
+    margin: 10px;
+  }
+  .selectable-image:hover {
+    border-color: #fff;
+  }
