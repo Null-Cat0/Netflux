@@ -3,14 +3,10 @@
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/crear_perfil.css') }}">
 <title>
-    {% if is_delete %}
-        Borrar perfil - Netflux
+    {% if is_edit %}
+        Editar Perfil - Netflux
     {% else %}
-        {% if is_edit %}
-            Editar Perfil - Netflux
-        {% else %}
-            Crear Perfil - Netflux
-        {% endif %}
+        Crear Perfil - Netflux
     {% endif %}
 </title>
 {% endblock %}
@@ -19,14 +15,10 @@
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
     <div class="card p-5 shadow-lg" style="max-width: 450px; width: 100%; background-color: #1c1c1c; border-radius: 12px;">
         <h2 class="text-center text-white mb-4">
-            {% if is_delete %}
-                Borrar perfil
+            {% if is_edit %}
+                Editar perfil
             {% else %}
-                {% if is_edit %}
-                    Editar perfil
-                {% else %}
-                    Crear perfil 
-                {% endif %}
+                Crear perfil 
             {% endif %}
         </h2>
 
@@ -49,14 +41,10 @@
             </div>
 
             <button type="submit" class="btn btn-danger w-100 rounded-pill">
-                {% if is_delete %}
-                    Borrar perfil
+                {% if is_edit %}
+                    Guardar cambios
                 {% else %}
-                    {% if is_edit %}
-                        Guardar cambios
-                    {% else %}
-                        Crear perfil
-                    {% endif %}
+                    Crear perfil
                 {% endif %}
             </button>
         </form>

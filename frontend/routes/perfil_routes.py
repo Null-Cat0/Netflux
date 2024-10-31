@@ -116,29 +116,15 @@ def eliminar_perfil(perfil_id):
     import app
     usuario_id = session.get('logged_user_id')
 
-    if request.method == 'GET':
-        print(perfil_id)
-        # Cargar los datos del perfil con disabilitado=True
-        response = requests.get(
-            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
-        if response.status_code == 200:
-            data = response.json()
-            return render_template("crear_perfil.html", perfil=data, is_delete=True)
-        else:
-            data = response.json()
-            flash(f"Error: {data['message']}", 'danger')
-            return redirect(url_for('perfil.obtener_perfiles'))
-
-    if request.method == 'POST':
-        # Hacer la solicitud DELETE al microservicio para eliminar el perfil
-        response = requests.delete(
-            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
+    # Hacer la solicitud DELETE al microservicio para eliminar el perfil
+    response = requests.delete(
+        f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
                 
-        print(response)
-        if response.status_code == 200:
-            flash("Perfil eliminado con éxito", 'success')
-            return redirect(url_for('perfil.obtener_perfiles'))
-        else:
-            data = response.json()
-            flash(f"Error: {data['message']}", 'danger')
-            return redirect(url_for('perfil.obtener_perfiles'))
+    print(response)
+    if response.status_code == 200:
+        flash("Perfil eliminado con éxito", 'success')
+        return redirect(url_for('perfil.obtener_perfiles'))
+    else:
+        data = response.json()
+        flash(f"Error: {data['message']}", 'danger')
+        return redirect(url_for('perfil.obtener_perfiles'))

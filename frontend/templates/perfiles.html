@@ -18,20 +18,39 @@
                     <div class="card p-3 shadow-lg bg-dark border-0" style="border-radius: 10px;">
                         <a href="{{ url_for('pagina_inicio', perfil_id=perfil.perfil_id) }}" aria-label="Perfil de {{ perfil.nombre }}">
                             <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle mx-auto d-block mb-3" style="width: 120px; height: 120px; object-fit: cover;" alt="Imagen de perfil de {{ perfil.nombre }}">
-
+                        </a>
                         <div class="card-body">
                             <h5 class="text-white">{{ perfil.nombre }}</h5>
                             <div class="d-flex justify-content-between mt-2">
-                                <a href="{{url_for('perfil.editar_perfil', perfil_id=perfil.perfil_id)}}" class="text-light" title="Editar perfil de {{ perfil.nombre }}" aria-label="Editar perfil">
+                                <a href="{{ url_for('perfil.editar_perfil', perfil_id=perfil.perfil_id) }}" class="text-light" title="Editar perfil de {{ perfil.nombre }}" aria-label="Editar perfil">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
-                                <a href="{{url_for('perfil.eliminar_perfil', perfil_id=perfil.perfil_id)}}" class="text-light" title="Eliminar perfil de {{ perfil.nombre }}" aria-label="Eliminar perfil" onclick="return confirm('¿Estás seguro de que quieres eliminar este perfil?');">
+                                <a href="#" class="text-light" title="Eliminar perfil de {{ perfil.nombre }}" aria-label="Eliminar perfil" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ perfil.perfil_id }}">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
                 </article>
+
+                <!-- Modal de confirmación para eliminar perfil -->
+                <div class="modal fade" id="confirmDeleteModal{{ perfil.perfil_id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ perfil.perfil_id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white rounded">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title" id="confirmDeleteModalLabel{{ perfil.perfil_id }}">Confirmar eliminación</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ¿Estás seguro de que quieres eliminar el perfil de {{ perfil.nombre }}?
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                                <a href="{{ url_for('perfil.eliminar_perfil', perfil_id=perfil.perfil_id) }}" class="btn btn-danger rounded-pill">Eliminar perfil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
         </section>
 
@@ -39,7 +58,6 @@
         {% if perfiles|length < 5 %}
             <div class="mt-4">
                 <a href="{{ url_for('perfil.crear_perfil', is_edit=false) }}" class="btn btn-outline-light add-profile-btn" role="button" aria-label="Agregar un nuevo perfil">Agregar un perfil</a>
-
             </div>
         {% endif %}
     </main>
