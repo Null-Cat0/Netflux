@@ -36,13 +36,16 @@
                                 <td>{{ dispositivo.tipo }}</td>
                                 <td>
                                     <!-- Botón de Editar -->
-                                    <a href="" class="text-warning mx-2" title="Editar">
+                                    <a href="{{ url_for('dispositivos.editar_dispositivo', nombre_dispositivo=dispositivo.nombre, dispositivo_id=dispositivo.dispositivo_id) }}" class="text-warning mx-2" title="Editar">
                                         <i class="fas fa-pencil-alt fa-lg"></i>
-                                    </a>
+                                    </a>                                    
                                     <!-- Botón de Eliminar -->
-                                    <a href="" class="text-danger mx-2" title="Eliminar" onclick="return confirm('¿Estás seguro de que quieres eliminar este dispositivo?');">
-                                        <i class="fas fa-trash-alt fa-lg"></i>
-                                    </a>
+                                    <form action="{{ url_for('dispositivos.eliminar_dispositivo',nombre_dispositivo=dispositivo.nombre,dispositivo_id=dispositivo.dispositivo_id ) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este dispositivo?');">
+                                        <button type="submit" class="btn btn-link text-danger mx-2" title="Eliminar" style="padding: 0; border: none; background: none;">
+                                            <i class="fas fa-trash-alt fa-lg"></i>
+                                        </button>
+                                    </form>
+                                   
                                 </td>
                             </tr>
                         {% endfor %}

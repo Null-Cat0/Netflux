@@ -1,36 +1,33 @@
 {% extends 'base.html' %}
 
-{% block title %}Crear Dispositivo - Netflux{% endblock %}
-
-{% block head %}
-    <title>Crear Dispositivo - Netflux</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-{% endblock %}
+{% block title %}{{ "Editar Dispositivo" if dispositivo_id else "Crear Dispositivo" }} - Netflux{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
     <div class="card p-5 shadow-lg" style="max-width: 450px; width: 100%; background-color: #1c1c1c; border-radius: 12px;">
-        <h2 class="text-center text-white mb-4">Añadir Dispositivo</h2>
+        <h2 class="text-center text-white mb-4">{{ "Editar Dispositivo" if dispositivo_id else "Añadir Dispositivo" }}</h2>
 
-        <!-- Formulario para crear dispositivo -->
+        <!-- Formulario para crear/editar dispositivo -->
         <form action="" method="POST">
             <div class="mb-4">
                 <label for="nombre" class="form-label text-white">Nombre del Dispositivo</label>
-                <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="nombre" name="nombre" placeholder="Ingrese el nombre del dispositivo" required>
+                <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="nombre" name="nombre_dispositivo"
+                       placeholder="Ingrese el nombre del dispositivo"
+                       value="{{ nombre_dispositivo if nombre_dispositivo else '' }}" required>
             </div>
 
             <div class="mb-4">
                 <label for="tipo" class="form-label text-white">Tipo de Dispositivo</label>
-                <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="tipo" name="tipo" required>
-                    <option value="" disabled selected>Seleccione el tipo</option>
-                    <option value="PC">PC</option>
-                    <option value="Móvil">Móvil</option>
-                    <option value="TV">TV</option>
+                <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="tipo" name="tipo_dispositivo" required>
+                    <option value="" disabled {% if not dispositivo_id %}selected{% endif %}>Seleccione el tipo</option>
+                    <option value="1" {% if tipo_dispositivo == '1' %}selected{% endif %}>PC</option>
+                    <option value="2" {% if tipo_dispositivo == '2' %}selected{% endif %}>Móvil</option>
+                    <option value="3" {% if tipo_dispositivo == '3' %}selected{% endif %}>TV</option>
                 </select>
             </div>
 
             <button type="submit" class="btn btn-danger w-100 rounded-pill">
-                <i class="fas fa-save me-2"></i>Guardar Dispositivo
+                <i class="fas fa-save me-2"></i>{{ "Guardar Cambios" if dispositivo_id else "Guardar Dispositivo" }}
             </button>
         </form>
     </div>

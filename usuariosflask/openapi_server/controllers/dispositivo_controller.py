@@ -6,7 +6,7 @@ from typing import Union
 from openapi_server.models.dispositivo_db import DispositivoDB
 from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
-from openapi_server import app
+from openapi_server import app,db
 
 from openapi_server.models.actualizar_dispositivos_request import ActualizarDispositivosRequest  # noqa: E501
 from openapi_server import util
@@ -28,8 +28,8 @@ def actualizar_dispositivos(user_id, actualizar_dispositivos_request):  # noqa: 
         actualizar_dispositivos_request = ActualizarDispositivosRequest.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
-
-def eliminar_dispositivo(user_id, dispositivo_id):  # noqa: E501
+@app.route('/usuario/<int:user_id>/dispositivo/<string:nombre_dispositivo>/<int:dispositivo_id>', methods=['DELETE'])
+def eliminar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
     """Elimina un dispositivo de la lista de dispositivos registrados del usuario
 
     Elimina un dispositivo de la lista de dispositivos registrados del usuario # noqa: E501
@@ -41,7 +41,16 @@ def eliminar_dispositivo(user_id, dispositivo_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    dispositivo_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id, dispositivo_id=dispositivo_id, nombre_dispositivo=nombre_dispositivo).first()
+
+    print(dispositivo_usuario_db)
+    if dispositivo_usuario_db is not None:
+        db.session.delete(dispositivo_usuario_db)
+        db.session.commit()
+        return jsonify({"message": "Dispositivo eliminado con éxito", "status": "success"}), 200
+    else:
+        return jsonify({"message": "El dispositivo no existe", "status": "error"}), 404
+
 
 @app.route('/usuario/<user_id>/dispositivos', methods=['GET'])
 def obtener_dispositivos(user_id):  # noqa: E501
@@ -59,12 +68,40 @@ def obtener_dispositivos(user_id):  # noqa: E501
     if dispositivos_usuarios_db is not None:
         for dispositivo_usuario_db in dispositivos_usuarios_db:
             dispositivos_aux =DispositivoDB.query.filter_by(dispositivo_id=dispositivo_usuario_db.dispositivo_id).first() # Tipo de dispositivo
+            print(dispositivo_usuario_db.dispositivo_id)
             disp= {
                 "nombre": dispositivo_usuario_db.nombre_dispositivo,
-                "tipo": dispositivos_aux.tipo_dispositivo
+                "tipo": dispositivos_aux.tipo_dispositivo,
+                "dispositivo_id": dispositivo_usuario_db.dispositivo_id
                 }
             dispositivos.append(disp)
      
     return jsonify(dispositivos), 200    
 
+@app.route('/usuario/<user_id>/dispositivo', methods=['POST'])
+def crear_dispositivo(user_id):  # noqa: E501
+    """Registra un nuevo dispositivo para el usuario
+
+    Registra un nuevo dispositivo para el usuario # noqa: E501
+
+    :param user_id: ID del usuario
+    :type user_id: int
+    :param nombre_dispositivo: Nombre del dispositivo
+    :type nombre_dispositivo: str
+    :param tipo_dispositivo: Tipo de dispositivo
+    :type tipo_dispositivo: str
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    """
+    if request.is_json:
+        data = request.get_json()
+        nombre_dispositivo = data.get('nombre_dispositivo')
+        tipo_dispositivo = data.get('tipo_dispositivo')
+        dispositivo = DispositivosUsuarioDB(user_id=user_id, nombre_dispositivo=nombre_dispositivo, dispositivo_id=tipo_dispositivo)
+        
+        db.session.add(dispositivo)
+        db.session.commit()
+    else:
+        return jsonify({"message": "Error en la creación del dispositivo", "status": "error"}), 404
+    
     return 'do some magic!'
