@@ -101,8 +101,10 @@ def crear_usuario():
 @usuario_bp.route('/cuenta', methods=['GET', 'POST'])
 def editar_usuario():
     import app
-    perfil_id = request.args.get('perfil_id', default='')
     usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Debes iniciar sesión para acceder a esta página", 'danger')
+        return redirect(url_for('user.login'))
 
     if request.method == 'GET':
         response = requests.get(
@@ -115,7 +117,7 @@ def editar_usuario():
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
             # Redirigir a una vista de error si es necesario
-            return redirect(url_for('some_error_handling_view'))
+            return redirect(url_for('user.login'))
 
     if request.method == 'POST':
         dispositivos = []
@@ -166,6 +168,9 @@ def editar_usuario():
 def borrar_cuenta():
     import app
     usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Debes iniciar sesión para acceder a esta página", 'danger')
+        return redirect(url_for('user.login'))
 
     response = requests.delete(
         f"{app.USUARIOS_BASE_URL}/eliminar_usuario/{usuario_id}")

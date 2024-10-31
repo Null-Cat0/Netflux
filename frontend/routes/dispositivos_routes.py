@@ -8,6 +8,9 @@ def dispositivos():
     import app
     if request.method == 'GET':
         user_id = session.get('logged_user_id')
+        if not user_id:
+            flash("Usuario no autenticado.", 'danger')
+            return redirect(url_for('user.login'))
         response = requests.get(
             f"{app.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivos")
         if response.status_code == 200:
@@ -22,4 +25,8 @@ def dispositivos():
 @dispositivos_bp.route("/crear_dispositivo", methods=['GET', 'POST'])
 def crear_dispositivo():
     if request.method == 'GET':
+        user_id = session.get('logged_user_id')
+        if not user_id:
+            flash("Usuario no autenticado.", 'danger')
+            return redirect(url_for('user.login'))
         return render_template("crear_dispositivo.html")

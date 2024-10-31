@@ -8,6 +8,9 @@ def obtener_perfiles():
     import app
     # Se obtiene el usuario_id del usuario que se encuentra en la sesión
     usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))
 
     # Hacer la solicitud GET al microservicio para obtener los perfiles del usuario
     response = requests.get(
@@ -26,6 +29,12 @@ def obtener_perfiles():
 @perfil_bp.route('/crear_perfil', methods=['GET', 'POST'])
 def crear_perfil():
     import app
+
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))  # Asegúrate de tener una ruta de login
+    
     if request.method == 'GET':
         return render_template("crear_perfil.html")
 
@@ -45,15 +54,7 @@ def crear_perfil():
         if foto_perfil not in imagenes_permitidas:
             flash("Imagen no válida.", 'danger')
             return redirect(url_for('crear_perfil'))
-        
-        # Se obtiene el usuario_id del usuario que se encuentra en la sesión
-        usuario_id = session.get('logged_user_id')
-        
-        if not usuario_id:
-            flash("Usuario no autenticado.", 'danger')
-            return redirect(url_for('login'))  # Asegúrate de tener una ruta de login
-
-
+         
         # Crear el payload para enviar al microservicio
         perfil_data = {
             'user_id': usuario_id,
@@ -84,6 +85,9 @@ def crear_perfil():
 def editar_perfil(perfil_id):
     import app
     usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))
 
     # Método GET para cargar los datos del perfil
     if request.method == 'GET':
@@ -135,6 +139,9 @@ def editar_perfil(perfil_id):
 def eliminar_perfil(perfil_id):
     import app
     usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))
 
     # Hacer la solicitud DELETE al microservicio para eliminar el perfil
     response = requests.delete(
