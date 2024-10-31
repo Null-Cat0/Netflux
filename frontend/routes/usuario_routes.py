@@ -131,7 +131,7 @@ def editar_usuario():
         if not nombre or not correo_electronico or not password:
             flash("Todos los campos son obligatorios.", 'danger')
             # Redirigir a la misma página para corregir
-            return redirect(url_for('editar_usuario'))
+            return redirect(url_for('user.editar_usuario'))
 
         # Crear el payload para enviar al microservicio
         usuario_data = {
@@ -156,7 +156,7 @@ def editar_usuario():
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
             # Redirigir a la misma página para corregir
-            return redirect(url_for('editar_usuario'))
+            return redirect(url_for('user.editar_usuario'))
 
     # Si no se maneja el método, retornar a la página de cuenta o un error
     # Cambia esto según sea necesario
