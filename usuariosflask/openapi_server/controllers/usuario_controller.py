@@ -162,14 +162,15 @@ def obtener_usuario(user_id):  # noqa: E501
     """
     
     usuario_db = UsuarioDB.query.filter_by(user_id=user_id).first()
-    # Hacer
-    dispositivos_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
-
-    dispositivos = []
-    for dispositivo_usuario_db in dispositivos_usuario_db:
-        dispositivo = DispositivoDB.query.filter_by(dispositivo_id=dispositivo_usuario_db.dispositivo_id).first()
-        if dispositivo:  # Solo agrega si el dispositivo existe
-            dispositivos.append(dispositivo.tipo_dispositivo)
+    if usuario_db is None:
+        return jsonify({"message": "El usuario no existe", "status": "error"}), 404
+    else:
+        dispositivos_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
+        dispositivos = []
+        for dispositivo_usuario_db in dispositivos_usuario_db:
+            dispositivo = DispositivoDB.query.filter_by(dispositivo_id=dispositivo_usuario_db.dispositivo_id).first()
+            if dispositivo:  # Solo agrega si el dispositivo existe
+                dispositivos.append(dispositivo.tipo_dispositivo)
 
     print(dispositivos)  # Verificamos que la lista de dispositivos sea correcta
 

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Dispositivo - Netflux{% endblock %}
+
+{% block head %}
+    <title>Crear Dispositivo - Netflux</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <h1 class="text-center text-white mb-4">Crear Nuevo Dispositivo</h1>
+
+        <div class="row justify-content-center">
+        <!-- Formulario para crear dispositivo -->
+        <form class="col-5" action="" method="POST">
+            <div class="mb-3">
+                <label for="nombre" class="form-label text-white">Nombre del Dispositivo</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese el nombre del dispositivo" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="tipo" class="form-label text-white">Tipo de Dispositivo</label>
+                <select class="form-select" id="tipo" name="tipo" required>
+                    <option value="">Seleccione el tipo</option>
+                    <option value="PC">PC</option>
+                    <option value="Móvil">Móvil</option>
+                    <option value="TV">TV</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100">
+                <i class="fas fa-save me-2"></i>Guardar Dispositivo
+            </button>
+        </div>
+        </form>
+    </div>
+{% endblock %}

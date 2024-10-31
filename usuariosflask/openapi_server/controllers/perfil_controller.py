@@ -69,8 +69,7 @@ def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
         return jsonify({"message": "Perfil eliminado con éxito", "status": "success"}), 200
     else:
         return jsonify({"message": "No se ha podido eliminar el perfil", "status": "error"}), 404
-    
-    return 'do some magic!'
+
 
 @app.route('/usuario/<user_id>/perfiles', methods=['POST'])
 def crear_perfil(user_id):  # noqa: E501
@@ -142,7 +141,6 @@ def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
     """
     
     perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
-    print(PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first())
     if perfil_db is not None:
         perfil = perfil_db.to_api_model()
         if perfil is None:
