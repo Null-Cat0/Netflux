@@ -1,11 +1,12 @@
 import requests
 from flask import render_template, request, redirect, url_for, flash, session, Blueprint
 
+from global_config import UsuariosConfig as userConf
+
 usuario_bp = Blueprint('user', __name__)
 
 @usuario_bp.route('/iniciar_sesion', methods=['GET', 'POST'])
 def login():
-    import app
     if session.get('logged_user_id'):
         flash("Ya has iniciado sesión.", 'info')
         return redirect(url_for('perfil.obtener_perfiles'))
@@ -26,7 +27,7 @@ def login():
 
         # Hacer la llamada POST al microservicio de autenticación
         response = requests.post(
-            f"{app.USUARIOS_BASE_URL}/iniciar_sesion", json=login_data)
+            f"{userConf.USUARIOS_BASE_URL}/iniciar_sesion", json=login_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 200:
@@ -55,7 +56,10 @@ def login():
 @usuario_bp.route('/cerrar_sesion')
 def cerrar_sesion():
     # Elimina 'logged_user_id' de la sesión para cerrar sesión
-    session.pop('logged_user_id', None)
+    # session.pop('logged_user_id', None)
+    # session.pop('logged_user_id', None)
+    # session.pop('perfil_id', None)
+    session.clear()
     # Mensaje opcional para el usuario
     flash("Has cerrado sesión con éxito.", "info")
     # Redirige a la página de inicio de sesión o a la página principal
@@ -63,10 +67,9 @@ def cerrar_sesion():
 
 @usuario_bp.route('/crear_usuario', methods=['GET', 'POST'])
 def crear_usuario():
-    import app
     if request.method == 'GET':
         # Renderiza el formulario de creación de cuenta
-        return render_template("crear_usuario.html")
+        return render_template("formulario_usuario.html")
 
     if request.method == 'POST':
         dispositivos = []
@@ -90,7 +93,7 @@ def crear_usuario():
 
         # Hacer la solicitud POST al microservicio para crear el usuario
         response = requests.post(
-            f"{app.USUARIOS_BASE_URL}/crear_usuario", json=usuario_data)
+            f"{userConf.USUARIOS_BASE_URL}/crear_usuario", json=usuario_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 201:
@@ -100,11 +103,10 @@ def crear_usuario():
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
 
-    return render_template("crear_usuario.html")
+    return render_template("formulario_usuario.html")
 
 @usuario_bp.route('/cuenta', methods=['GET', 'POST'])
 def editar_usuario():
-    import app
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Debes iniciar sesión para acceder a esta página", 'danger')
@@ -112,11 +114,11 @@ def editar_usuario():
 
     if request.method == 'GET':
         response = requests.get(
-            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}"
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}"
         )
         if response.status_code == 200:
             data = response.json()
-            return render_template("crear_usuario.html", cuenta=data)
+            return render_template("formulario_usuario.html", cuenta=data)
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
@@ -151,7 +153,7 @@ def editar_usuario():
 
         # Hacer la solicitud PUT al microservicio para actualizar el usuario
         response = requests.put(
-            f"{app.USUARIOS_BASE_URL}/actualizar_usuario/{usuario_id}", json=usuario_data)
+            f"{userConf.USUARIOS_BASE_URL}/actualizar_usuario/{usuario_id}", json=usuario_data)
 
         if response.status_code == 200:
             session['logged_user_name'] = nombre
@@ -170,14 +172,13 @@ def editar_usuario():
 
 @usuario_bp.route('/borrar_cuenta')
 def borrar_cuenta():
-    import app
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Debes iniciar sesión para acceder a esta página", 'danger')
         return redirect(url_for('user.login'))
 
     response = requests.delete(
-        f"{app.USUARIOS_BASE_URL}/eliminar_usuario/{usuario_id}")
+        f"{userConf.USUARIOS_BASE_URL}/eliminar_usuario/{usuario_id}")
 
     if response.status_code == 200:
         flash("Cuenta eliminada con éxito", 'success')

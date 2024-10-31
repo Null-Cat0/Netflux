@@ -1,18 +1,19 @@
 import requests
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session
 
+from global_config import UsuariosConfig as userConf
+
 dispositivos_bp = Blueprint('dispositivos', __name__)
 
 @dispositivos_bp.route("/dispositivos", methods=['GET', 'POST'])
 def dispositivos():
-    import app
     if request.method == 'GET':
         user_id = session.get('logged_user_id')
         if not user_id:
             flash("Usuario no autenticado.", 'danger')
             return redirect(url_for('user.login'))
         response = requests.get(
-            f"{app.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivos")
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivos")
         if response.status_code == 200:
             data = response.json()
             print (data)
@@ -29,14 +30,13 @@ def crear_dispositivo():
         if not user_id:
             flash("Usuario no autenticado.", 'danger')
             return redirect(url_for('user.login'))
-        return render_template("crear_dispositivo.html")
+        return render_template("formulario_dispositivo.html")
 
     if request.method == 'POST':
-        import app 
         user_id = session.get('logged_user_id')
         # Comprobación de que tiene 5 o menos dispositivos
         response = requests.get(
-            f"{app.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivos")
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivos")
         
         
         if response.status_code == 200:
@@ -55,7 +55,7 @@ def crear_dispositivo():
             "tipo_dispositivo": request.form['tipo_dispositivo']
         }
         response = requests.post(
-            f"{app.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivo", json=data)
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivo", json=data)
         if response.status_code == 200:
             flash("Dispositivo creado con éxito", 'success')
             return redirect(url_for('dispositivos.dispositivos'))
@@ -69,12 +69,11 @@ def eliminar_dispositivo(nombre_dispositivo, dispositivo_id):
     if request.method == 'POST':
         # Usar el ID de usuario de la sesión
         user_id = session.get('logged_user_id')
-        import app
         if user_id is None:
             flash("Error: No se encontró el usuario en la sesión.", 'danger')
             return redirect(url_for('auth.login'))
 
-        url = f"{app.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivo/{nombre_dispositivo}/{dispositivo_id}"
+        url = f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivo/{nombre_dispositivo}/{dispositivo_id}"
         
         # Realizar la solicitud DELETE
         response = requests.delete(url)
@@ -98,13 +97,12 @@ def editar_dispositivo(nombre_dispositivo, dispositivo_id):
     if request.method == 'GET':
         # Pasar datos al template para pre-rellenar el formulario
         return render_template(
-            "crear_dispositivo.html",
+            "formulario_dispositivo.html",
             nombre_dispositivo=nombre_dispositivo,
             dispositivo_id=dispositivo_id
         )
     
     if request.method == 'POST':
-        import app
         user_id = session.get('logged_user_id')
         if not user_id:
             flash("Error: Usuario no autenticado.", 'danger')
@@ -115,7 +113,7 @@ def editar_dispositivo(nombre_dispositivo, dispositivo_id):
             "nombre_dispositivo": request.form['nombre_dispositivo'],
             "tipo_dispositivo": request.form['tipo_dispositivo']
         }
-        url = f"{app.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivo/{nombre_dispositivo}/{dispositivo_id}"
+        url = f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivo/{nombre_dispositivo}/{dispositivo_id}"
         response = requests.put(url, json=data)
         
         if response.status_code == 200:

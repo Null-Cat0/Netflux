@@ -1,11 +1,12 @@
 import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
+from global_config import UsuariosConfig as userConf
+
 perfil_bp = Blueprint('perfil', __name__)
 
 @perfil_bp.route('/perfiles')
 def obtener_perfiles():
-    import app
     # Se obtiene el usuario_id del usuario que se encuentra en la sesión
     usuario_id = session.get('logged_user_id')
     session.pop('perfil_id', None)
@@ -15,7 +16,7 @@ def obtener_perfiles():
 
     # Hacer la solicitud GET al microservicio para obtener los perfiles del usuario
     response = requests.get(
-        f"{app.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles")
+        f"{userConf.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles")
 
     # Manejar la respuesta del microservicio
     if response.status_code == 200:
@@ -30,15 +31,13 @@ def obtener_perfiles():
 
 @perfil_bp.route('/crear_perfil', methods=['GET', 'POST'])
 def crear_perfil():
-    import app
-
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))  # Asegúrate de tener una ruta de login
     
     if request.method == 'GET':
-        return render_template("crear_perfil.html")
+        return render_template("formulario_perfil.html")
 
     if request.method == 'POST':
         # Capturar datos del formulario
@@ -66,7 +65,7 @@ def crear_perfil():
 
         # Hacer la solicitud POST al microservicio para crear el perfil
         response = requests.post(
-            f"{app.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles", json=perfil_data)
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles", json=perfil_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 201:
@@ -81,11 +80,10 @@ def crear_perfil():
         # Convierte el string a booleano
         is_edit = is_edit_str.lower() == 'true'
 
-        return render_template("crear_perfil.html", is_edit=is_edit)
+        return render_template("formulario_perfil.html", is_edit=is_edit)
 
 @perfil_bp.route('/editar_perfil/<perfil_id>', methods=['GET', 'POST'])
 def editar_perfil(perfil_id):
-    import app
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
@@ -94,11 +92,11 @@ def editar_perfil(perfil_id):
     # Método GET para cargar los datos del perfil
     if request.method == 'GET':
         response = requests.get(
-            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
 
         if response.status_code == 200:
             data = response.json()
-            return render_template("crear_perfil.html", perfil=data, is_edit=True)
+            return render_template("formulario_perfil.html", perfil=data, is_edit=True)
         else:
             # Manejar error en caso de no obtener datos del perfil
             try:
@@ -121,7 +119,7 @@ def editar_perfil(perfil_id):
         
         # Hacer la solicitud PUT para actualizar el perfil
         response = requests.put(
-            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}", json=perfil_data)
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}", json=perfil_data)
 
         if response.status_code == 200:
             flash("Perfil actualizado con éxito", 'success')
@@ -139,7 +137,6 @@ def editar_perfil(perfil_id):
 
 @perfil_bp.route('/eliminar_perfil/<perfil_id>', methods=['GET', 'POST'])
 def eliminar_perfil(perfil_id):
-    import app
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
@@ -147,7 +144,7 @@ def eliminar_perfil(perfil_id):
 
     # Hacer la solicitud DELETE al microservicio para eliminar el perfil
     response = requests.delete(
-        f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
+        f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
                 
     print(response)
     if response.status_code == 200:

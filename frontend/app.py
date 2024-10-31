@@ -1,19 +1,13 @@
-import os
-import requests
+import os, sys, requests
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+from global_config import Config
 from routes import blueprints
-from datetime import timedelta
-from dotenv import load_dotenv
-
-load_dotenv("../config.env")
-USUARIOS_BASE_URL = os.getenv("USUARIOS_BASE_URL")
-CONTENIDOS_BASE_URL = os.getenv("CONTENIDOS_BASE_URL")
-VISUALIZACIONES_BASE_URL = os.getenv("VISUALIZACIONES_BASE_URL")
 
 app = Flask(__name__)
-app.secret_key = 'secret_key'
-app.permanent_session_lifetime = timedelta(minutes=30)
+app.secret_key = Config.SECRET_KEY
+app.permanent_session_lifetime = Config.PERMANENT_SESSION_LIFETIME
 
 for bp in blueprints:
     app.register_blueprint(bp)
@@ -28,7 +22,7 @@ def pagina_inicio():
     usuario_id = session.get('logged_user_id')
     
     response = requests.get(
-        f"{USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles/{perfil_id}")
+        f"{Config.USUARIOS.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles/{perfil_id}")
 
     if response.status_code == 200:
         data = response.json()
