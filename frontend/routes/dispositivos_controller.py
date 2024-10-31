@@ -1,15 +1,16 @@
 import requests
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session
 
+from global_config import UsuariosConfig as userConf
+
 dispositivos_bp = Blueprint('dispositivos', __name__)
 
 @dispositivos_bp.route("/dispositivos", methods=['GET', 'POST'])
 def dispositivos():
-    import app
     if request.method == 'GET':
         user_id = session.get('logged_user_id')
         response = requests.get(
-            f"{app.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivos")
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivos")
         if response.status_code == 200:
             data = response.json()
             print (data)

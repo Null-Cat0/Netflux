@@ -1,17 +1,18 @@
 import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
+from global_config import UsuariosConfig as userConf
+
 perfil_bp = Blueprint('perfil', __name__)
 
 @perfil_bp.route('/perfiles')
 def obtener_perfiles():
-    import app
     # Se obtiene el usuario_id del usuario que se encuentra en la sesión
     usuario_id = session.get('logged_user_id')
 
     # Hacer la solicitud GET al microservicio para obtener los perfiles del usuario
     response = requests.get(
-        f"{app.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles")
+        f"{userConf.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles")
 
     # Manejar la respuesta del microservicio
     if response.status_code == 200:
@@ -25,7 +26,6 @@ def obtener_perfiles():
 
 @perfil_bp.route('/crear_perfil', methods=['GET', 'POST'])
 def crear_perfil():
-    import app
     if request.method == 'GET':
         return render_template("crear_perfil.html")
 
@@ -44,7 +44,7 @@ def crear_perfil():
 
         # Hacer la solicitud POST al microservicio para crear el perfil
         response = requests.post(
-            f"{app.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles", json=perfil_data)
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles", json=perfil_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 201:
@@ -63,13 +63,12 @@ def crear_perfil():
 
 @perfil_bp.route('/editar_perfil/<perfil_id>', methods=['GET', 'POST'])
 def editar_perfil(perfil_id):
-    import app
     usuario_id = session.get('logged_user_id')
 
     # Método GET para cargar los datos del perfil
     if request.method == 'GET':
         response = requests.get(
-            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
 
         if response.status_code == 200:
             data = response.json()
@@ -95,7 +94,7 @@ def editar_perfil(perfil_id):
 
         # Hacer la solicitud PUT para actualizar el perfil
         response = requests.put(
-            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}", json=perfil_data)
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}", json=perfil_data)
 
         if response.status_code == 200:
             flash("Perfil actualizado con éxito", 'success')
@@ -113,14 +112,13 @@ def editar_perfil(perfil_id):
 
 @perfil_bp.route('/eliminar_perfil/<perfil_id>', methods=['GET', 'POST'])
 def eliminar_perfil(perfil_id):
-    import app
     usuario_id = session.get('logged_user_id')
 
     if request.method == 'GET':
         print(perfil_id)
         # Cargar los datos del perfil con disabilitado=True
         response = requests.get(
-            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
         if response.status_code == 200:
             data = response.json()
             return render_template("crear_perfil.html", perfil=data, is_delete=True)
@@ -132,7 +130,7 @@ def eliminar_perfil(perfil_id):
     if request.method == 'POST':
         # Hacer la solicitud DELETE al microservicio para eliminar el perfil
         response = requests.delete(
-            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
                 
         print(response)
         if response.status_code == 200:

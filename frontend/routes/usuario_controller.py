@@ -1,11 +1,12 @@
 import requests
 from flask import render_template, request, redirect, url_for, flash, session, Blueprint
 
+from global_config import UsuariosConfig as userConf
+
 usuario_bp = Blueprint('user', __name__)
 
 @usuario_bp.route('/iniciar_sesion', methods=['GET', 'POST'])
 def login():
-    import app
     if request.method == 'GET':
         return render_template("inicio_sesion.html")
 
@@ -22,7 +23,7 @@ def login():
 
         # Hacer la llamada POST al microservicio de autenticación
         response = requests.post(
-            f"{app.USUARIOS_BASE_URL}/iniciar_sesion", json=login_data)
+            f"{userConf.USUARIOS_BASE_URL}/iniciar_sesion", json=login_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 200:
@@ -59,7 +60,6 @@ def cerrar_sesion():
 
 @usuario_bp.route('/crear_usuario', methods=['GET', 'POST'])
 def crear_usuario():
-    import app
     if request.method == 'GET':
         # Renderiza el formulario de creación de cuenta
         return render_template("crear_usuario.html")
@@ -86,7 +86,7 @@ def crear_usuario():
 
         # Hacer la solicitud POST al microservicio para crear el usuario
         response = requests.post(
-            f"{app.USUARIOS_BASE_URL}/crear_usuario", json=usuario_data)
+            f"{userConf.USUARIOS_BASE_URL}/crear_usuario", json=usuario_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 201:
@@ -100,13 +100,12 @@ def crear_usuario():
 
 @usuario_bp.route('/cuenta', methods=['GET', 'POST'])
 def editar_usuario():
-    import app
     perfil_id = request.args.get('perfil_id', default='')
     usuario_id = session.get('logged_user_id')
 
     if request.method == 'GET':
         response = requests.get(
-            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}"
+            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}"
         )
         if response.status_code == 200:
             data = response.json()
@@ -145,7 +144,7 @@ def editar_usuario():
 
         # Hacer la solicitud PUT al microservicio para actualizar el usuario
         response = requests.put(
-            f"{app.USUARIOS_BASE_URL}/actualizar_usuario/{usuario_id}", json=usuario_data)
+            f"{userConf.USUARIOS_BASE_URL}/actualizar_usuario/{usuario_id}", json=usuario_data)
 
         if response.status_code == 200:
             session['logged_user_name'] = nombre
@@ -164,11 +163,10 @@ def editar_usuario():
 
 @usuario_bp.route('/borrar_cuenta')
 def borrar_cuenta():
-    import app
     usuario_id = session.get('logged_user_id')
 
     response = requests.delete(
-        f"{app.USUARIOS_BASE_URL}/eliminar_usuario/{usuario_id}")
+        f"{userConf.USUARIOS_BASE_URL}/eliminar_usuario/{usuario_id}")
 
     if response.status_code == 200:
         flash("Cuenta eliminada con éxito", 'success')
