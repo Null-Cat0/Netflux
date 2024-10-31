@@ -11,7 +11,6 @@ USUARIOS_BASE_URL = os.getenv("USUARIOS_BASE_URL")
 CONTENIDOS_BASE_URL = os.getenv("CONTENIDOS_BASE_URL")
 VISUALIZACIONES_BASE_URL = os.getenv("VISUALIZACIONES_BASE_URL")
 
-
 app = Flask(__name__)
 app.secret_key = 'secret_key'
 app.permanent_session_lifetime = timedelta(minutes=30)
@@ -21,9 +20,13 @@ for bp in blueprints:
 
 @app.route('/inicio', methods=['GET'])
 def pagina_inicio():
-    perfil_id = request.args.get('perfil_id')
+    if session.get('perfil_id') is None:
+        perfil_id = request.args.get('perfil_id')
+        session['perfil_id'] = perfil_id
+    else: 
+        perfil_id = session.get('perfil_id')
     usuario_id = session.get('logged_user_id')
-
+    
     response = requests.get(
         f"{USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles/{perfil_id}")
 

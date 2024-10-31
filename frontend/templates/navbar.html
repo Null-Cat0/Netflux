@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <!-- Logotipo de Netflux -->
-        <a class="navbar-brand">
+        <a class="navbar-brand"
+            href="{% if 'perfil_id' in session %}{{ url_for('pagina_inicio', perfil_id=session['perfil_id']) }}{% else %}{{ url_for('perfil.obtener_perfiles') }}{% endif %}">
             <img src="{{ url_for('static', filename='images/netflux-logo.png') }}" alt="Netflux Logo" width="100">
         </a>
 
@@ -16,8 +17,10 @@
         <!-- Enlaces de la navbar -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if 'perfil_id' in session %}
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ url_for('home') }}">Inicio</a>
+                    <a class="nav-link active"
+                        href="{{ url_for('pagina_inicio', perfil_id=session['perfil_id']) }}">Inicio</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Series</a>
@@ -31,6 +34,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">Mi lista</a>
                 </li>
+                {% endif %}
             </ul>
 
             <!-- Menú de usuario -->
@@ -47,7 +51,8 @@
                 <ul class="dropdown-menu dropdown-menu-end bg-dark" aria-labelledby="dropdownMenuLink">
                     <li><a class="dropdown-item text-white" href="{{url_for('user.editar_usuario')}}">Cuenta</a></li>
                     <li><a class="dropdown-item text-white" href="{{url_for('perfil.obtener_perfiles')}}">Perfiles</a>
-                    <li><a class="dropdown-item text-white" href="{{url_for('dispositivos.dispositivos')}}">Dispositivos</a></li>
+                    <li><a class="dropdown-item text-white"
+                            href="{{url_for('dispositivos.dispositivos')}}">Dispositivos</a></li>
                     <li><a class="dropdown-item text-white" href="{{url_for('user.cerrar_sesion')}}">Cerrar sesión</a>
                     </li>
 

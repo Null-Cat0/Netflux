@@ -8,6 +8,7 @@ def obtener_perfiles():
     import app
     # Se obtiene el usuario_id del usuario que se encuentra en la sesión
     usuario_id = session.get('logged_user_id')
+    session.pop('perfil_id', None)
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
@@ -19,6 +20,7 @@ def obtener_perfiles():
     # Manejar la respuesta del microservicio
     if response.status_code == 200:
         data = response.json()
+        print(data)
         return render_template("perfiles.html", perfiles=data)
     else:
         data = response.json()
