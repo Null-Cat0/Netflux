@@ -10,8 +10,12 @@
         <h2 class="mb-4 text-center text-white">
             {% if session['logged_user_id'] %}Editar Usuario{% else %}Crea tu cuenta{% endif %}
         </h2>
+        {% if session['logged_user_id'] %}
+            <form method="POST" action="{{ url_for('user.editar_usuario') }}">
+        {% else %}
+            <form method="POST" action="{{ url_for('user.crear_usuario') }}">
+        {% endif %}
 
-        <form method="POST" action="{{ url_for('editar_usuario') if session['logged_user_id'] else url_for('crear_usuario') }}">
             <div class="mb-3">
                 <label for="nombre" class="form-label text-white">Nombre</label>
                 <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="nombre" name="nombre" placeholder="Nombre" value="{{ cuenta['nombre'] if cuenta else '' }}" required>
