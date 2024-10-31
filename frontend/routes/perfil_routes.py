@@ -33,6 +33,7 @@ def crear_perfil():
         # Capturar datos del formulario
         nombre = request.form.get('name')
         foto_perfil = request.form.get('foto_perfil') or 'netflux_rojo.png'  # Asignar por defecto si está vacío
+        print(foto_perfil)
 
         # Validar que el nombre no esté vacío
         if not nombre:

@@ -22,14 +22,6 @@
             {% endif %}
         </h2>
 
-        <!-- Imagen de perfil -->
-        <div class="text-center mb-4">
-            <img src="{{ profile.image if profile else 'https://via.placeholder.com/120' }}" alt="Imagen de perfil" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
-        </div>
-        <div class="text-center mb-4">
-            <input type="file" class="form-control-file bg-dark text-white border-0 rounded-pill px-3" accept="image/*" style="color: #ccc;">
-        </div>
-
         <!-- Formulario de creación/edición -->
         <form action="" method="POST">
             <!-- Imagen de perfil clicable para abrir el modal -->
@@ -66,9 +58,6 @@
       <div class="modal-content bg-dark text-white">
         <div class="modal-header">
           <h5 class="modal-title" id="imageSelectModalLabel">Selecciona una imagen de perfil</h5>
-          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
-            <span aria-hidden="true">&times;</span>
-          </button>
         </div>
         <div class="modal-body">
           <div class="d-flex justify-content-around flex-wrap">

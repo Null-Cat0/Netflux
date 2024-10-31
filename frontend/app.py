@@ -25,7 +25,7 @@ def pagina_inicio():
     usuario_id = session.get('logged_user_id')
 
     response = requests.get(
-        f"{USUARIOS_BASE_URL}/{str(usuario_id)}/perfiles/{perfil_id}")
+        f"{USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles/{perfil_id}")
 
     if response.status_code == 200:
         data = response.json()
