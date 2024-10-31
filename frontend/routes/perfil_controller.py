@@ -1,14 +1,17 @@
 import requests
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
-@app.route('/perfiles')
+perfil_bp = Blueprint('perfil', __name__)
+
+@perfil_bp.route('/perfiles')
 def obtener_perfiles():
+    import app
     # Se obtiene el usuario_id del usuario que se encuentra en la sesión
     usuario_id = session.get('logged_user_id')
 
     # Hacer la solicitud GET al microservicio para obtener los perfiles del usuario
     response = requests.get(
-        'http://localhost:8080/usuario/' + str(usuario_id) + '/perfiles')
+        f"{app.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles")
 
     # Manejar la respuesta del microservicio
     if response.status_code == 200:
@@ -20,47 +23,53 @@ def obtener_perfiles():
 
     return render_template("perfiles.html")
 
-@app.route('/crear_perfil', methods=['GET', 'POST'])
+@perfil_bp.route('/crear_perfil', methods=['GET', 'POST'])
 def crear_perfil():
-    # Capturar datos del formulario
-    nombre = request.form.get('name')
+    import app
+    if request.method == 'GET':
+        return render_template("crear_perfil.html")
 
-    # Se obtiene el usuario_id del usuario que se encuentra en la sesión
-    usuario_id = session.get('logged_user_id')
+    if request.method == 'POST':
+        # Capturar datos del formulario
+        nombre = request.form.get('name')
 
-    # Crear el payload para enviar al microservicio
-    perfil_data = {
-        'user_id': usuario_id,
-        'nombre': nombre,
-    }
+        # Se obtiene el usuario_id del usuario que se encuentra en la sesión
+        usuario_id = session.get('logged_user_id')
 
-    # Hacer la solicitud POST al microservicio para crear el perfil
-    response = requests.post(
-        'http://localhost:8080/usuario/' + str(usuario_id) + '/perfiles', json=perfil_data)
+        # Crear el payload para enviar al microservicio
+        perfil_data = {
+            'user_id': usuario_id,
+            'nombre': nombre,
+        }
 
-    # Manejar la respuesta del microservicio
-    if response.status_code == 201:
-        flash('Perfil creado con éxito', 'success')
-        return redirect(url_for('obtener_perfiles'))
-    else:
-        data = response.json()
-        flash(f"Error: {data['message']}", 'danger')
+        # Hacer la solicitud POST al microservicio para crear el perfil
+        response = requests.post(
+            f"{app.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles", json=perfil_data)
 
-    is_edit_str = request.args.get('is_edit', default='false')
+        # Manejar la respuesta del microservicio
+        if response.status_code == 201:
+            flash('Perfil creado con éxito', 'success')
+            return redirect(url_for('perfil.obtener_perfiles'))
+        else:
+            data = response.json()
+            flash(f"Error: {data['message']}", 'danger')
 
-    # Convierte el string a booleano
-    is_edit = is_edit_str.lower() == 'true'
+        is_edit_str = request.args.get('is_edit', default='false')
 
-    return render_template("crear_perfil.html", is_edit=is_edit)
+        # Convierte el string a booleano
+        is_edit = is_edit_str.lower() == 'true'
 
-@app.route('/editar_perfil/<perfil_id>', methods=['GET', 'POST'])
+        return render_template("crear_perfil.html", is_edit=is_edit)
+
+@perfil_bp.route('/editar_perfil/<perfil_id>', methods=['GET', 'POST'])
 def editar_perfil(perfil_id):
+    import app
     usuario_id = session.get('logged_user_id')
 
     # Método GET para cargar los datos del perfil
     if request.method == 'GET':
         response = requests.get(
-            f'http://localhost:8080/usuario/{usuario_id}/perfiles/{perfil_id}')
+            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
 
         if response.status_code == 200:
             data = response.json()
@@ -75,7 +84,7 @@ def editar_perfil(perfil_id):
                 # Si no hay JSON en la respuesta (por ejemplo, error 500)
                 flash(
                     "Error al cargar el perfil. El servidor no proporcionó una respuesta válida.", 'danger')
-            return redirect(url_for('obtener_perfiles'))
+            return redirect(url_for('perfil.obtener_perfiles'))
 
     # Método POST para actualizar los datos del perfil
     if request.method == 'POST':
@@ -86,11 +95,11 @@ def editar_perfil(perfil_id):
 
         # Hacer la solicitud PUT para actualizar el perfil
         response = requests.put(
-            f'http://localhost:8080/usuario/{usuario_id}/perfiles/{perfil_id}', json=perfil_data)
+            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}", json=perfil_data)
 
         if response.status_code == 200:
             flash("Perfil actualizado con éxito", 'success')
-            return redirect(url_for('obtener_perfiles'))
+            return redirect(url_for('perfil.obtener_perfiles'))
         else:
             # Manejar error en caso de no poder actualizar el perfil
             try:
@@ -100,34 +109,36 @@ def editar_perfil(perfil_id):
             except ValueError:
                 flash(
                     "Error al actualizar el perfil. El servidor no proporcionó una respuesta válida.", 'danger')
-            return redirect(url_for('obtener_perfiles'))
+            return redirect(url_for('perfil.obtener_perfiles'))
 
-@app.route('/eliminar_perfil/<perfil_id>', methods=['GET', 'POST'])
+@perfil_bp.route('/eliminar_perfil/<perfil_id>', methods=['GET', 'POST'])
 def eliminar_perfil(perfil_id):
+    import app
     usuario_id = session.get('logged_user_id')
 
     if request.method == 'GET':
         print(perfil_id)
         # Cargar los datos del perfil con disabilitado=True
         response = requests.get(
-            f'http://localhost:8080/usuario/{usuario_id}/perfiles/{perfil_id}')
+            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
         if response.status_code == 200:
             data = response.json()
             return render_template("crear_perfil.html", perfil=data, is_delete=True)
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
-            return redirect(url_for('obtener_perfiles'))
+            return redirect(url_for('perfil.obtener_perfiles'))
 
     if request.method == 'POST':
         # Hacer la solicitud DELETE al microservicio para eliminar el perfil
         response = requests.delete(
-            f'http://localhost:8080/usuario/{usuario_id}/perfiles/{perfil_id}')
+            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
+                
         print(response)
         if response.status_code == 200:
             flash("Perfil eliminado con éxito", 'success')
-            return redirect(url_for('obtener_perfiles'))
+            return redirect(url_for('perfil.obtener_perfiles'))
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
-            return redirect(url_for('obtener_perfiles'))
+            return redirect(url_for('perfil.obtener_perfiles'))

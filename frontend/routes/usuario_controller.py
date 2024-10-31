@@ -1,9 +1,11 @@
 import requests
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-# from datetime import timedelta
+from flask import render_template, request, redirect, url_for, flash, session, Blueprint
 
-@app.route('/iniciar_sesion', methods=['GET', 'POST'])
+usuario_bp = Blueprint('user', __name__)
+
+@usuario_bp.route('/iniciar_sesion', methods=['GET', 'POST'])
 def login():
+    import app
     if request.method == 'GET':
         return render_template("inicio_sesion.html")
 
@@ -20,7 +22,7 @@ def login():
 
         # Hacer la llamada POST al microservicio de autenticación
         response = requests.post(
-            'http://localhost:8080/iniciar_sesion', json=login_data)
+            f"{app.USUARIOS_BASE_URL}/iniciar_sesion", json=login_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 200:
@@ -33,7 +35,7 @@ def login():
                 session['logged_user_name'] = data['usuario']['nombre']
 
                 # Redirigir al perfil del usuario
-                return redirect(url_for('obtener_perfiles'))
+                return redirect(url_for('perfil.obtener_perfiles'))
             except requests.exceptions.JSONDecodeError:
                 flash("Error al procesar la respuesta del servidor.", 'danger')
                 return render_template("inicio_sesion.html")
@@ -46,20 +48,20 @@ def login():
 
     return render_template("inicio_sesion.html")
 
-@app.route('/cerrar_sesion')
+@usuario_bp.route('/cerrar_sesion')
 def cerrar_sesion():
     # Elimina 'logged_user_id' de la sesión para cerrar sesión
     session.pop('logged_user_id', None)
     # Mensaje opcional para el usuario
     flash("Has cerrado sesión con éxito.", "info")
     # Redirige a la página de inicio de sesión o a la página principal
-    return redirect(url_for('login'))
+    return redirect(url_for('user.login'))
 
-@app.route('/crear_usuario', methods=['GET', 'POST'])
+@usuario_bp.route('/crear_usuario', methods=['GET', 'POST'])
 def crear_usuario():
+    import app
     if request.method == 'GET':
         # Renderiza el formulario de creación de cuenta
-
         return render_template("crear_usuario.html")
 
     if request.method == 'POST':
@@ -84,25 +86,28 @@ def crear_usuario():
 
         # Hacer la solicitud POST al microservicio para crear el usuario
         response = requests.post(
-            'http://localhost:8080/crear_usuario', json=usuario_data)
+            f"{app.USUARIOS_BASE_URL}/crear_usuario", json=usuario_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 201:
             flash('Usuario creado con éxito', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('user.login'))
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
 
     return render_template("crear_usuario.html")
 
-@app.route('/cuenta', methods=['GET', 'POST'])
+@usuario_bp.route('/cuenta', methods=['GET', 'POST'])
 def editar_usuario():
+    import app
     perfil_id = request.args.get('perfil_id', default='')
     usuario_id = session.get('logged_user_id')
 
     if request.method == 'GET':
-        response = requests.get(f'http://localhost:8080/usuario/{usuario_id}')
+        response = requests.get(
+            f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}"
+        )
         if response.status_code == 200:
             data = response.json()
             return render_template("crear_usuario.html", cuenta=data)
@@ -140,13 +145,13 @@ def editar_usuario():
 
         # Hacer la solicitud PUT al microservicio para actualizar el usuario
         response = requests.put(
-            f'http://localhost:8080/actualizar_usuario/{usuario_id}', json=usuario_data)
+            f"{app.USUARIOS_BASE_URL}/actualizar_usuario/{usuario_id}", json=usuario_data)
 
         if response.status_code == 200:
             session['logged_user_name'] = nombre
             flash("Usuario actualizado con éxito", 'success')
             # Redirigir a la vista de perfiles
-            return redirect(url_for('obtener_perfiles'))
+            return redirect(url_for('perfil.obtener_perfiles'))
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
@@ -157,17 +162,18 @@ def editar_usuario():
     # Cambia esto según sea necesario
     return redirect(url_for('some_default_view'))
 
-@app.route('/borrar_cuenta')
+@usuario_bp.route('/borrar_cuenta')
 def borrar_cuenta():
+    import app
     usuario_id = session.get('logged_user_id')
 
     response = requests.delete(
-        f'http://localhost:8080/eliminar_usuario/{usuario_id}')
+        f"{app.USUARIOS_BASE_URL}/eliminar_usuario/{usuario_id}")
 
     if response.status_code == 200:
         flash("Cuenta eliminada con éxito", 'success')
-        return redirect(url_for('cerrar_sesion'))
+        return redirect(url_for('user.cerrar_sesion'))
     else:
         data = response.json()
         flash(f"Error: {data['message']}", 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('user.login'))

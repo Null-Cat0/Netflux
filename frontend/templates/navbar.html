@@ -8,7 +8,8 @@
         <!-- Comprobación de si el usuario se encuentra en la sesión -->
         {% if 'logged_user_id' in session%}
         <!-- Botón para pantallas pequeñas -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -34,19 +35,23 @@
 
             <!-- Menú de usuario -->
             <div class="dropdown">
-                <a class="nav-link dropdown-toggle text-white" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                {% if perfil and 'nombre' in perfil %}
+                <a class="nav-link dropdown-toggle text-white" href="#" role="button" id="dropdownMenuLink"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if perfil and 'nombre' in perfil %}
                     {{ perfil.nombre }}
-                {% else %}
+                    {% else %}
                     {{ session['logged_user_name'] if 'logged_user_name' in session else 'Invitado' }}
-                {% endif %}
+                    {% endif %}
 
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end bg-dark" aria-labelledby="dropdownMenuLink">
-                    <li><a class="dropdown-item text-white" href="{{url_for('editar_usuario')}}">Cuenta</a></li>
-                    <li><a class="dropdown-item text-white" href="{{url_for('dispositivos')}}">Dispositivos</a></li>
-                    <li><a class="dropdown-item text-white" href="{{url_for('cerrar_sesion')}}">Cerrar sesión</a></li>
-                    <li><a class="dropdown-item text-white" href="#" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Borrar cuenta</a></li>
+                    <li><a class="dropdown-item text-white" href="{{url_for('user.editar_usuario')}}">Cuenta</a></li>
+                    <li><a class="dropdown-item text-white"
+                            href="{{url_for('dispositivos.dispositivos')}}">Dispositivos</a></li>
+                    <li><a class="dropdown-item text-white" href="{{url_for('user.cerrar_sesion')}}">Cerrar sesión</a>
+                    </li>
+                    <li><a class="dropdown-item text-white" href="#" data-bs-toggle="modal"
+                            data-bs-target="#confirmDeleteModal">Borrar cuenta</a></li>
                 </ul>
             </div>
         </div>
@@ -54,19 +59,21 @@
     </div>
 </nav>
 
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-white">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar eliminación</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 ¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <a href="{{ url_for('borrar_cuenta') }}" class="btn btn-danger">Eliminar cuenta</a>
+                <a href="{{ url_for('user.borrar_cuenta') }}" class="btn btn-danger">Eliminar cuenta</a>
             </div>
         </div>
     </div>
