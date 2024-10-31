@@ -108,10 +108,11 @@ def editar_perfil(perfil_id):
     # Método POST para actualizar los datos del perfil
     if request.method == 'POST':
         nombre = request.form.get('name')
+        foto_perfil = request.form.get('foto_perfil')
 
         # Crear el payload para enviar al microservicio
-        perfil_data = {'nombre': nombre}
-
+        perfil_data = {'nombre': nombre, 'foto_perfil': foto_perfil}
+        
         # Hacer la solicitud PUT para actualizar el perfil
         response = requests.put(
             f"{app.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}", json=perfil_data)

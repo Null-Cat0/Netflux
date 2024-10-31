@@ -38,6 +38,7 @@ def actualizar_perfil_usuario(user_id, profile_id):
         if perfil_db is not None:
             # Actualiza los campos del perfil
             perfil_db.nombre = perfil_api.nombre
+            perfil_db.foto_perfil = perfil_api.foto_perfil
             # Guarda los cambios en la base de datos
             db.session.commit()
             
