@@ -23,4 +23,4 @@ def dispositivos():
 @dispositivos_bp.route("/crear_dispositivo", methods=['GET', 'POST'])
 def crear_dispositivo():
     if request.method == 'GET':
-        return render_template("crear_dispositivo.html")
+        return render_template("formulario_dispositivo.html")

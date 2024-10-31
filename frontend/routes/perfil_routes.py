@@ -27,7 +27,7 @@ def obtener_perfiles():
 @perfil_bp.route('/crear_perfil', methods=['GET', 'POST'])
 def crear_perfil():
     if request.method == 'GET':
-        return render_template("crear_perfil.html")
+        return render_template("formulario_perfil.html")
 
     if request.method == 'POST':
         # Capturar datos del formulario
@@ -59,7 +59,7 @@ def crear_perfil():
         # Convierte el string a booleano
         is_edit = is_edit_str.lower() == 'true'
 
-        return render_template("crear_perfil.html", is_edit=is_edit)
+        return render_template("formulario_perfil.html", is_edit=is_edit)
 
 @perfil_bp.route('/editar_perfil/<perfil_id>', methods=['GET', 'POST'])
 def editar_perfil(perfil_id):
@@ -72,7 +72,7 @@ def editar_perfil(perfil_id):
 
         if response.status_code == 200:
             data = response.json()
-            return render_template("crear_perfil.html", perfil=data, is_edit=True)
+            return render_template("formulario_perfil.html", perfil=data, is_edit=True)
         else:
             # Manejar error en caso de no obtener datos del perfil
             try:
@@ -121,7 +121,7 @@ def eliminar_perfil(perfil_id):
             f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
         if response.status_code == 200:
             data = response.json()
-            return render_template("crear_perfil.html", perfil=data, is_delete=True)
+            return render_template("formulario_perfil.html", perfil=data, is_delete=True)
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')

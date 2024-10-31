@@ -62,7 +62,7 @@ def cerrar_sesion():
 def crear_usuario():
     if request.method == 'GET':
         # Renderiza el formulario de creación de cuenta
-        return render_template("crear_usuario.html")
+        return render_template("formulario_usuario.html")
 
     if request.method == 'POST':
         dispositivos = []
@@ -96,7 +96,7 @@ def crear_usuario():
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
 
-    return render_template("crear_usuario.html")
+    return render_template("formulario_usuario.html")
 
 @usuario_bp.route('/cuenta', methods=['GET', 'POST'])
 def editar_usuario():
@@ -109,7 +109,7 @@ def editar_usuario():
         )
         if response.status_code == 200:
             data = response.json()
-            return render_template("crear_usuario.html", cuenta=data)
+            return render_template("formulario_usuario.html", cuenta=data)
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
