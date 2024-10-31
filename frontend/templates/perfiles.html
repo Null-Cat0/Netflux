@@ -2,9 +2,8 @@
 
 {% block head %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<title>Selecciona tu perfil - Netflux</title>
 {% endblock %}
-
-{% block title %}Selecciona tu perfil - Netflux{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
@@ -16,10 +15,10 @@
         <section class="row justify-content-center">
             {% for perfil in perfiles %}
                 <article class="col-6 col-sm-4 col-md-3 mb-4">
-                    <div class="card bg-dark border-0 profile-card">
+                    <div class="card p-3 shadow-lg bg-dark border-0" style="border-radius: 10px;">
                         <a href="{{ url_for('pagina_inicio', perfil_id=perfil.perfil_id) }}" aria-label="Perfil de {{ perfil.nombre }}">
-                            <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle" alt="Imagen de perfil de {{ perfil.nombre }}">
-                        </a>
+                            <img src="https://via.placeholder.com/200" class="card-img-top rounded-circle mx-auto d-block mb-3" style="width: 120px; height: 120px; object-fit: cover;" alt="Imagen de perfil de {{ perfil.nombre }}">
+
                         <div class="card-body">
                             <h5 class="text-white">{{ perfil.nombre }}</h5>
                             <div class="d-flex justify-content-between mt-2">
@@ -40,6 +39,7 @@
         {% if perfiles|length < 5 %}
             <div class="mt-4">
                 <a href="{{ url_for('perfil.crear_perfil', is_edit=false) }}" class="btn btn-outline-light add-profile-btn" role="button" aria-label="Agregar un nuevo perfil">Agregar un perfil</a>
+
             </div>
         {% endif %}
     </main>
