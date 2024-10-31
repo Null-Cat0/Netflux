@@ -6,6 +6,10 @@ usuario_bp = Blueprint('user', __name__)
 @usuario_bp.route('/iniciar_sesion', methods=['GET', 'POST'])
 def login():
     import app
+    if session.get('logged_user_id'):
+        flash("Ya has iniciado sesión.", 'info')
+        return redirect(url_for('perfil.obtener_perfiles'))
+    
     if request.method == 'GET':
         return render_template("inicio_sesion.html")
 
