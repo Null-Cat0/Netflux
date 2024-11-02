@@ -12,21 +12,26 @@ from openapi_server.models.actualizar_dispositivos_request import ActualizarDisp
 from openapi_server import util
 from flask import request, jsonify
 
-def actualizar_dispositivos(user_id, actualizar_dispositivos_request):  # noqa: E501
-    """Actualiza un dispositivo a la lista de dispositivos registrados del usuario
+@app.route('/usuario/<int:user_id>/dispositivo/<string:nombre_dispositivo>/<int:dispositivo_id>', methods=['PUT'])
+def actualizar_dispositivos(user_id, nombre_dispositivo, dispositivo_id):
+    if request.is_json:
+        actualizar_dispositivos_request = ActualizarDispositivosRequest.from_dict(request.get_json())
+    
+    dispositivo_usuario_db = DispositivosUsuarioDB.query.filter_by(
+        user_id=user_id, dispositivo_id=dispositivo_id, nombre_dispositivo=nombre_dispositivo
+    ).first()
 
-    Actualiza un dispositivo a la lista de dispositivos registrados del usuario # noqa: E501
+    if dispositivo_usuario_db is not None:
+        if actualizar_dispositivos_request.nombre_dispositivo and actualizar_dispositivos_request.dispositivo_id:
+            dispositivo_usuario_db.nombre_dispositivo = actualizar_dispositivos_request.nombre_dispositivo
+            dispositivo_usuario_db.dispositivo_id = actualizar_dispositivos_request.dispositivo_id
+            db.session.commit()
+            return jsonify({"message": "Dispositivo actualizado con éxito", "status": "success"}), 200
+        else:
+            return jsonify({"message": "Datos incompletos para actualizar", "status": "error"}), 400
+    else:
+        return jsonify({"message": "El dispositivo no existe", "status": "error"}), 404
 
-    :param user_id: ID del usuario
-    :type user_id: int
-    :param actualizar_dispositivos_request: ID del dispositivo a actualizar
-    :type actualizar_dispositivos_request: dict | bytes
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
-    if connexion.request.is_json:
-        actualizar_dispositivos_request = ActualizarDispositivosRequest.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
 
 @app.route('/usuario/<int:user_id>/dispositivo/<string:nombre_dispositivo>/<int:dispositivo_id>', methods=['DELETE'])
 def eliminar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
@@ -43,7 +48,6 @@ def eliminar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
     """
     dispositivo_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id, dispositivo_id=dispositivo_id, nombre_dispositivo=nombre_dispositivo).first()
 
-    print(dispositivo_usuario_db)
     if dispositivo_usuario_db is not None:
         db.session.delete(dispositivo_usuario_db)
         db.session.commit()
@@ -68,7 +72,6 @@ def obtener_dispositivos(user_id):  # noqa: E501
     if dispositivos_usuarios_db is not None:
         for dispositivo_usuario_db in dispositivos_usuarios_db:
             dispositivos_aux =DispositivoDB.query.filter_by(dispositivo_id=dispositivo_usuario_db.dispositivo_id).first() # Tipo de dispositivo
-            print(dispositivo_usuario_db.dispositivo_id)
             disp= {
                 "nombre": dispositivo_usuario_db.nombre_dispositivo,
                 "tipo": dispositivos_aux.tipo_dispositivo,

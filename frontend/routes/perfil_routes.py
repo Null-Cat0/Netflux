@@ -40,6 +40,21 @@ def crear_perfil():
         return render_template("formulario_perfil.html")
 
     if request.method == 'POST':
+        # Comprobación de que tiene 5 o menos perfiles
+        response = requests.get(
+        f"{userConf.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles")
+
+        if response.status_code == 200:
+            data = response.json()
+            if len(data) >= 4:
+                flash("No puedes tener más de 4 perfiles", 'danger')
+                return redirect(url_for('perfil.obtener_perfiles'))
+        else:   
+            data = response.json()
+            flash(f"Error: {data['message']}", 'danger')
+            return redirect(url_for('perfil.obtener_perfiles'))
+        
+        
         # Capturar datos del formulario
         nombre = request.form.get('name')
         foto_perfil = request.form.get('foto_perfil') or 'netflux_rojo.png'  # Asignar por defecto si está vacío

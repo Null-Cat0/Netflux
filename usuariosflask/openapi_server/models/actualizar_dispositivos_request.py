@@ -12,21 +12,24 @@ class ActualizarDispositivosRequest(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, dispositivo_id=None):  # noqa: E501
+    def __init__(self, dispositivo_id=None, nombre_dispositivo=None):  # noqa: E501
         """ActualizarDispositivosRequest - a model defined in OpenAPI
 
         :param dispositivo_id: The dispositivo_id of this ActualizarDispositivosRequest.  # noqa: E501
         :type dispositivo_id: int
         """
         self.openapi_types = {
-            'dispositivo_id': int
+            'dispositivo_id': int,
+            'nombre_dispositivo': str
         }
 
         self.attribute_map = {
-            'dispositivo_id': 'dispositivoId'
+            'dispositivo_id': 'dispositivo_id',
+            'nombre_dispositivo': 'nombre_dispositivo'
         }
 
         self._dispositivo_id = dispositivo_id
+        self._nombre_dispositivo = nombre_dispositivo
 
     @classmethod
     def from_dict(cls, dikt) -> 'ActualizarDispositivosRequest':
@@ -57,5 +60,25 @@ class ActualizarDispositivosRequest(Model):
         :param dispositivo_id: The dispositivo_id of this ActualizarDispositivosRequest.
         :type dispositivo_id: int
         """
-
         self._dispositivo_id = dispositivo_id
+
+    @property
+    def nombre_dispositivo(self) -> str:
+        """Gets the nombre_dispositivo of this ActualizarDispositivosRequest.
+
+
+        :return: The nombre_dispositivo of this ActualizarDispositivosRequest.
+        :rtype: str
+        """
+        return self._nombre_dispositivo
+    
+    @nombre_dispositivo.setter
+    def nombre_dispositivo(self, nombre_dispositivo: str):
+        """Sets the nombre_dispositivo of this ActualizarDispositivosRequest.
+
+
+        :param nombre_dispositivo: The nombre_dispositivo of this ActualizarDispositivosRequest.
+        :type nombre_dispositivo: str
+        """
+        self._nombre_dispositivo = nombre_dispositivo
+

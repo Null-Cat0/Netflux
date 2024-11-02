@@ -104,15 +104,21 @@ def editar_dispositivo(nombre_dispositivo, dispositivo_id):
     
     if request.method == 'POST':
         user_id = session.get('logged_user_id')
-        if not user_id:
-            flash("Error: Usuario no autenticado.", 'danger')
-            return redirect(url_for('auth.login'))
+        
+        # Asegurarse de capturar los valores del formulario correctamente
+        nombre_dispositivo_actualizado = request.form.get('nombre_dispositivo')
+        tipo_dispositivo_actualizado = request.form.get('tipo_dispositivo')
+        
+        if not nombre_dispositivo_actualizado or not tipo_dispositivo_actualizado:
+            flash("Error: Los campos del formulario están vacíos.", 'danger')
+            return redirect(url_for('dispositivos.editar_dispositivo', nombre_dispositivo=nombre_dispositivo, dispositivo_id=dispositivo_id))
 
-        # Construir los datos a enviar en la solicitud PUT
+        print(f"Datos del formulario: {nombre_dispositivo_actualizado}, {tipo_dispositivo_actualizado}")
         data = {
-            "nombre_dispositivo": request.form['nombre_dispositivo'],
-            "tipo_dispositivo": request.form['tipo_dispositivo']
+            "nombre_dispositivo": nombre_dispositivo_actualizado,
+            "dispositivo_id": tipo_dispositivo_actualizado
         }
+
         url = f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivo/{nombre_dispositivo}/{dispositivo_id}"
         response = requests.put(url, json=data)
         
