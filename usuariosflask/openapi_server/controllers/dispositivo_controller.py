@@ -1,8 +1,3 @@
-import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
-
 from openapi_server.models.dispositivo_db import DispositivoDB
 from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 

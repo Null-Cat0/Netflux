@@ -2,6 +2,7 @@
 from openapi_server import db, util, connex_app, app
 from flask import request, jsonify
 from openapi_server.models.usuario_db import UsuarioDB
+from werkzeug.security import check_password_hash
 
 @app.route('/iniciar_sesion', methods=['POST'])
 def iniciar_sesion():
@@ -16,7 +17,7 @@ def iniciar_sesion():
     if usuario_db:
         usuario = usuario_db.to_api_model()
 
-        if usuario.password == password:
+        if check_password_hash(usuario.password, password):
             return jsonify({
                 "message": "Inicio de sesión exitoso",
                 "status": "success",

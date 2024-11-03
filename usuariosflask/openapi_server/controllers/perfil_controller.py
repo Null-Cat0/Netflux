@@ -1,5 +1,4 @@
 from openapi_server.models.perfil import Perfil  # noqa: E501
-from openapi_server.models.perfil_update import PerfilUpdate  # noqa: E501
 
 from openapi_server import db
 
