@@ -156,3 +156,13 @@ def populate_dispositivosDB():
             dispositivoDB = DispositivoDB(tipo_dispositivo=dispositivo)
             db.session.add(dispositivoDB)
         db.session.commit()
+
+def populate_genresDB():
+    from openapi_server.models.genero_db import GeneroDB
+    from openapi_server import db
+
+    if GeneroDB.query.first() is None:
+        list_genres = ["comedia", "drama", "accion", "terror", "ciencia_ficcion", "romance", "documental"]
+        genre_objects = [GeneroDB(nombre=genre) for genre in list_genres]
+        db.session.bulk_save_objects(genre_objects)
+        db.session.commit()

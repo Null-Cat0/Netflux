@@ -39,5 +39,6 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         util.populate_dispositivosDB()
+        util.populate_genresDB()
 
     connex_app.run(port=8080)
