@@ -38,7 +38,6 @@ def crear_dispositivo():
         response = requests.get(
             f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivos")
         
-        
         if response.status_code == 200:
             data = response.json()
             if len(data) >= 5:
@@ -49,7 +48,6 @@ def crear_dispositivo():
             flash(f"Error: {data['message']}", 'danger')
             return redirect(url_for('perfil.obtener_perfiles'))         
         
-    
         data = {
             "nombre_dispositivo": request.form['nombre_dispositivo'],
             "tipo_dispositivo": request.form['tipo_dispositivo']
@@ -62,7 +60,7 @@ def crear_dispositivo():
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
-            return redirect(url_for('perfil.obtener_perfiles'))
+            return redirect(url_for('dispositivos.dispositivos'))
 
 @dispositivos_bp.route("/eliminar_dispositivo/<nombre_dispositivo>/<int:dispositivo_id>", methods=['POST'])
 def eliminar_dispositivo(nombre_dispositivo, dispositivo_id):
