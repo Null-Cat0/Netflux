@@ -1,15 +1,9 @@
-import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
-
 from openapi_server.models.dispositivo_db import DispositivoDB
 from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
 from openapi_server import app,db
 
 from openapi_server.models.actualizar_dispositivos_request import ActualizarDispositivosRequest  # noqa: E501
-from openapi_server import util
 from flask import request, jsonify
 
 @app.route('/usuario/<int:user_id>/dispositivo/<string:nombre_dispositivo>/<int:dispositivo_id>', methods=['PUT'])
@@ -17,20 +11,34 @@ def actualizar_dispositivos(user_id, nombre_dispositivo, dispositivo_id):
     if request.is_json:
         actualizar_dispositivos_request = ActualizarDispositivosRequest.from_dict(request.get_json())
     
-    dispositivo_usuario_db = DispositivosUsuarioDB.query.filter_by(
-        user_id=user_id, dispositivo_id=dispositivo_id, nombre_dispositivo=nombre_dispositivo
-    ).first()
+        dispositivo_usuario_db = DispositivosUsuarioDB.query.filter_by(
+            user_id=user_id, dispositivo_id=dispositivo_id, nombre_dispositivo=nombre_dispositivo
+        ).first()
 
-    if dispositivo_usuario_db is not None:
-        if actualizar_dispositivos_request.nombre_dispositivo and actualizar_dispositivos_request.dispositivo_id:
-            dispositivo_usuario_db.nombre_dispositivo = actualizar_dispositivos_request.nombre_dispositivo
-            dispositivo_usuario_db.dispositivo_id = actualizar_dispositivos_request.dispositivo_id
-            db.session.commit()
-            return jsonify({"message": "Dispositivo actualizado con éxito", "status": "success"}), 200
+        if dispositivo_usuario_db is not None:
+            # Verificar si la nueva combinación ya existe para otro registro
+            nuevo_nombre_dispositivo = actualizar_dispositivos_request.nombre_dispositivo
+            nuevo_dispositivo_id = actualizar_dispositivos_request.dispositivo_id
+
+            dispositivo_existente = DispositivosUsuarioDB.query.filter_by(
+                user_id=user_id,
+                nombre_dispositivo=nuevo_nombre_dispositivo,
+                dispositivo_id=nuevo_dispositivo_id
+            ).first()
+
+            if dispositivo_existente and dispositivo_existente != dispositivo_usuario_db:
+                return jsonify({"message": "Ya existe un dispositivo con los mismos datos", "status": "error"}), 400
+
+            # Si no existe duplicado, proceder con la actualización
+            if nuevo_nombre_dispositivo and nuevo_dispositivo_id:
+                dispositivo_usuario_db.nombre_dispositivo = nuevo_nombre_dispositivo
+                dispositivo_usuario_db.dispositivo_id = nuevo_dispositivo_id
+                db.session.commit()
+                return jsonify({"message": "Dispositivo actualizado con éxito", "status": "success"}), 200
+            else:
+                return jsonify({"message": "Datos incompletos para actualizar", "status": "error"}), 400
         else:
-            return jsonify({"message": "Datos incompletos para actualizar", "status": "error"}), 400
-    else:
-        return jsonify({"message": "El dispositivo no existe", "status": "error"}), 404
+            return jsonify({"message": "El dispositivo no existe", "status": "error"}), 404
 
 
 @app.route('/usuario/<int:user_id>/dispositivo/<string:nombre_dispositivo>/<int:dispositivo_id>', methods=['DELETE'])
@@ -100,11 +108,28 @@ def crear_dispositivo(user_id):  # noqa: E501
         data = request.get_json()
         nombre_dispositivo = data.get('nombre_dispositivo')
         tipo_dispositivo = data.get('tipo_dispositivo')
-        dispositivo = DispositivosUsuarioDB(user_id=user_id, nombre_dispositivo=nombre_dispositivo, dispositivo_id=tipo_dispositivo)
+
+        # Verificar si ya existe un dispositivo con la combinación de user_id, nombre_dispositivo y tipo_dispositivo
+        dispositivo_existente = DispositivosUsuarioDB.query.filter_by(
+            user_id=user_id,
+            nombre_dispositivo=nombre_dispositivo,
+            dispositivo_id=tipo_dispositivo
+        ).first()
+
+        if dispositivo_existente:
+            return jsonify({"message": "Ya existe un dispositivo con los mismos datos", "status": "error"}), 400
+
+        dispositivo = DispositivosUsuarioDB(
+            user_id=user_id, 
+            nombre_dispositivo=nombre_dispositivo, 
+            dispositivo_id=tipo_dispositivo
+        )
         
         db.session.add(dispositivo)
         db.session.commit()
+
+        return jsonify({"message": "Dispositivo creado con éxito", "status": "success"}), 200
+    
     else:
         return jsonify({"message": "Error en la creación del dispositivo", "status": "error"}), 404
     
-    return 'do some magic!'

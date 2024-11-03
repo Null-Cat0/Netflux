@@ -130,13 +130,12 @@ def editar_usuario():
         # Capturar datos del formulario
         nombre = request.form.get('nombre')
         correo_electronico = request.form.get('correo_electronico')
-        password = request.form.get('password')
         pais = request.form.get('pais')
         plan_suscripcion = request.form.get('plan_suscripcion')
         dispositivos.append(request.form.get('dispositivos'))
 
         # Verificación de campos obligatorios
-        if not nombre or not correo_electronico or not password:
+        if not nombre or not correo_electronico:
             flash("Todos los campos son obligatorios.", 'danger')
             # Redirigir a la misma página para corregir
             return redirect(url_for('user.editar_usuario'))
@@ -145,7 +144,6 @@ def editar_usuario():
         usuario_data = {
             'nombre': nombre,
             'correo_electronico': correo_electronico,
-            'password': password,
             'pais': pais,
             'plan_suscripcion': plan_suscripcion,
             'dispositivos': dispositivos
@@ -169,6 +167,40 @@ def editar_usuario():
     # Si no se maneja el método, retornar a la página de cuenta o un error
     # Cambia esto según sea necesario
     return redirect(url_for('some_default_view'))
+
+
+@usuario_bp.route('/actualizar_password', methods=['GET', 'POST'])
+def actualizar_password():
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Debes iniciar sesión para acceder a esta página", 'danger')
+        return redirect(url_for('user.login'))
+
+    if request.method == 'POST':
+        # Capturar datos del formulario
+        old_password = request.form.get('old_password')
+        new_password = request.form.get('new_password')
+
+        # Crear el payload para enviar al microservicio
+        password_data = {
+            'old_password': old_password,
+            'new_password': new_password
+        }
+
+        # Hacer la solicitud PATCH al microservicio para actualizar la contraseña
+        response = requests.patch(
+            f"{userConf.USUARIOS_BASE_URL}/actualizar_password/{usuario_id}", json=password_data)
+
+        if response.status_code == 200:
+            flash("Contraseña actualizada con éxito", 'success')
+            return redirect(url_for('perfil.obtener_perfiles'))
+        else:
+            data = response.json()
+            flash(f"Error: {data['message']}", 'danger')
+            return redirect(url_for('user.editar_usuario'))
+    
+    return render_template('actualizar_password.html')
+
 
 @usuario_bp.route('/borrar_cuenta')
 def borrar_cuenta():

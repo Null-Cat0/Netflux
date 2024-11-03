@@ -4,12 +4,9 @@ from openapi_server import db
 
 # Importa la app de Flask
 from flask import request, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
-from openapi_server.models.perfil import Perfil
 from openapi_server.models.usuario import Usuario
-
-from openapi_server.models.dispositivo import Dispositivo
 
 from openapi_server.models.usuario_db import UsuarioDB
 from openapi_server.models.perfil_db import PerfilDB
@@ -17,7 +14,6 @@ from openapi_server.models.dispositivo_db import DispositivoDB
 from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
 from openapi_server import app
-
 
 @app.route('/actualizar_usuario/<user_id>', methods=['PUT'])
 def actualizar_usuario(user_id):  # noqa: E501
@@ -43,7 +39,6 @@ def actualizar_usuario(user_id):  # noqa: E501
 
     usuario.nombre = usuario_db.nombre
     usuario.correo_electronico = usuario_db.correo_electronico
-    usuario.password = usuario_db.password
     usuario.pais = usuario_db.pais
     usuario.plan_suscripcion = usuario_db.plan_suscripcion
 
@@ -65,6 +60,46 @@ def actualizar_usuario(user_id):  # noqa: E501
     return jsonify({"message": "Usuario actualizado con éxito", "status": "success"}), 200
 
 
+@app.route('/actualizar_password/<user_id>', methods=['PATCH'])
+def actualizar_password(user_id):  # noqa: E501
+    """Actualizar la contraseña de un usuario
+
+    Actualiza la contraseña de un usuario específico por su ID después de verificar la contraseña antigua. # noqa: E501
+
+    :param user_id: ID del usuario a actualizar
+    :type user_id: int
+
+    :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
+    """
+    
+    # Verificar si los datos están en formato JSON
+    if not request.is_json:
+        return jsonify({"message": "La solicitud debe estar en formato JSON", "status": "error"}), 400
+
+    data = request.get_json()
+    old_password = data.get('old_password')
+    new_password = data.get('new_password')
+    
+    # Verificar que ambas contraseñas se hayan proporcionado
+    if not old_password or not new_password:
+        return jsonify({"message": "Se requiere la contraseña actual y la nueva contraseña", "status": "error"}), 400
+
+    # Buscar el usuario en la base de datos
+    usuario = UsuarioDB.query.filter_by(user_id=user_id).first()
+    if usuario is None:
+        return jsonify({"message": "El usuario no existe", "status": "error"}), 404
+
+    # Verificar que la contraseña antigua es correcta
+    if not check_password_hash(usuario.password, old_password):
+        return jsonify({"message": "La contraseña actual es incorrecta", "status": "error"}), 401
+
+    # Actualizar la contraseña con el hash de la nueva contraseña
+    usuario.password = generate_password_hash(new_password)
+    db.session.commit()
+    
+    return jsonify({"message": "Contraseña actualizada con éxito", "status": "success"}), 200
+
+
 @app.route('/crear_usuario', methods=['GET', 'POST'])
 def crear_usuario():  # noqa: E501
     """Crear un nuevo usuario
@@ -80,6 +115,7 @@ def crear_usuario():  # noqa: E501
    # Capturar los datos enviados en el JSON
     if request.is_json:
         usuario_api = Usuario.from_dict(request.get_json())  # noqa: E501
+        usuario_api.password = generate_password_hash(usuario_api.password)
 
     if (usuario_api):
         usuario_db = usuario_api.to_db_model()
