@@ -7,6 +7,11 @@ from flask import request, jsonify
 from openapi_server.models.perfil import Perfil
 from openapi_server.models.perfil_db import PerfilDB
 
+from openapi_server.models.preferencias_contenido import PreferenciasContenido
+from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
+
+from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
+
 from openapi_server import app
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['PUT'])
@@ -40,7 +45,39 @@ def actualizar_perfil_usuario(user_id, profile_id):
             perfil_db.foto_perfil = perfil_api.foto_perfil
             # Guarda los cambios en la base de datos
             db.session.commit()
+
+            # Ahora hay que gestionar las preferencias de contenido
+            preferencias_db = PreferenciasContenidoDB.query.filter_by(perfil_id=perfil_db.perfil_id).first()
+
+            # Si no hay preferencias de contenido, se crean
+            if preferencias_db is None:
+                preferencias_db = PreferenciasContenidoDB(perfil_id=perfil_db.perfil_id)
+                db.session.add(preferencias_db)
+
+            # Actualiza las preferencias de contenido
+            preferencias_db.subtitulos = perfil_api.preferencias_contenido.subtitulos
+            preferencias_db.idioma_audio = perfil_api.preferencias_contenido.idioma_audio
+
+            # Elimina los géneros anteriores
+            GeneroPreferenciasDB.query.filter_by(preferencias_id=preferencias_db.preferencias_id).delete()
+
+            # Añade los nuevos géneros
+            ## Primero hay que obtener los géneros de la base de datos
+            generos_db = GeneroPreferenciasDB.query.all()
+            generos = {genero.genero_id: genero.nombre for genero in generos_db}
+
+            ## Ahora se añaden los géneros seleccionados
+            for genero in perfil_api.preferencias_contenido.generos:
+                if genero in generos:
+                    genero_db = GeneroPreferenciasDB(
+                        preferencias_id=preferencias_db.preferencias_id,
+                        genero_id=genero
+                    )
+                    db.session.add(genero_db)
             
+            # Guarda los cambios en la base de datos
+            db.session.commit()
+
             # Devuelve el perfil actualizado
             return jsonify(perfil_api.serialize()), 200
         else:

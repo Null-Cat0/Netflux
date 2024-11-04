@@ -63,6 +63,7 @@ class Perfil(Model):
             'user_id': self.user_id,
             'nombre': self.nombre,
             'foto_perfil': self.foto_perfil,
+            'preferencias_contenido': self.preferencias_contenido.serialize()
         }
     
     def to_db_model(self):

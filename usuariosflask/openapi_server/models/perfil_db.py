@@ -53,7 +53,7 @@ class PerfilDB(db.Model):
             user_id=self.user_id,
             nombre=self.nombre,
             foto_perfil=self.foto_perfil,
-            preferencias_contenido=self.get_preferencias_contenido()
+            preferencias_contenido=get_preferencias_contenido()
         )
     
     
