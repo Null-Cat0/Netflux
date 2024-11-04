@@ -75,7 +75,12 @@ def crear_perfil():
         perfil_data = {
             'user_id': usuario_id,
             'nombre': nombre,
-            'foto_perfil': foto_perfil
+            'foto_perfil': foto_perfil,
+            'preferencias_contenido': {
+                'subtitulos': False,
+                'idioma_audio': 'es',
+                'generos': []
+            }
         }
 
         # Hacer la solicitud POST al microservicio para crear el perfil
@@ -111,6 +116,7 @@ def editar_perfil(perfil_id):
 
         if response.status_code == 200:
             data = response.json()
+            print(f"\n\nDATOS PERFIL EN ROUTES: {data}\n\n")
             return render_template("formulario_perfil.html", perfil=data, is_edit=True)
         else:
             # Manejar error en caso de no obtener datos del perfil
@@ -129,8 +135,21 @@ def editar_perfil(perfil_id):
         nombre = request.form.get('name')
         foto_perfil = request.form.get('foto_perfil')
 
+        # Retrieve preferences data from form fields
+        subtitulos = request.form.get('subtitulos') == 'on'
+        idioma_audio = request.form.get('idioma_audio')
+        generos = request.form.getlist('generos') # List from selected genres
+
         # Crear el payload para enviar al microservicio
-        perfil_data = {'nombre': nombre, 'foto_perfil': foto_perfil}
+        perfil_data = {
+            'nombre': nombre,
+            'foto_perfil': foto_perfil,
+            'preferencias_contenido': {
+                'subtitulos': subtitulos,
+                'idioma_audio': idioma_audio,
+                'generos': generos
+            }
+        }
         
         # Hacer la solicitud PUT para actualizar el perfil
         response = requests.put(
