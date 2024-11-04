@@ -1,14 +1,11 @@
-import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
-
-from openapi_server.models.actor import Actor  # noqa: E501
 from openapi_server.models.actor_update import ActorUpdate  # noqa: E501
-from openapi_server.models.pelicula import Pelicula  # noqa: E501
-from openapi_server.models.serie import Serie  # noqa: E501
-from openapi_server import util
-
+from openapi_server.models.actor import Actor  # noqa: E501
+from openapi_server.models.actor_db import ActorDB
+from openapi_server import db
+from flask import request
+from openapi_server import app
+from flask import jsonify
+from bson import ObjectId
 
 def actualizar_actor(actor_id, actor_update):  # noqa: E501
     """Actualizar un actor existente
@@ -22,12 +19,12 @@ def actualizar_actor(actor_id, actor_update):  # noqa: E501
 
     :rtype: Union[Actor, Tuple[Actor, int], Tuple[Actor, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        actor_update = ActorUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+    if request.is_json:
+        actor_update = ActorUpdate.from_dict(request.get_json())  # noqa: E501
     return 'do some magic!'
 
-
-def crear_actor(actor):  # noqa: E501
+@app.route('/crear_actor', methods=['POST'])
+def crear_actor():  # noqa: E501
     """Crear un nuevo actor
 
     Crea un nuevo actor con la información proporcionada. # noqa: E501
@@ -37,11 +34,16 @@ def crear_actor(actor):  # noqa: E501
 
     :rtype: Union[Actor, Tuple[Actor, int], Tuple[Actor, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        actor = Actor.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    if request.is_json:
+        nombre = request.json.get('nombre')
+        fecha_nacimiento = request.json.get('fecha_nacimiento')
+        biografia = request.json.get('biografia')
+        actor_api = Actor(nombre=nombre, fecha_nacimiento=fecha_nacimiento, biografia=biografia) # No tira el from_dict LOL
+        actor_db = actor_api.to_db_model()
+        actor_db.save()
+        return jsonify({"message": "Actor creado con éxito", "status": "success"}), 201
 
-
+@app.route('/eliminar_actor/<actor_id>', methods=['DELETE'])
 def eliminar_actor(actor_id):  # noqa: E501
     """Eliminar un actor
 
@@ -52,9 +54,11 @@ def eliminar_actor(actor_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    ActorDB.objects.get(id=ObjectId(actor_id)).delete()
+    return jsonify({"message": "Actor eliminado con éxito", "status": "success"}), 200
+   
 
-
+@app.route('/listar_actores', methods=['GET'])
 def listar_actores():  # noqa: E501
     """Listar todos los actores
 
@@ -63,7 +67,8 @@ def listar_actores():  # noqa: E501
 
     :rtype: Union[List[Actor], Tuple[List[Actor], int], Tuple[List[Actor], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    actores_db = ActorDB.objects()
+    return [actor.to_api_model() for actor in actores_db]
 
 
 def listar_peliculas_de_actor(actor_id):  # noqa: E501
@@ -91,7 +96,7 @@ def listar_series_de_actor(actor_id):  # noqa: E501
     """
     return 'do some magic!'
 
-
+@app.route('/actor/<actor_id>', methods=['GET'])
 def obtener_actor(actor_id):  # noqa: E501
     """Obtener un actor específico
 
@@ -101,5 +106,7 @@ def obtener_actor(actor_id):  # noqa: E501
     :type actor_id: int
 
     :rtype: Union[Actor, Tuple[Actor, int], Tuple[Actor, int, Dict[str, str]]
-    """
-    return 'do some magic!'
+    """ 
+
+    actor_db = ActorDB.objects.get(id=ObjectId(actor_id))
+    return jsonify(actor_db.to_api_model())

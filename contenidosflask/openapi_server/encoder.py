@@ -1,9 +1,7 @@
-from connexion.apps.flask_app import FlaskJSONEncoder
-
+from flask.json import JSONEncoder
 from openapi_server.models.base_model import Model
 
-
-class JSONEncoder(FlaskJSONEncoder):
+class CustomJSONEncoder(JSONEncoder):
     include_nulls = False
 
     def default(self, o):
@@ -16,4 +14,4 @@ class JSONEncoder(FlaskJSONEncoder):
                 attr = o.attribute_map[attr]
                 dikt[attr] = value
             return dikt
-        return FlaskJSONEncoder.default(self, o)
+        return super().default(o)  # Usa el método default del JSONEncoder de Flask

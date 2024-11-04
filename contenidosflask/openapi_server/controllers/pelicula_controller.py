@@ -1,13 +1,14 @@
-import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
-
 from openapi_server.models.actor import Actor  # noqa: E501
 from openapi_server.models.asignar_actor_a_serie_request import AsignarActorASerieRequest  # noqa: E501
 from openapi_server.models.pelicula import Pelicula  # noqa: E501
 from openapi_server.models.pelicula_update import PeliculaUpdate  # noqa: E501
 from openapi_server import util
+from openapi_server import db
+from flask import request
+from openapi_server import app
+from flask import jsonify
+from bson import ObjectId
+from openapi_server.models.pelicula_db import PeliculaDB
 
 
 def actualizar_pelicula(pelicula_id, pelicula_update):  # noqa: E501
@@ -22,8 +23,8 @@ def actualizar_pelicula(pelicula_id, pelicula_update):  # noqa: E501
 
     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        pelicula_update = PeliculaUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+    if request.is_json:
+        pelicula_update = PeliculaUpdate.from_dict(request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
@@ -39,12 +40,12 @@ def asignar_actor_a_pelicula(pelicula_id, asignar_actor_a_serie_request):  # noq
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        asignar_actor_a_serie_request = AsignarActorASerieRequest.from_dict(connexion.request.get_json())  # noqa: E501
+    if request.is_json:
+        asignar_actor_a_serie_request = AsignarActorASerieRequest.from_dict(request.get_json())  # noqa: E501
     return 'do some magic!'
 
-
-def crear_pelicula(pelicula):  # noqa: E501
+@app.route('/crear_pelicula', methods=['POST'])
+def crear_pelicula():  # noqa: E501
     """Crear una nueva película
 
     Crea una nueva película con la información proporcionada. # noqa: E501
@@ -54,9 +55,17 @@ def crear_pelicula(pelicula):  # noqa: E501
 
     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        pelicula = Pelicula.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    if request.is_json:
+        titulo = request.json.get('titulo')
+        genero = request.json.get('genero')
+        sinopsis = request.json.get('sinopsis')
+        anio_estreno = request.json.get('anio_estreno')
+        duracion = request.json.get('duracion')
+        actores = [ObjectId(id) for id in request.json.get('actores')]
+        pelicula_api = Pelicula(titulo=titulo, genero=genero, sinopsis=sinopsis, anio_estreno=anio_estreno, duracion=duracion, actores=actores)
+        pelicula_db = pelicula_api.to_db_model()
+        pelicula_db.save()
+        return jsonify({"message": "Película creada con éxito", "status": "success"}), 201
 
 
 def eliminar_actor_pelicula(pelicula_id, actor_id):  # noqa: E501
@@ -99,7 +108,7 @@ def listar_actores_de_pelicula(pelicula_id):  # noqa: E501
     """
     return 'do some magic!'
 
-
+@app.route('/listar_peliculas', methods=['GET'])
 def listar_peliculas():  # noqa: E501
     """Listar todas las películas
 
@@ -108,9 +117,10 @@ def listar_peliculas():  # noqa: E501
 
     :rtype: Union[List[Pelicula], Tuple[List[Pelicula], int], Tuple[List[Pelicula], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    peliculas_db = PeliculaDB.objects()
+    return [pelicula.to_api_model() for pelicula in peliculas_db]
 
-
+@app.route('/pelicula/<pelicula_id>', methods=['GET'])
 def obtener_pelicula(pelicula_id):  # noqa: E501
     """Obtener una película específica
 
@@ -121,7 +131,9 @@ def obtener_pelicula(pelicula_id):  # noqa: E501
 
     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
+    return jsonify(pelicula_db.to_api_model())
+    
 
 
 def obtener_precuela_pelicula(pelicula_id):  # noqa: E501
