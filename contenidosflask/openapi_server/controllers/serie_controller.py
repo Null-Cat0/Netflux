@@ -1,13 +1,14 @@
-import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
-
 from openapi_server.models.actor import Actor  # noqa: E501
 from openapi_server.models.asignar_actor_a_serie_request import AsignarActorASerieRequest  # noqa: E501
 from openapi_server.models.serie import Serie  # noqa: E501
 from openapi_server.models.serie_update import SerieUpdate  # noqa: E501
 from openapi_server import util
+
+from flask import request
+from openapi_server import app
+from flask import jsonify
+from bson import ObjectId
+from openapi_server.models.serie_db import SerieDB
 
 
 def actualizar_serie(serie_id, serie_update):  # noqa: E501
@@ -22,8 +23,8 @@ def actualizar_serie(serie_id, serie_update):  # noqa: E501
 
     :rtype: Union[Serie, Tuple[Serie, int], Tuple[Serie, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        serie_update = SerieUpdate.from_dict(connexion.request.get_json())  # noqa: E501
+    if request.is_json:
+        serie_update = SerieUpdate.from_dict(request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
@@ -39,12 +40,13 @@ def asignar_actor_a_serie(serie_id, asignar_actor_a_serie_request):  # noqa: E50
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        asignar_actor_a_serie_request = AsignarActorASerieRequest.from_dict(connexion.request.get_json())  # noqa: E501
+    if request.is_json:
+        asignar_actor_a_serie_request = AsignarActorASerieRequest.from_dict(request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def crear_serie(serie):  # noqa: E501
+@app.route('/crear_serie', methods=['POST'])
+def crear_serie():  # noqa: E501
     """Crear una nueva serie
 
     Crea una nueva serie de televisión con la información proporcionada. # noqa: E501
@@ -54,9 +56,18 @@ def crear_serie(serie):  # noqa: E501
 
     :rtype: Union[Serie, Tuple[Serie, int], Tuple[Serie, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        serie = Serie.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    if request.is_json:
+        titulo = request.json.get('titulo')
+        genero = request.json.get('genero')
+        sinopsis = request.json.get('sinopsis')
+        anio_estreno = request.json.get('anio_estreno')
+        temporadas = request.json.get('temporadas')
+        actores = [ObjectId(id) for id in request.json.get('actores')]
+        serie_api = Serie(titulo=titulo, genero=genero, sinopsis=sinopsis, anio_estreno=anio_estreno, temporadas=temporadas, actores=actores)
+        serie_db = serie_api.to_db_model()
+        serie_db.save()
+        return jsonify({"message": "Serie creada con éxito", "status": "success"}), 201
+    
 
 
 def eliminar_actor_serie(serie_id, actor_id):  # noqa: E501
@@ -99,7 +110,7 @@ def listar_actores_de_serie(serie_id):  # noqa: E501
     """
     return 'do some magic!'
 
-
+@app.route('/listar_series', methods=['GET'])
 def listar_series():  # noqa: E501
     """Listar todas las series
 
@@ -108,9 +119,11 @@ def listar_series():  # noqa: E501
 
     :rtype: Union[List[Serie], Tuple[List[Serie], int], Tuple[List[Serie], int, Dict[str, str]]
     """
-    return 'do some magic!'
 
+    serie_db = SerieDB.objects()
+    return [serie.to_api_model() for serie in serie_db]
 
+@app.route('/obtener_serie/<serie_id>', methods=['GET'])
 def obtener_serie(serie_id):  # noqa: E501
     """Obtener una serie específica
 
@@ -121,4 +134,6 @@ def obtener_serie(serie_id):  # noqa: E501
 
     :rtype: Union[Serie, Tuple[Serie, int], Tuple[Serie, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
+    print("estoy aqui")
+    return jsonify(serie_db.to_api_model())

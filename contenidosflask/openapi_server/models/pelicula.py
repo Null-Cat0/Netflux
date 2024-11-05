@@ -4,13 +4,7 @@ from typing import List, Dict  # noqa: F401
 
 from openapi_server.models.base_model import Model
 from openapi_server.models.actor import Actor
-from openapi_server.models.temporada import Temporada
 from openapi_server import util
-
-from openapi_server.models.actor import Actor  # noqa: E501
-from openapi_server.models.temporada import Temporada  # noqa: E501
-from openapi_server.models.actor_db import ActorDB  # noqa: E501
-
 from bson import ObjectId
 
 

@@ -68,6 +68,7 @@ def crear_pelicula():  # noqa: E501
         return jsonify({"message": "Película creada con éxito", "status": "success"}), 201
 
 
+@app.route('/eliminar_actor_pelicula/<pelicula_id>/<actor_id>', methods=['DELETE'])
 def eliminar_actor_pelicula(pelicula_id, actor_id):  # noqa: E501
     """Elimnar un actor de una película
 
@@ -80,9 +81,13 @@ def eliminar_actor_pelicula(pelicula_id, actor_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
+    pelicula_db.actores.remove(ObjectId(actor_id))
+    pelicula_db.save()
+    return jsonify({"message": "Actor eliminado con éxito", "status": "success"}), 200
 
 
+@app.route('/eliminar_pelicula/<pelicula_id>', methods=['DELETE'])
 def eliminar_pelicula(pelicula_id):  # noqa: E501
     """Eliminar una película
 
@@ -93,9 +98,12 @@ def eliminar_pelicula(pelicula_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
 
+    pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
+    pelicula_db.delete()
+    return jsonify({"message": "Película eliminada con éxito", "status": "success"}), 200
 
+@app.route('/listar_actores_de_pelicula/<pelicula_id>', methods=['GET'])
 def listar_actores_de_pelicula(pelicula_id):  # noqa: E501
     """Listar actores de una película específica
 
@@ -106,7 +114,12 @@ def listar_actores_de_pelicula(pelicula_id):  # noqa: E501
 
     :rtype: Union[List[Actor], Tuple[List[Actor], int], Tuple[List[Actor], int, Dict[str, str]]
     """
-    return 'do some magic!'
+
+    pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
+    pelicula_api = pelicula_db.to_api_model()
+    actores_json = [actor.serialize() for actor in pelicula_api.actores]
+    return jsonify(actores_json)
+    
 
 @app.route('/listar_peliculas', methods=['GET'])
 def listar_peliculas():  # noqa: E501

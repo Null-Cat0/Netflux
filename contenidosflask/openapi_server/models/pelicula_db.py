@@ -10,17 +10,6 @@ class PeliculaDB(db.Document):
     duracion = db.IntField(required=True)
     actores = db.ListField(db.ObjectIdField())  # Lista de IDs de actores como ObjectId
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "titulo": self.titulo,
-            "genero": self.genero,
-            "sinopsis": self.sinopsis,
-            "anio_estreno": self.anio_estreno,
-            "duracion": self.duracion,
-            "actores": self.actores
-        }
-
     def to_api_model(self):
         from openapi_server.models.pelicula import Pelicula
         from openapi_server.models.actor_db import ActorDB

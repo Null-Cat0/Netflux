@@ -1,14 +1,11 @@
 from datetime import date, datetime  # noqa: F401
 
-from typing import List, Dict  # noqa: F401
+from typing import List  # noqa: F401
 
 from openapi_server.models.base_model import Model
-from openapi_server.models.actor import Actor
-from openapi_server.models.temporada import Temporada
-from openapi_server import util
-
 from openapi_server.models.actor import Actor  # noqa: E501
-from openapi_server.models.temporada import Temporada  # noqa: E501
+from openapi_server import util
+from bson import ObjectId
 
 class CapituloEmbedded(Model):
     def __init__(self, numero=None, titulo=None, duracion=None, sinopsis=None):
@@ -29,6 +26,22 @@ class CapituloEmbedded(Model):
         self._duracion = duracion
         self._sinopsis = sinopsis
     
+    @property
+    def numero(self):
+        return self._numero
+
+    @property
+    def titulo(self):
+        return self._titulo
+
+    @property
+    def duracion(self):
+        return self._duracion
+
+    @property
+    def sinopsis(self):
+        return self._sinopsis
+    
     def serialize(self):
         return {
             "numero": self.numero,
@@ -36,6 +49,15 @@ class CapituloEmbedded(Model):
             "duracion": self.duracion,
             "sinopsis": self.sinopsis
         }
+
+    def to_db_model(self):
+        from openapi_server.models.serie_db import CapituloEmbeddedDB
+        return CapituloEmbeddedDB(
+            numero=self._numero,
+            titulo=self._titulo,
+            duracion=self._duracion,
+            sinopsis=self._sinopsis
+        )
 
 class TemporadaEmbedded(Model):
     def __init__(self, numero=None, anio_lanzamiento=None, capitulos=None):
@@ -51,7 +73,22 @@ class TemporadaEmbedded(Model):
         }
         self._numero = numero
         self._anio_lanzamiento = anio_lanzamiento
-        self._capitulos = capitulos or []
+        self._capitulos = [
+            CapituloEmbedded(**capitulo) if isinstance(capitulo, dict) else capitulo
+            for capitulo in (capitulos or [])
+        ]
+    
+    @property
+    def numero(self):
+        return self._numero
+
+    @property
+    def anio_lanzamiento(self):
+        return self._anio_lanzamiento
+
+    @property
+    def capitulos(self):
+        return self._capitulos
     
     def serialize(self):
         return {
@@ -60,16 +97,25 @@ class TemporadaEmbedded(Model):
             "capitulos": [capitulo.serialize() for capitulo in self.capitulos]
         }
 
+    def to_db_model(self):
+        from openapi_server.models.serie_db import TemporadaEmbeddedDB
+        return TemporadaEmbeddedDB(
+            numero=self._numero,
+            anio_lanzamiento=self._anio_lanzamiento,
+            capitulos=[capitulo.to_db_model() for capitulo in self.capitulos]
+        )
+
+
 class Serie(Model):
     def __init__(self, id=None, titulo=None, genero=None, sinopsis=None, anio_estreno=None, temporadas=None, actores=None):
         self.openapi_types = {
-            'id': int,
+            'id': str,
             'titulo': str,
             'genero': str,
             'sinopsis': str,
             'anio_estreno': int,
             'temporadas': List[TemporadaEmbedded],
-            'actores': List[int]
+            'actores': List[Actor]
         }
         self.attribute_map = {
             'id': 'id',
@@ -85,9 +131,16 @@ class Serie(Model):
         self._genero = genero
         self._sinopsis = sinopsis
         self._anio_estreno = anio_estreno
-        self._temporadas = temporadas or []
-        self._actores = actores or []
+        
+        self._temporadas = [
+            TemporadaEmbedded(**temporada) if isinstance(temporada, dict) else temporada
+            for temporada in (temporadas or [])
+        ]
+        
+        # Convertir los actores en una lista de ObjectIds si no lo están ya
+        self._actores = [ObjectId(actor) if isinstance(actor, str) else actor for actor in (actores or [])]
     
+
     def serialize(self):
         return {
             "id": self.id,
@@ -96,19 +149,18 @@ class Serie(Model):
             "sinopsis": self.sinopsis,
             "anio_estreno": self.anio_estreno,
             "temporadas": [temporada.serialize() for temporada in self.temporadas],
-            "actores": [actor.id for actor in self.actores]
+            "actores": [actor.serialize() for actor in self.actores] if self.actores else []
         }
 
     def to_db_model(self):
         from openapi_server.models.serie_db import SerieDB
         return SerieDB(
-            id=self._id,
             titulo=self._titulo,
             genero=self._genero,
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             temporadas=[temporada.to_db_model() for temporada in self._temporadas],
-            actores=self._actores
+            actores=[ObjectId(id) for id in self._actores] if self._actores else []
         )
 
 
@@ -237,7 +289,7 @@ class Serie(Model):
         self._anio_estreno = anio_estreno
 
     @property
-    def temporadas(self) -> List[Temporada]:
+    def temporadas(self) -> List[TemporadaEmbedded]:
         """Gets the temporadas of this Serie.
 
 
@@ -247,7 +299,7 @@ class Serie(Model):
         return self._temporadas
 
     @temporadas.setter
-    def temporadas(self, temporadas: List[Temporada]):
+    def temporadas(self, temporadas: List[TemporadaEmbedded]):
         """Sets the temporadas of this Serie.
 
 
