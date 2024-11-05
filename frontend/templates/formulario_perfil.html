@@ -46,8 +46,10 @@
 
             <!-- Subtitles Preference (Checkbox) -->
             <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" id="subtitulos" name="subtitulos" {% if perfil and
-                    perfil.preferencias_contenido.subtitulos %} checked {% endif %}>
+                <input type="checkbox" class="form-check-input" id="subtitulos" name="subtitulos"
+                {% if perfil and perfil.preferencias_contenido.subtitulos %} 
+                        checked
+                {% endif %}>
                 <label class="form-check-label text-white" for="subtitulos">Subtítulos</label>
             </div>
 

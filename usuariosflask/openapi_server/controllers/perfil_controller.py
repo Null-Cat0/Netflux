@@ -13,6 +13,11 @@ from openapi_server.models.preferencias_contenido_db import PreferenciasContenid
 from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
 from openapi_server.models.genero_db import GeneroDB
 
+from openapi_server.models.preferencias_contenido import PreferenciasContenido
+from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
+
+from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
+
 from openapi_server import app
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['PUT'])
@@ -137,6 +142,23 @@ def crear_perfil(user_id):  # noqa: E501
         perfil_db = perfil_api.to_db_model()
         db.session.add(perfil_db)
         db.session.commit()
+
+        preferencias_api = perfil_api.preferencias_contenido
+        preferencias_api.perfil_id = perfil_db.perfil_id
+        preferencias_db = preferencias_api.to_db_model() 
+
+        db.session.add(preferencias_db)
+        db.session.commit()
+
+        generos_name_list = preferencias_api.generos
+        generos_db = [GeneroDB.query.filter_by(nombre=nombre).first() for nombre in generos_name_list]
+
+        if not None in generos_db:
+            for genero in generos_db:
+                genero_preferencias_db = GeneroPreferenciasDB(preferencias_id=preferencias_db.preferencias_id, genero_id=genero.genero_id)
+                db.session.add(genero_preferencias_db)
+            db.session.commit()
+
         return jsonify(perfil_api.serialize()), 201
     else:
         return jsonify({"message": "Ha habido un error con su solicitud, inténtelo de nuevo más tarde", "status": "error"}), 404

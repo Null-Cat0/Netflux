@@ -58,7 +58,6 @@ class PreferenciasContenido(Model):
     def to_db_model(self):
         from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
         return PreferenciasContenidoDB(
-            preferencias_id=self._preferencias_id,
             perfil_id=self._perfil_id,
             subtitulos=self._subtitulos,
             idioma_audio=self._idioma_audio,

@@ -70,6 +70,11 @@ def crear_perfil():
         if foto_perfil not in imagenes_permitidas:
             flash("Imagen no válida.", 'danger')
             return redirect(url_for('crear_perfil'))
+
+        # Validar las preferencias de contenido
+        subtitulos = request.form.get('subtitulos') == 'on'
+        idioma_audio = request.form.get('idioma_audio')
+        generos = request.form.getlist('generos')  # Lista de géneros seleccionados
          
         # Crear el payload para enviar al microservicio
         perfil_data = {
@@ -77,9 +82,9 @@ def crear_perfil():
             'nombre': nombre,
             'foto_perfil': foto_perfil,
             'preferencias_contenido': {
-                'subtitulos': False,
-                'idioma_audio': 'es',
-                'generos': []
+                'subtitulos': subtitulos,
+                'idioma_audio': 'es' if idioma_audio == 'default' else idioma_audio,
+                'generos': generos
             }
         }
 
