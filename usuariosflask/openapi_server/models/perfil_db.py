@@ -44,7 +44,7 @@ class PerfilDB(db.Model):
             generos=generos
         )
 
-        return preferencias_contenido
+        return preferencias_api
     
     def to_api_model(self):
         from openapi_server.models.perfil import Perfil
@@ -53,7 +53,5 @@ class PerfilDB(db.Model):
             user_id=self.user_id,
             nombre=self.nombre,
             foto_perfil=self.foto_perfil,
-            preferencias_contenido=get_preferencias_contenido()
+            preferencias_contenido=self.get_preferencias_contenido()
         )
-    
-    

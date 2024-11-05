@@ -45,6 +45,7 @@ def actualizar_usuario(user_id):  # noqa: E501
     dispositivos_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
     for dispositivo_usuario_db in dispositivos_usuario_db:
         db.session.delete(dispositivo_usuario_db)
+
     for nombre in usuario_update.dispositivos:
         disp_enc = DispositivoDB.query.filter_by(tipo_dispositivo=nombre).first()
         if disp_enc is not None:

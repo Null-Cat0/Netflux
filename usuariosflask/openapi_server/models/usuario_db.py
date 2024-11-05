@@ -14,6 +14,7 @@ class UsuarioDB(db.Model):
     password = db.Column(db.String(255))
     pais = db.Column(db.String(255))
     plan_suscripcion = db.Column(db.String(255))
+
     perfiles = db.relationship('PerfilDB', backref='usuario', cascade='all, delete')
     dispositivos = db.relationship('DispositivosUsuarioDB', backref='usuario', cascade='all, delete')
 

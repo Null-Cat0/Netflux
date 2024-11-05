@@ -8,9 +8,10 @@ class PreferenciasContenidoDB(db.Model):
 
     __tablename__ = 'preferencias_contenido'
 
-    perfil_id = db.Column(db.Integer, db.ForeignKey('perfil.perfil_id'), nullable=False, primary_key=True)
+    preferencias_id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    perfil_id = db.Column(db.Integer, db.ForeignKey('perfil.perfil_id'), nullable=False)
     subtitulos = db.Column(db.Boolean, nullable=False)
-    idioma_audio = db.Column(db.String(255), nullable=False)
+    idioma_audio = db.Column(db.String(255), nullable=True)
 
     # Lista de generos, relacion muchos a muchos con la tabla genero_preferencias
     generos = db.relationship('GeneroPreferenciasDB', backref='preferencias_contenido', cascade='all, delete')
@@ -32,6 +33,7 @@ class PreferenciasContenidoDB(db.Model):
     def to_api_model(self):
         from openapi_server.models.preferencias_contenido import PreferenciasContenido
         return PreferenciasContenido(
+            preferencias_id=self.preferencias_id,
             perfil_id=self.perfil_id,
             subtitulos=self.subtitulos,
             idioma_audio=self.idioma_audio,

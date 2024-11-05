@@ -46,7 +46,7 @@
 
             <!-- Subtitles Preference (Checkbox) -->
             <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" id="subtitulos" name="subtitulos" {% if
+                <input type="checkbox" class="form-check-input" id="subtitulos" name="subtitulos" {% if perfil and
                     perfil.preferencias_contenido.subtitulos %} checked {% endif %}>
                 <label class="form-check-label text-white" for="subtitulos">Subtítulos</label>
             </div>
@@ -55,11 +55,11 @@
             <div class="mb-3">
                 <label for="idioma_audio" class="form-label text-white">Idioma de audio</label>
                 <select id="idioma_audio" name="idioma_audio" class="form-control bg-dark text-white">
-                    <option value="es" {% if perfil.preferencias_contenido.idioma_audio=='es' %} selected {% endif %}>Español
+                    <option value="es" {% if perfil and perfil.preferencias_contenido.idioma_audio=='es' %} selected {% endif %}>Español
                     </option>
-                    <option value="en" {% if perfil.preferencias_contenido.idioma_audio=='en' %} selected {% endif %}>Inglés
+                    <option value="en" {% if perfil and perfil.preferencias_contenido.idioma_audio=='en' %} selected {% endif %}>Inglés
                     </option>
-                    <option value="fr" {% if perfil.preferencias_contenido.idioma_audio=='fr' %} selected {% endif %}>Francés
+                    <option value="fr" {% if perfil and perfil.preferencias_contenido.idioma_audio=='fr' %} selected {% endif %}>Francés
                     </option>
                     <!-- Add more languages as needed -->
                 </select>
@@ -74,7 +74,7 @@
                     {% for genre in genres_list %}
                     <div class="form-check me-3 mb-2">
                         <input type="checkbox" class="form-check-input" id="genre_{{ genre }}" name="generos"
-                            value="{{ genre }}" {% if genre in perfil.preferencias_contenido.generos %} checked {% endif %}>
+                            value="{{ genre }}" {% if perfil and genre in perfil.preferencias_contenido.generos %} checked {% endif %}>
                         <label class="form-check-label text-white" for="genre_{{ genre }}">{{ genre.capitalize()
                             }}</label>
                     </div>

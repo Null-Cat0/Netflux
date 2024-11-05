@@ -11,6 +11,7 @@ from openapi_server.models.preferencias_contenido import PreferenciasContenido
 from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
 
 from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
+from openapi_server.models.genero_db import GeneroDB
 
 from openapi_server import app
 
@@ -53,28 +54,26 @@ def actualizar_perfil_usuario(user_id, profile_id):
             if preferencias_db is None:
                 preferencias_db = PreferenciasContenidoDB(perfil_id=perfil_db.perfil_id)
                 db.session.add(preferencias_db)
+            else:
+                # Actualiza las preferencias de contenido
+                preferencias_db.subtitulos = perfil_api.preferencias_contenido.subtitulos
+                preferencias_db.idioma_audio = perfil_api.preferencias_contenido.idioma_audio
 
-            # Actualiza las preferencias de contenido
-            preferencias_db.subtitulos = perfil_api.preferencias_contenido.subtitulos
-            preferencias_db.idioma_audio = perfil_api.preferencias_contenido.idioma_audio
+                # Elimina los géneros anteriores
+                GeneroPreferenciasDB.query.filter_by(preferencias_id=preferencias_db.preferencias_id).delete()
 
-            # Elimina los géneros anteriores
-            GeneroPreferenciasDB.query.filter_by(preferencias_id=preferencias_db.preferencias_id).delete()
+                # Añade los nuevos géneros
+                ## Primero hay que obtener los géneros de la base de datos
+                genero_preferencias_db = GeneroPreferenciasDB.query.filter_by(preferencias_id=preferencias_db.preferencias_id).all()
+                for gpdb in genero_preferencias_db:
+                    db.session.delete(gpdb)
 
-            # Añade los nuevos géneros
-            ## Primero hay que obtener los géneros de la base de datos
-            generos_db = GeneroPreferenciasDB.query.all()
-            generos = {genero.genero_id: genero.nombre for genero in generos_db}
+                for nombre_genero in perfil_api.preferencias_contenido.generos:
+                    genero = GeneroDB.query.filter_by(nombre=nombre_genero).first()
+                    if genero is not None:
+                        gpdb = GeneroPreferenciasDB(preferencias_id=preferencias_db.preferencias_id, genero_id=genero.genero_id)
+                        db.session.add(gpdb)
 
-            ## Ahora se añaden los géneros seleccionados
-            for genero in perfil_api.preferencias_contenido.generos:
-                if genero in generos:
-                    genero_db = GeneroPreferenciasDB(
-                        preferencias_id=preferencias_db.preferencias_id,
-                        genero_id=genero
-                    )
-                    db.session.add(genero_db)
-            
             # Guarda los cambios en la base de datos
             db.session.commit()
 
@@ -123,6 +122,7 @@ def crear_perfil(user_id):  # noqa: E501
     """
 
     if request.is_json:
+        print(request.get_json())
         perfil_api = Perfil.from_dict(request.get_json())  # noqa: E501
 
     # Obtener el campo 'foto_perfil', si no existe, usar 'netflux_rojo.png'

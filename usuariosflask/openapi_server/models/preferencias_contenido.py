@@ -12,7 +12,7 @@ class PreferenciasContenido(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, perfil_id, subtitulos=False, idioma_audio=None, generos=None):  # noqa: E501
+    def __init__(self, preferencias_id=None, perfil_id=None, subtitulos=False, idioma_audio=None, generos=None):  # noqa: E501
         """PreferenciasContenido - a model defined in OpenAPI
 
         :param perfil_id: The perfil_id of this PreferenciasContenido.  # noqa: E501
@@ -25,6 +25,7 @@ class PreferenciasContenido(Model):
         :type generos: List[str]
         """
         self.openapi_types = {
+            'preferencias_id': int,
             'perfil_id': int,
             'subtitulos': bool,
             'idioma_audio': str,
@@ -32,12 +33,14 @@ class PreferenciasContenido(Model):
         }
 
         self.attribute_map = {
+            'preferencias_id': 'preferencias_id',
             'perfil_id': 'perfil_id',
             'subtitulos': 'subtitulos',
             'idioma_audio': 'idioma_audio',
             'generos': 'generos',
         }
 
+        self._preferencias_id = preferencias_id
         self._perfil_id = perfil_id
         self._subtitulos = subtitulos
         self._idioma_audio = idioma_audio
@@ -45,6 +48,7 @@ class PreferenciasContenido(Model):
 
     def serialize(self):
         return {
+            'preferencias_id': self._preferencias_id,
             'perfil_id': self._perfil_id,
             'subtitulos': self._subtitulos,
             'idioma_audio': self._idioma_audio,
@@ -54,6 +58,7 @@ class PreferenciasContenido(Model):
     def to_db_model(self):
         from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
         return PreferenciasContenidoDB(
+            preferencias_id=self._preferencias_id,
             perfil_id=self._perfil_id,
             subtitulos=self._subtitulos,
             idioma_audio=self._idioma_audio,
@@ -109,6 +114,27 @@ bool        :rtype: bool
         """
         # Should be revisited to limit the possible values
         self._idioma_audio = idioma_audio
+
+    @property
+    def preferencias_id(self) -> int:
+        """Gets the preferencias_id of this PreferenciasContenido.
+
+        :return: The preferencias_id of this PreferenciasContenido.
+        :rtype: int
+        """
+        return self._preferencias_id
+
+    @preferencias_id.setter
+    def preferencias_id(self, preferencias_id: int):
+        """Sets the preferencias_id of this PreferenciasContenido.
+
+        :param preferencias_id: The preferencias_id of this PreferenciasContenido.
+        :type preferencias_id: int
+        """
+        if preferencias_id is None:
+            raise ValueError("Invalid value for `preferencias_id`, must not be `None`")
+
+        self._preferencias_id = preferencias_id
 
     @property
     def perfil_id(self) -> int:

@@ -5,13 +5,13 @@ class GeneroPreferenciasDB(db.Model):
 
     __tablename__ = 'genero_preferencias'
 
-    perfil_id = db.Column(db.Integer, db.ForeignKey('preferencias_contenido.perfil_id'), nullable=False)
+    preferencias_id = db.Column(db.Integer, db.ForeignKey('preferencias_contenido.preferencias_id'), nullable=False)
     genero_id = db.Column(db.Integer, db.ForeignKey('genero.genero_id'), nullable=False)
 
     __table_args__ = (
-        db.PrimaryKeyConstraint('perfil_id', 'genero_id'),
+        db.PrimaryKeyConstraint('preferencias_id', 'genero_id'),
     )
 
-    def __init__(self, perfil_id, genero_id):  # noqa: E501
-        self.perfil_id = dispositivo_id
+    def __init__(self, preferencias_id, genero_id):  # noqa: E501
+        self.preferencias_id = preferencias_id
         self.genero_id = genero_id
