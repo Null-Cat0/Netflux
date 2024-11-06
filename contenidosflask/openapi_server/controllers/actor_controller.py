@@ -35,10 +35,17 @@ def crear_actor():  # noqa: E501
     :rtype: Union[Actor, Tuple[Actor, int], Tuple[Actor, int, Dict[str, str]]
     """
     if request.is_json:
-        nombre = request.json.get('nombre')
-        fecha_nacimiento = request.json.get('fecha_nacimiento')
-        biografia = request.json.get('biografia')
-        actor_api = Actor(nombre=nombre, fecha_nacimiento=fecha_nacimiento, biografia=biografia) # No tira el from_dict LOL
+        # nombre = request.json.get('nombre')
+        # fecha_nacimiento = request.json.get('fecha_nacimiento')
+        # biografia = request.json.get('biografia')
+        # actor_api = Actor(nombre=nombre, fecha_nacimiento=fecha_nacimiento, biografia=biografia) # No tira el from_dict LOL
+
+        print(f"DATA: {request.get_json()}")
+
+        actor_api = Actor.from_dict(request.get_json())
+
+        print(f"DATA ACTOR API: {actor_api}")
+
         actor_db = actor_api.to_db_model()
         actor_db.save()
         return jsonify({"message": "Actor creado con éxito", "status": "success"}), 201
@@ -109,4 +116,8 @@ def obtener_actor(actor_id):  # noqa: E501
     """ 
 
     actor_db = ActorDB.objects.get(id=ObjectId(actor_id))
+
+    a = actor_db.to_api_model()
+    print(f"DATA ACTOR: {type(a.fecha_nacimiento)}")
+
     return jsonify(actor_db.to_api_model())

@@ -34,7 +34,7 @@ class Actor(Model):
         self.attribute_map = {
             'id': 'id',
             'nombre': 'nombre',
-            'fecha_nacimiento': 'fechaNacimiento',
+            'fecha_nacimiento': 'fecha_nacimiento',
             'biografia': 'biografia'
         }
 
