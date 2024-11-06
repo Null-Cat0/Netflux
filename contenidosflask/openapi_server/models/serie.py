@@ -82,6 +82,17 @@ class TemporadaEmbedded(Model):
     def numero(self):
         return self._numero
 
+    @numero.setter
+    def id(self, numero: int):
+        """Sets the id of this Serie.
+
+
+        :param id: The id of this Serie.
+        :type id: int
+        """
+
+        self._numero = numero
+
     @property
     def anio_lanzamiento(self):
         return self._anio_lanzamiento
