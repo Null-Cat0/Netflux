@@ -219,3 +219,4 @@ def borrar_cuenta():
         data = response.json()
         flash(f"Error: {data['message']}", 'danger')
         return redirect(url_for('user.login'))
+    

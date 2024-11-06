@@ -5,7 +5,11 @@ from global_config import ContenidosConfig as contConf
 
 contenidos_bp = Blueprint('contenidos', __name__)
 
-@contenidos_bp.route('/mi_lista')
-def mi_lista():
-    return render_template("mi_lista.html")
+@contenidos_bp.route('/peliculas')
+def peliculas():
+    return render_template("peliculas.html")
+
+@contenidos_bp.route('/series')
+def series():
+    return render_template("series.html")
 
