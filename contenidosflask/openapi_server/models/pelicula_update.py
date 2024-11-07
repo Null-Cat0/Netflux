@@ -1,6 +1,7 @@
 from datetime import date, datetime  # noqa: F401
 
 from typing import List, Dict  # noqa: F401
+from bson import ObjectId
 
 from openapi_server.models.base_model import Model
 from openapi_server.models.actor import Actor
@@ -40,7 +41,7 @@ class PeliculaUpdate(Model):
             'sinopsis': str,
             'anio_estreno': int,
             'duracion': int,
-            'actores': List[Actor]
+            'actores': List[str]
         }
 
         self.attribute_map = {
@@ -59,7 +60,18 @@ class PeliculaUpdate(Model):
         self._sinopsis = sinopsis
         self._anio_estreno = anio_estreno
         self._duracion = duracion
-        self._actores = actores
+        self._actores = [ObjectId(actor) if isinstance(actor, str) else actor for actor in (actores or [])]
+
+    def to_db_model(self):
+        from openapi_server.models.pelicula_db import PeliculaDB
+        return PeliculaDB(
+            titulo=self._titulo,
+            genero=self._genero,
+            sinopsis=self._sinopsis,
+            anio_estreno=self._anio_estreno,
+            duracion=self._duracion,
+            actores=[ObjectId(id) for id in self._actores]
+        )
 
     @classmethod
     def from_dict(cls, dikt) -> 'PeliculaUpdate':

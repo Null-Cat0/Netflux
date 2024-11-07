@@ -80,13 +80,11 @@ def eliminar_actor(actor_id):  # noqa: E501
     actor.delete()
     return jsonify({"message": "Actor eliminado correctamente", "status": "success"}), 200
    
-
 @app.route('/listar_actores', methods=['GET'])
 def listar_actores():  # noqa: E501
     """Listar todos los actores
 
     Obtiene una lista de todos los actores registrados en el sistema. # noqa: E501
-
 
     :rtype: Union[List[Actor], Tuple[List[Actor], int], Tuple[List[Actor], int, Dict[str, str]]
     """
@@ -134,7 +132,7 @@ def listar_series_de_actor(actor_id):  # noqa: E501
     series_api = [serie.to_api_model() for serie in series]
     return jsonify(series_api), 200
 
-@app.route('/actor/<actor_id>', methods=['GET'])
+@app.route('/obtener_actor/<actor_id>', methods=['GET'])
 def obtener_actor(actor_id):  # noqa: E501
     """Obtener un actor específico
 
@@ -150,5 +148,4 @@ def obtener_actor(actor_id):  # noqa: E501
     if not actor_db:
         return jsonify({"message": "Actor no encontrado", "status": "error"}), 404
 
-    actor_api = actor_db.to_api_model()
-    return jsonify(actor_api), 200
+    return jsonify(actor_db.to_api_model()), 200

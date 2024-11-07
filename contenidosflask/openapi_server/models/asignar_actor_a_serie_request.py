@@ -16,14 +16,14 @@ class AsignarActorASerieRequest(Model):
         """AsignarActorASerieRequest - a model defined in OpenAPI
 
         :param actor_id: The actor_id of this AsignarActorASerieRequest.  # noqa: E501
-        :type actor_id: int
+        :type actor_id: str
         """
         self.openapi_types = {
-            'actor_id': int
+            'actor_id': str
         }
 
         self.attribute_map = {
-            'actor_id': 'actorId'
+            'actor_id': 'actor_id'
         }
 
         self._actor_id = actor_id
@@ -40,7 +40,7 @@ class AsignarActorASerieRequest(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def actor_id(self) -> int:
+    def actor_id(self) -> str:
         """Gets the actor_id of this AsignarActorASerieRequest.
 
 
@@ -50,7 +50,7 @@ class AsignarActorASerieRequest(Model):
         return self._actor_id
 
     @actor_id.setter
-    def actor_id(self, actor_id: int):
+    def actor_id(self, actor_id: str):
         """Sets the actor_id of this AsignarActorASerieRequest.
 
 
