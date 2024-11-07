@@ -47,7 +47,7 @@ class SerieUpdate(Model):
             'titulo': 'titulo',
             'genero': 'genero',
             'sinopsis': 'sinopsis',
-            'anio_estreno': 'anioEstreno',
+            'anio_estreno': 'anio_estreno',
             'temporadas': 'temporadas',
             'actores': 'actores'
         }

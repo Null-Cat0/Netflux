@@ -34,7 +34,7 @@ class ActorUpdate(Model):
         self.attribute_map = {
             'id': 'id',
             'nombre': 'nombre',
-            'fecha_nacimiento': 'fechaNacimiento',
+            'fecha_nacimiento': 'fecha_nacimiento',
             'biografia': 'biografia'
         }
 
@@ -42,6 +42,14 @@ class ActorUpdate(Model):
         self._nombre = nombre
         self._fecha_nacimiento = fecha_nacimiento
         self._biografia = biografia
+
+    def to_db_model(self):
+        from openapi_server.models.actor_db import ActorDB
+        return ActorDB(
+            nombre=self._nombre,
+            fecha_nacimiento=self._fecha_nacimiento if self._fecha_nacimiento else None,
+            biografia=self._biografia
+        )
 
     @classmethod
     def from_dict(cls, dikt) -> 'ActorUpdate':
