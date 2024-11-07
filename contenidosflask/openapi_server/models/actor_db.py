@@ -5,14 +5,16 @@ class ActorDB(db.Document):
 
     # No se especifica el id porque se genera automáticamente
     nombre = db.StringField(required=True)
-    fecha_nacimiento = db.DateField(required=True)
-    biografia = db.StringField(required=True)
+    fecha_nacimiento = db.DateField(required=False)
+    nacionalidad = db.StringField(required=False)
+    biografia = db.StringField(required=False)
 
     def to_dict(self):
         return {
             "id": self.id,
             "nombre": self.nombre,
-            "fecha_nacimiento": self.fecha_nacimiento if self.fecha_nacimiento else None,
+            "fecha_nacimiento": self.fecha_nacimiento,
+            "nacionalidad": self.nacionalidad,
             "biografia": self.biografia
         }
 
@@ -21,6 +23,7 @@ class ActorDB(db.Document):
         return Actor(
             id=str(self.id),
             nombre=self.nombre,
-            fecha_nacimiento=self.fecha_nacimiento if self.fecha_nacimiento else None,
+            fecha_nacimiento=self.fecha_nacimiento,
+            nacionalidad=self.nacionalidad,
             biografia=self.biografia
         )

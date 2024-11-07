@@ -14,7 +14,7 @@ class Pelicula(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, titulo=None, genero=None, sinopsis=None, anio_estreno=None, duracion=None, actores=None):  # noqa: E501
+    def __init__(self, id=None, titulo=None, genero=None, sinopsis=None, anio_estreno=None, duracion=None, actores=None, secuela=None, precuela=None):  # noqa: E501
         """Pelicula - a model defined in OpenAPI
 
         :param id: The id of this Pelicula.  # noqa: E501
@@ -39,7 +39,10 @@ class Pelicula(Model):
             'sinopsis': str,
             'anio_estreno': int,
             'duracion': int,
-            'actores': List[str]
+            'actores': List[str],
+
+            'secuela': str,
+            'precuela': str
         }
 
         self.attribute_map = {
@@ -49,7 +52,10 @@ class Pelicula(Model):
             'sinopsis': 'sinopsis',
             'anio_estreno': 'anio_estreno',
             'duracion': 'duracion',
-            'actores': 'actores'
+            'actores': 'actores',
+
+            'secuela': 'secuela',
+            'precuela': 'precuela'
         }
 
         self._id = id
@@ -59,7 +65,9 @@ class Pelicula(Model):
         self._anio_estreno = anio_estreno
         self._duracion = duracion
         self._actores = [ObjectId(actor) if isinstance(actor, str) else actor for actor in (actores or [])]
-
+        self._secuela = secuela if isinstance(secuela, str) else secuela
+        self._precuela = precuela if isinstance(precuela, str) else precuela
+        
     def serialize(self):
         return {
             "id": self.id,
@@ -68,7 +76,10 @@ class Pelicula(Model):
             "sinopsis": self.sinopsis,
             "anio_estreno": self.anio_estreno,
             "duracion": self.duracion,
-            "actores": [actor.serialize() for actor in self.actores] if self.actores else []
+            "actores": [actor.serialize() for actor in self.actores] if self.actores else [],
+
+            "secuela": self.secuela,
+            "precuela": self.precuela
         }
 
     def to_db_model(self):
@@ -79,7 +90,10 @@ class Pelicula(Model):
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             duracion=self._duracion,
-            actores=[ObjectId(id) for id in self._actores]
+            actores=[ObjectId(id) for id in self._actores],
+
+            secuela=ObjectId(self._secuela) if self._secuela else None,
+            precuela=ObjectId(self._precuela) if self._precuela else None
         )
 
     @classmethod
@@ -247,3 +261,45 @@ class Pelicula(Model):
         """
 
         self._actores = actores
+
+    @property
+    def secuela(self) -> {str, str}:
+        """Gets the secuela of this Pelicula.
+
+
+        :return: The secuela of this Pelicula.
+        :rtype: str
+        """
+        return self._secuela
+
+    @secuela.setter
+    def secuela(self, secuela: {str, str}):
+        """Sets the secuela of this Pelicula.
+
+
+        :param secuela: The secuela of this Pelicula.
+        :type secuela: str
+        """
+
+        self._secuela = secuela
+
+    @property
+    def precuela(self) -> {str, str}:
+        """Gets the precuela of this Pelicula.
+
+
+        :return: The precuela of this Pelicula.
+        :rtype: str
+        """
+        return self._precuela
+
+    @precuela.setter
+    def precuela(self, precuela: {str, str}):
+        """Sets the precuela of this Pelicula.
+
+
+        :param precuela: The precuela of this Pelicula.
+        :type precuela: str
+        """
+
+        self._precuela = precuela

@@ -42,6 +42,13 @@ def actualizar_pelicula(pelicula_id):  # noqa: E501
     actores_db = [ActorDB.objects.get(id=ObjectId(id)) for id in pelicula_update.actores]
     pelicula_to_update.actores = actores_db # Se cambia la lista de actores por la nueva
 
+    # Reemplazar la secuela y precuela
+    if pelicula_update.secuela:
+        pelicula_to_update.secuela = PeliculaDB.objects.get(id=ObjectId(pelicula_update.secuela))
+    
+    if pelicula_update.precuela:
+        pelicula_to_update.precuela = PeliculaDB.objects.get(id=ObjectId(pelicula_update.precuela))
+
     pelicula_to_update.save()
     return jsonify({"message": "Película actualizada correctamente", "status": "success"}), 200
 
@@ -189,6 +196,7 @@ def obtener_pelicula(pelicula_id):  # noqa: E501
     
     return jsonify(pelicula_db.to_api_model()), 200
     
+@app.route('/obtener_precuela_pelicula/<pelicula_id>', methods=['GET'])
 def obtener_precuela_pelicula(pelicula_id):  # noqa: E501
     """Obtiene la precuela de una película específica
 
@@ -199,9 +207,14 @@ def obtener_precuela_pelicula(pelicula_id):  # noqa: E501
 
     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
     """
-    return 'do some magic!'
 
+    pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
+    if not pelicula_db:
+        return jsonify({"message": "Película no encontrada", "status": "error"}), 404
 
+    return jsonify(pelicula_db.precuela), 200
+
+@app.route('/obtener_secuela_pelicula/<pelicula_id>', methods=['GET'])
 def obtener_secuela_pelicula(pelicula_id):  # noqa: E501
     """Obtiene la secuela de una película específica
 
@@ -212,4 +225,9 @@ def obtener_secuela_pelicula(pelicula_id):  # noqa: E501
 
     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
     """
-    return 'do some magic!'
+
+    pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
+    if not pelicula_db:
+        return jsonify({"message": "Película no encontrada", "status": "error"}), 404
+
+    return jsonify(pelicula_db.secuela), 200

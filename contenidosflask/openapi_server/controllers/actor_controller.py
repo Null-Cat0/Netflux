@@ -32,6 +32,7 @@ def actualizar_actor(actor_id):  # noqa: E501
     actor_db = actor_update.to_db_model()
     actor_to_update.nombre = actor_db.nombre
     actor_to_update.fecha_nacimiento = actor_db.fecha_nacimiento
+    actor_to_update.nacionalidad = actor_db.nacionalidad
     actor_to_update.biografia = actor_db.biografia
 
     actor_to_update.save()
