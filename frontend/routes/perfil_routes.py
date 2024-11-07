@@ -231,24 +231,6 @@ def crear_actor():
     
     return render_template("formulario_actor.html")
 
-
-@perfil_bp.route('/crear_pelicula', methods=['GET', 'POST'])
-def crear_pelicula():
-    usuario_id = session.get('logged_user_id')
-    if not usuario_id:
-        flash("Usuario no autenticado.", 'danger')
-        return redirect(url_for('user.login'))
-    
-    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
-    
-    if request.method == 'GET':
-        return render_template("formulario_pelicula.html")
-    
-    if request.method == 'POST':
-        return render_template("formulario_pelicula.html")
-    
-    return render_template("formulario_pelicula.html")
-
 @perfil_bp.route('/crear_serie', methods=['GET', 'POST'])
 def crear_serie():
     usuario_id = session.get('logged_user_id')
