@@ -32,7 +32,7 @@ def obtener_peliculas():
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    return render_template("lista_peliculas.html")
+    return render_template("peliculas.html")
 
 @pelicula_bp.route('/pelicula/<pelicula_id>', methods=['GET'])
 def pelicula(pelicula_id):

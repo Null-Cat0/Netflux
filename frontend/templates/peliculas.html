@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Películas - Netflux{% endblock %}
+
+{% block head %}
+    <title>Películas - Netflux</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Lista de Películas</h1>
+
+    <!-- Botón de Añadir Película -->
+    <div class="d-flex justify-content-end mb-4">
+        <a href="" class="btn btn-danger">
+            <i class="fas fa-plus me-2"></i> Añadir Película
+        </a>
+    </div>
+
+    <!-- Lista de Películas -->
+    {% if peliculas %}
+        <div class="row">   
+            {% for pelicula in peliculas %}
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card bg-dark text-white shadow-sm h-100">
+                        <img src="" class="card-img-top" alt="{{ pelicula.titulo }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ pelicula.titulo }}</h5>
+                            <p class="card-text">{{ pelicula.descripcion | truncate(100) }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <a href="" class="btn btn-outline-light btn-sm">Ver Más</a>
+                                <div class="d-flex">
+                                    <!-- Botón de Editar -->
+                                    <a href="" class="text-warning mx-2" title="Editar">
+                                        <i class="fas fa-pencil-alt fa-lg"></i>
+                                    </a>
+                                    <!-- Botón de Eliminar -->
+                                    <a href="" class="text-danger mx-2" title="Eliminar" onclick="return confirm('¿Estás seguro de que quieres eliminar esta película?');">
+                                        <i class="fas fa-trash-alt fa-lg"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-white">No hay películas disponibles.</p>
+    {% endif %}
+</div>
+{% endblock %}
