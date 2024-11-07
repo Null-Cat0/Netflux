@@ -1,6 +1,8 @@
 from openapi_server.models.actor_update import ActorUpdate  # noqa: E501
 from openapi_server.models.actor import Actor  # noqa: E501
 from openapi_server.models.actor_db import ActorDB
+from openapi_server.models.pelicula_db import PeliculaDB
+from openapi_server.models.serie_db import SerieDB
 from openapi_server import db
 from flask import request
 from openapi_server import app
@@ -35,17 +37,7 @@ def crear_actor():  # noqa: E501
     :rtype: Union[Actor, Tuple[Actor, int], Tuple[Actor, int, Dict[str, str]]
     """
     if request.is_json:
-        # nombre = request.json.get('nombre')
-        # fecha_nacimiento = request.json.get('fecha_nacimiento')
-        # biografia = request.json.get('biografia')
-        # actor_api = Actor(nombre=nombre, fecha_nacimiento=fecha_nacimiento, biografia=biografia) # No tira el from_dict LOL
-
-        print(f"DATA: {request.get_json()}")
-
         actor_api = Actor.from_dict(request.get_json())
-
-        print(f"DATA ACTOR API: {actor_api}")
-
         actor_db = actor_api.to_db_model()
         actor_db.save()
         return jsonify({"message": "Actor creado con éxito", "status": "success"}), 201
@@ -61,8 +53,17 @@ def eliminar_actor(actor_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    ActorDB.objects.get(id=ObjectId(actor_id)).delete()
-    return jsonify({"message": "Actor eliminado con éxito", "status": "success"}), 200
+    actor = Actor.objects(id=ObjectId(actor_id)).first()
+    if not actor:
+        return jsonify({"message": "Actor no encontrado", "status": "fail"}), 404
+    
+    # Elimina referencias en Serie y Pelicula
+    SerieDB.objects.update(pull__actores=actor)  # Remueve el actor de las listas de actores en Serie
+    PeliculaDB.objects.update(pull__actores=actor)  # Remueve el actor de las listas de actores en Pelicula
+    
+    actor.delete()
+    
+    return jsonify({"message": "Actor eliminado correctamente", "status": "success"}), 200
    
 
 @app.route('/listar_actores', methods=['GET'])
@@ -116,8 +117,5 @@ def obtener_actor(actor_id):  # noqa: E501
     """ 
 
     actor_db = ActorDB.objects.get(id=ObjectId(actor_id))
-
-    a = actor_db.to_api_model()
-    print(f"DATA ACTOR: {type(a.fecha_nacimiento)}")
-
-    return jsonify(actor_db.to_api_model())
+    actor_api = actor_db.to_api_model()
+    return jsonify(actor_api)

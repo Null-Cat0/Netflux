@@ -39,7 +39,7 @@ class Pelicula(Model):
             'sinopsis': str,
             'anio_estreno': int,
             'duracion': int,
-            'actores': List[Actor]
+            'actores': List[str]
         }
 
         self.attribute_map = {
@@ -58,7 +58,7 @@ class Pelicula(Model):
         self._sinopsis = sinopsis
         self._anio_estreno = anio_estreno
         self._duracion = duracion
-        self._actores = actores
+        self._actores = [ObjectId(actor) if isinstance(actor, str) else actor for actor in (actores or [])]
 
     def serialize(self):
         return {
@@ -79,7 +79,7 @@ class Pelicula(Model):
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             duracion=self._duracion,
-            actores=[ObjectId(id) for id in self._actores] if self._actores else []
+            actores=[ObjectId(id) for id in self._actores]
         )
 
     @classmethod

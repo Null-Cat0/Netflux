@@ -57,13 +57,6 @@ def crear_serie():  # noqa: E501
     :rtype: Union[Serie, Tuple[Serie, int], Tuple[Serie, int, Dict[str, str]]
     """
     if request.is_json:
-        # titulo = request.json.get('titulo')
-        # genero = request.json.get('genero')
-        # sinopsis = request.json.get('sinopsis')
-        # anio_estreno = request.json.get('anio_estreno')
-        # temporadas = request.json.get('temporadas')
-        # actores = [ObjectId(id) for id in request.json.get('actores')]
-        # serie_api = Serie(titulo=titulo, genero=genero, sinopsis=sinopsis, anio_estreno=anio_estreno, temporadas=temporadas, actores=actores)
         serie_api = Serie.from_dict(request.get_json())
         serie_db = serie_api.to_db_model()
         serie_db.save()
@@ -136,5 +129,4 @@ def obtener_serie(serie_id):  # noqa: E501
     :rtype: Union[Serie, Tuple[Serie, int], Tuple[Serie, int, Dict[str, str]]
     """
     serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
-    print("estoy aqui")
     return jsonify(serie_db.to_api_model())

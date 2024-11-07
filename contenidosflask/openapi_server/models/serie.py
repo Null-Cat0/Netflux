@@ -30,17 +30,33 @@ class CapituloEmbedded(Model):
     def numero(self):
         return self._numero
 
+    @numero.setter
+    def numero(self, numero):
+        self._numero = numero
+
     @property
     def titulo(self):
         return self._titulo
+
+    @titulo.setter
+    def titulo(self, titulo):
+        self._titulo = titulo
 
     @property
     def duracion(self):
         return self._duracion
 
+    @duracion.setter
+    def duracion(self, duracion):
+        self._duracion = duracion
+
     @property
     def sinopsis(self):
         return self._sinopsis
+
+    @sinopsis.setter
+    def sinopsis(self, sinopsis):
+        self._sinopsis = sinopsis
     
     def serialize(self):
         return {
@@ -68,7 +84,7 @@ class TemporadaEmbedded(Model):
         }
         self.attribute_map = {
             'numero': 'numero',
-            'anio_lanzamiento': 'anioLanzamiento',
+            'anio_lanzamiento': 'anio_lanzamiento',
             'capitulos': 'capitulos'
         }
         self._numero = numero
@@ -83,23 +99,24 @@ class TemporadaEmbedded(Model):
         return self._numero
 
     @numero.setter
-    def id(self, numero: int):
-        """Sets the id of this Serie.
-
-
-        :param id: The id of this Serie.
-        :type id: int
-        """
-
+    def numero(self, numero: int):
         self._numero = numero
 
     @property
     def anio_lanzamiento(self):
         return self._anio_lanzamiento
 
+    @anio_lanzamiento.setter
+    def anio_lanzamiento(self, anio_lanzamiento: int):
+        self._anio_lanzamiento = anio_lanzamiento
+
     @property
     def capitulos(self):
         return self._capitulos
+
+    @capitulos.setter
+    def capitulos(self, capitulos: List[CapituloEmbedded]):
+        self._capitulos = capitulos
     
     def serialize(self):
         return {
@@ -126,7 +143,7 @@ class Serie(Model):
             'sinopsis': str,
             'anio_estreno': int,
             'temporadas': List[TemporadaEmbedded],
-            'actores': List[Actor]
+            'actores': List[str]
         }
         self.attribute_map = {
             'id': 'id',
@@ -142,13 +159,10 @@ class Serie(Model):
         self._genero = genero
         self._sinopsis = sinopsis
         self._anio_estreno = anio_estreno
-        
         self._temporadas = [
             TemporadaEmbedded(**temporada) if isinstance(temporada, dict) else temporada
             for temporada in (temporadas or [])
         ]
-        
-        # Convertir los actores en una lista de ObjectIds si no lo están ya
         self._actores = [ObjectId(actor) if isinstance(actor, str) else actor for actor in (actores or [])]
     
 
@@ -171,7 +185,7 @@ class Serie(Model):
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             temporadas=[temporada.to_db_model() for temporada in self._temporadas],
-            actores=[ObjectId(id) for id in self._actores] if self._actores else []
+            actores=[ObjectId(id) for id in self._actores]
         )
 
 

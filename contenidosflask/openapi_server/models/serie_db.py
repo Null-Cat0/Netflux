@@ -1,4 +1,6 @@
 from openapi_server import db
+from openapi_server.models.actor_db import ActorDB
+from bson import ObjectId
 
 class CapituloEmbeddedDB(db.EmbeddedDocument):
     numero = db.IntField(required=True)
@@ -36,10 +38,9 @@ class SerieDB(db.Document):
     sinopsis = db.StringField(required=True)
     anio_estreno = db.IntField(required=True)
     temporadas = db.ListField(db.EmbeddedDocumentField(TemporadaEmbeddedDB))  # Temporadas con capítulos anidados
-    actores = db.ListField(db.ObjectIdField())
+    actores = db.ListField(db.ReferenceField(ActorDB))
 
     def to_api_model(self):
-        from openapi_server.models.actor_db import ActorDB
         from openapi_server.models.serie import Serie
         return Serie(
             id=str(self.id),
@@ -48,5 +49,5 @@ class SerieDB(db.Document):
             sinopsis=self.sinopsis,
             anio_estreno=self.anio_estreno,
             temporadas=[temporada.to_api_model() for temporada in self.temporadas],
-            actores=[actor.to_api_model() for actor in ActorDB.objects(id__in=self.actores)]
+            actores=[actor.to_api_model() for actor in self.actores]
         )

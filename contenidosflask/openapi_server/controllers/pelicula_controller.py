@@ -56,13 +56,7 @@ def crear_pelicula():  # noqa: E501
     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
     """
     if request.is_json:
-        titulo = request.json.get('titulo')
-        genero = request.json.get('genero')
-        sinopsis = request.json.get('sinopsis')
-        anio_estreno = request.json.get('anio_estreno')
-        duracion = request.json.get('duracion')
-        actores = [ObjectId(id) for id in request.json.get('actores')]
-        pelicula_api = Pelicula(titulo=titulo, genero=genero, sinopsis=sinopsis, anio_estreno=anio_estreno, duracion=duracion, actores=actores)
+        pelicula_api = Pelicula.from_dict(request.get_json())
         pelicula_db = pelicula_api.to_db_model()
         pelicula_db.save()
         return jsonify({"message": "Película creada con éxito", "status": "success"}), 201

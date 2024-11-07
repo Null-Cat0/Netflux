@@ -15,9 +15,6 @@ def _deserialize(data, klass):
     if data is None:
         return None
 
-    print(f"\n\nDATA: {data}")
-    print(f"KLASS: {klass}\n\n")
-
     if klass in (int, float, str, bool, bytearray):
         return _deserialize_primitive(data, klass)
     elif klass == object:
@@ -113,9 +110,6 @@ def deserialize_model(data, klass):
         return data
 
     for attr, attr_type in instance.openapi_types.items():
-        print(f"\n\nATTR: {attr}")
-        print(f"ATTR TYPE: {attr_type}\n\n")
-        print(f"\n\nINSTANCE: {instance.attribute_map}\n\n")
         if data is not None \
                 and instance.attribute_map[attr] in data \
                 and isinstance(data, (list, dict)):
