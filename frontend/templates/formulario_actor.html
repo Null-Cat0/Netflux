@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Añadir Actor - Netflux{% endblock %}
+
+{% block head %}
+    <title>Añadir Actor - Netflux</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
+    <div class="card p-5 shadow-lg" style="max-width: 450px; width: 100%; background-color: #1c1c1c; border-radius: 12px;">
+        <h2 class="text-center text-white mb-4">Añadir Actor</h2>
+
+        <!-- Formulario para añadir actor -->
+        <form action="" method="POST">
+            <div class="mb-4">
+                <label for="nombre" class="form-label text-white">Nombre del Actor</label>
+                <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="nombre" name="nombre" 
+                       placeholder="Ingrese el nombre del actor" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="fecha_nacimiento" class="form-label text-white">Fecha de Nacimiento</label>
+                <input type="date" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="fecha_nacimiento" name="fecha_nacimiento" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="biografia" class="form-label text-white">Biografía</label>
+                <textarea class="form-control bg-dark text-white border-0 rounded px-3" id="biografia" name="biografia" 
+                          rows="4" placeholder="Escriba una breve biografía del actor" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100 rounded-pill">
+                Crear actor
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

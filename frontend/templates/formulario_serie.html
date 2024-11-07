@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Añadir Serie - Netflux{% endblock %}
+
+{% block head %}
+    <title>Añadir Serie - Netflux</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
+    <div class="card p-5 shadow-lg" style="max-width: 450px; width: 100%; background-color: #1c1c1c; border-radius: 12px;">
+        <h2 class="text-center text-white mb-4">Añadir Serie</h2>
+
+        <!-- Formulario para añadir serie -->
+        <form action="" method="POST">
+            <div class="mb-4">
+                <label for="titulo" class="form-label text-white">Título de la Serie</label>
+                <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="titulo" name="titulo" 
+                       placeholder="Ingrese el título de la serie" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="genero" class="form-label text-white">Género</label>
+                <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="genero" name="genero" required>
+                    <option value="" selected>Seleccione un género</option>
+                    <option value="Acción">Comedia</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Fantasía">Accion</option>
+                    <option value="Terror">Terror</option>
+                    <option value="Ciencia Ficción">Ciencia_Ficcion</option>
+                    <option value="Romance">Romance</option>
+                    <option value="Documental">Documental</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="sinopsis" class="form-label text-white">Sinopsis</label>
+                <textarea class="form-control bg-dark text-white border-0 rounded px-3" id="sinopsis" name="sinopsis" 
+                          rows="4" placeholder="Escriba una breve biografía del actor" required></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="anio_estreno" class="form-label text-white">Año de estreno</label>
+                <input type="date" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="anio_estreno" name="anio_estreno" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="actores" class="form-label text-white">Actores</label>
+                <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="actores" name="actores" required>
+                    <option value="" selected>Seleccione un género</option>
+                    <option value="Acción">Comedia</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Fantasía">Accion</option>
+                    <option value="Terror">Terror</option>
+                    <option value="Ciencia Ficción">Ciencia_Ficcion</option>
+                    <option value="Romance">Romance</option>
+                    <option value="Documental">Documental</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100 rounded-pill">
+                Crear serie
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

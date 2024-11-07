@@ -32,7 +32,22 @@
                     <a class="nav-link" href="#">Novedades</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('perfil.obtener_mi_lista')}}">Mi lista</a>
+                    <a class="nav-link" href="{{url_for('perfil.obtener_mi_lista', perfil_id=session['perfil_id'])}}">Mi lista</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('perfil.crear_actor')}}">Crear Actor</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('perfil.crear_pelicula')}}">Crear Pelicula</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('perfil.crear_serie')}}">Crear Serie</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('perfil.crear_temporada')}}">Crear Temporada</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('perfil.crear_capitulo')}}">Crear Capitulo</a>
                 </li>
                 {% endif %}
             </ul>

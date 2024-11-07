@@ -213,3 +213,89 @@ def obtener_mi_lista(perfil_id):
     #     flash(f"Error: {data['message']}", 'danger')
         
     return render_template("mi_lista.html")
+
+@perfil_bp.route('/crear_actor', methods=['GET', 'POST'])
+def crear_actor():
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))  # Asegúrate de tener una ruta de login
+    
+    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
+    
+    if request.method == 'GET':
+        return render_template("formulario_actor.html")
+
+    if request.method == 'POST':
+        return render_template("formulario_actor.html")
+    
+    return render_template("formulario_actor.html")
+
+
+@perfil_bp.route('/crear_pelicula', methods=['GET', 'POST'])
+def crear_pelicula():
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))
+    
+    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
+    
+    if request.method == 'GET':
+        return render_template("formulario_pelicula.html")
+    
+    if request.method == 'POST':
+        return render_template("formulario_pelicula.html")
+    
+    return render_template("formulario_pelicula.html")
+
+@perfil_bp.route('/crear_serie', methods=['GET', 'POST'])
+def crear_serie():
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))
+    
+    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
+    
+    if request.method == 'GET':
+        return render_template("formulario_serie.html")
+    
+    if request.method == 'POST':
+        return render_template("formulario_serie.html")
+    
+    return render_template("formulario_serie.html")
+
+@perfil_bp.route('/crear_temporada', methods=['GET', 'POST'])
+def crear_temporada():
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))
+    
+    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
+    
+    if request.method == 'GET':
+        return render_template("formulario_temporada.html")
+    
+    if request.method == 'POST':
+        return render_template("formulario_temporada.html")
+    
+    return render_template("formulario_temporada.html")
+
+@perfil_bp.route('/crear_capitulo', methods=['GET', 'POST'])
+def crear_capitulo():
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))
+    
+    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
+    
+    if request.method == 'GET':
+        return render_template("formulario_capitulo.html")
+    
+    if request.method == 'POST':
+        return render_template("formulario_capitulo.html")
+    
+    return render_template("formulario_capitulo.html")
