@@ -34,7 +34,7 @@ class SerieDB(db.Document):
     meta = {'collection': 'series'}
 
     titulo = db.StringField(required=True)
-    genero = db.StringField(required=True)
+    genero = db.ListField(db.StringField(), required=True)
     sinopsis = db.StringField(required=True)
     anio_estreno = db.IntField(required=True)
     temporadas = db.ListField(db.EmbeddedDocumentField(TemporadaEmbeddedDB))  # Temporadas con capítulos anidados

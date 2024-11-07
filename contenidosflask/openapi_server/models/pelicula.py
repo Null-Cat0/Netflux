@@ -35,7 +35,7 @@ class Pelicula(Model):
         self.openapi_types = {
             'id': str,
             'titulo': str,
-            'genero': str,
+            'genero': List[str],
             'sinopsis': str,
             'anio_estreno': int,
             'duracion': int,
@@ -138,7 +138,7 @@ class Pelicula(Model):
         self._titulo = titulo
 
     @property
-    def genero(self) -> str:
+    def genero(self) -> List[str]:
         """Gets the genero of this Pelicula.
 
 
@@ -148,7 +148,7 @@ class Pelicula(Model):
         return self._genero
 
     @genero.setter
-    def genero(self, genero: str):
+    def genero(self, genero: List[str]):
         """Sets the genero of this Pelicula.
 
 

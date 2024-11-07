@@ -5,7 +5,7 @@ class PeliculaDB(db.Document):
     meta = {'collection': 'peliculas'}  # Nombre de la colección en MongoDB
 
     titulo = db.StringField(required=True)
-    genero = db.StringField(required=True)
+    genero = db.ListField(db.StringField(), required=True)
     sinopsis = db.StringField(required=True)
     anio_estreno = db.IntField(required=True)
     duracion = db.IntField(required=True)
