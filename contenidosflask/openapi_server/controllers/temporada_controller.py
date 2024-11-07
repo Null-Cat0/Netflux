@@ -3,8 +3,8 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.models.temporada import Temporada  # noqa: E501
-from openapi_server.models.temporada_update import TemporadaUpdate  # noqa: E501
+# from openapi_server.models.temporada import Temporada  # noqa: E501
+# from openapi_server.models.temporada_update import TemporadaUpdate  # noqa: E501
 from openapi_server import util
 
 

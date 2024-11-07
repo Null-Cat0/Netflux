@@ -52,7 +52,7 @@ class Pelicula(Model):
             'titulo': 'titulo',
             'genero': 'genero',
             'sinopsis': 'sinopsis',
-            'anio_estreno': 'anioEstreno',
+            'anio_estreno': 'anio_estreno',
             'duracion': 'duracion',
             'temporadas': 'temporadas',
             'actores': 'actores'

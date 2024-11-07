@@ -3,8 +3,8 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.models.capitulo import Capitulo  # noqa: E501
-from openapi_server.models.capitulo_update import CapituloUpdate  # noqa: E501
+# from openapi_server.models.capitulo import Capitulo  # noqa: E501
+# from openapi_server.models.capitulo_update import CapituloUpdate  # noqa: E501
 from openapi_server import util
 
 
