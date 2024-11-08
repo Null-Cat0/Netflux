@@ -36,7 +36,7 @@ class Temporada(Model):
         self.attribute_map = {
             'id': 'id',
             'numero': 'numero',
-            'anio_lanzamiento': 'anioLanzamiento',
+            'anio_lanzamiento': 'anio_lanzamiento',
             'capitulos': 'capitulos'
         }
 

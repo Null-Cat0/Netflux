@@ -1,4 +1,3 @@
-from flask import Flask
 from flask.json import JSONEncoder
 from openapi_server.models.base_model import Model
 

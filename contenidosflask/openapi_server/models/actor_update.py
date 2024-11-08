@@ -12,7 +12,7 @@ class ActorUpdate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, nombre=None, fecha_nacimiento=None, biografia=None):  # noqa: E501
+    def __init__(self, id=None, nombre=None, fecha_nacimiento=None, nacionalidad=None, biografia=None):  # noqa: E501
         """ActorUpdate - a model defined in OpenAPI
 
         :param id: The id of this ActorUpdate.  # noqa: E501
@@ -28,20 +28,32 @@ class ActorUpdate(Model):
             'id': int,
             'nombre': str,
             'fecha_nacimiento': date,
+            'nacionalidad': str,
             'biografia': str
         }
 
         self.attribute_map = {
             'id': 'id',
             'nombre': 'nombre',
-            'fecha_nacimiento': 'fechaNacimiento',
+            'fecha_nacimiento': 'fecha_nacimiento',
+            'nacionalidad': 'nacionalidad',
             'biografia': 'biografia'
         }
 
         self._id = id
         self._nombre = nombre
         self._fecha_nacimiento = fecha_nacimiento
+        self._nacionalidad = nacionalidad
         self._biografia = biografia
+
+    def to_db_model(self):
+        from openapi_server.models.actor_db import ActorDB
+        return ActorDB(
+            nombre=self._nombre,
+            fecha_nacimiento=self._fecha_nacimiento,
+            nacionalidad=self._nacionalidad,
+            biografia=self._biografia
+        )
 
     @classmethod
     def from_dict(cls, dikt) -> 'ActorUpdate':
@@ -122,6 +134,29 @@ class ActorUpdate(Model):
             raise ValueError("Invalid value for `fecha_nacimiento`, must not be `None`")  # noqa: E501
 
         self._fecha_nacimiento = fecha_nacimiento
+
+    @property
+    def nacionalidad(self) -> str:
+        """Gets the nacionalidad of this Actor.
+
+
+        :return: The nacionalidad of this Actor.
+        :rtype: str
+        """
+        return self._nacionalidad
+    
+    @nacionalidad.setter
+    def nacionalidad(self, nacionalidad: str):
+        """Sets the nacionalidad of this Actor.
+
+
+        :param nacionalidad: The nacionalidad of this Actor.
+        :type nacionalidad: str
+        """
+        if nacionalidad is None:
+            raise ValueError("Invalid value for `nacionalidad`, must not be `None`")  # noqa: E501
+
+        self._nacionalidad = nacionalidad
 
     @property
     def biografia(self) -> str:
