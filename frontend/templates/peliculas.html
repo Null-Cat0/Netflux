@@ -12,12 +12,18 @@
     <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Lista de Películas</h1>
 
     <!-- Botón de Añadir Película -->
-    <div class="d-flex justify-content-end mb-4">
-        <a href="" class="btn btn-danger">
-            <i class="fas fa-plus me-2"></i> Añadir Película
-        </a>
-    </div>
 
+    {% if es_admin %}    
+        <div class="d-flex justify-content-end mb-4">
+            <a href="{{url_for('pelicula.crear_pelicula')}}" class="btn btn-danger">
+                <i class="fas fa-plus me-2"></i> Añadir Película
+            </a>
+
+            <a href="{{url_for('actor.crear_actor')}}" class="ms-5 btn btn-danger">
+                <i class="fas fa-plus me-2"></i> Añadir Actor
+            </a>
+        </div>
+    {%endif%}
     <!-- Lista de Películas -->
     {% if peliculas %}
         <div class="row">   

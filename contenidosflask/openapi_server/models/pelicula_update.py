@@ -95,7 +95,7 @@ class PeliculaUpdate(Model):
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             duracion=self._duracion,
-            actores=[ObjectId(id) for id in self._actores],
+            actores=[ObjectId(actor) for actor in self._actores],
 
             secuela=ObjectId(self._secuela) if self._secuela else None,
             precuela=ObjectId(self._precuela) if self._precuela else None

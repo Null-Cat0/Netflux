@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+ {% extends 'base.html' %}
 
 {% block title %}Añadir Película - Netflux{% endblock %}
 
@@ -22,16 +22,16 @@
 
             <div class="mb-4">
                 <label for="genero" class="form-label text-white">Género</label>
-                <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="genero" name="genero" required>
-                    <option value="" selected>Seleccione un género</option>
-                    <option value="Acción">Comedia</option>
-                    <option value="Drama">Drama</option>
-                    <option value="Fantasía">Accion</option>
-                    <option value="Terror">Terror</option>
-                    <option value="Ciencia Ficción">Ciencia_Ficcion</option>
-                    <option value="Romance">Romance</option>
-                    <option value="Documental">Documental</option>
-                </select>
+                {% set genres_list = ['comedia', 'drama', 'accion', 'terror', 'ciencia_ficcion', 'romance',
+                'documental'] %}
+                {% for genre in genres_list %}
+                <div class="form-check me-3 mb-2">
+                    <input type="checkbox" class="form-check-input" id="genre_{{ genre }}" name="generos"
+                        value="{{ genre }}" {% if perfil and genre in perfil.preferencias_contenido.generos %} checked {% endif %}>
+                    <label class="form-check-label text-white" for="genre_{{ genre }}">{{ genre.capitalize()
+                        }}</label>
+                </div>
+                {% endfor %}
             </div>
 
             <div class="mb-4">
@@ -42,7 +42,7 @@
 
             <div class="mb-4">
                 <label for="anio_estreno" class="form-label text-white">Año de estreno</label>
-                <input type="date" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="anio_estreno" name="anio_estreno" required>
+                <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="anio_estreno" name="anio_estreno" required>
             </div>
 
             <div class="mb-4">
@@ -52,15 +52,11 @@
 
             <div class="mb-4">
                 <label for="actores" class="form-label text-white">Actores</label>
-                <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="actores" name="actores" required>
-                    <option value="" selected>Seleccione un género</option>
-                    <option value="Acción">Comedia</option>
-                    <option value="Drama">Drama</option>
-                    <option value="Fantasía">Accion</option>
-                    <option value="Terror">Terror</option>
-                    <option value="Ciencia Ficción">Ciencia_Ficcion</option>
-                    <option value="Romance">Romance</option>
-                    <option value="Documental">Documental</option>
+                <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="actores" name="actores">
+                    <option value="" selected>Seleccione un Actor</option>
+                    {% for actor in actores %}
+                        <option value="{{ actor.id }}">{{ actor.nombre }}</option>
+                    {% endfor %}
                 </select>
             </div>
 

@@ -2,6 +2,7 @@ import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
 from global_config import ContenidosConfig as contConf
+from global_config import UsuariosConfig as userConf
 
 serie_bp = Blueprint('serie', __name__)
 
@@ -30,6 +31,15 @@ def obtener_series():
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))
+        # Obtener el usuario correspondiente al ID y comprobar si es admin
+    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}")
+    if response.status_code == 200:
+        data = response.json()
+        es_admin = data.get('esAdmin')
+    else:
+        data = response.json()
+        flash(f"Error: {data['message']}", 'danger')
         return redirect(url_for('user.login'))
     
     return render_template("series.html")

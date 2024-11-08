@@ -24,7 +24,6 @@ def login():
             'correo_electronico': correo_electronico,
             'password': password
         }
-
         # Hacer la llamada POST al microservicio de autenticación
         response = requests.post(
             f"{userConf.USUARIOS_BASE_URL}/iniciar_sesion", json=login_data)
@@ -80,7 +79,7 @@ def crear_usuario():
         pais = request.form.get('pais')
         plan_suscripcion = request.form.get('plan_suscripcion')
         dispositivos.append(request.form.get('dispositivos'))
-        esAdmin = request.form.get('a   dmin')
+        esAdmin = request.form.get('admin')
 
         # Crear el payload para enviar al microservicio
         usuario_data = {
