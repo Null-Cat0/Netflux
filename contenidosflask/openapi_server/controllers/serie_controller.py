@@ -10,7 +10,6 @@ from flask import jsonify
 from bson import ObjectId
 from openapi_server.models.serie_db import SerieDB
 
-
 def actualizar_serie(serie_id, serie_update):  # noqa: E501
     """Actualizar una serie existente
 
@@ -27,7 +26,6 @@ def actualizar_serie(serie_id, serie_update):  # noqa: E501
         serie_update = SerieUpdate.from_dict(request.get_json())  # noqa: E501
     return 'do some magic!'
 
-
 def asignar_actor_a_serie(serie_id, asignar_actor_a_serie_request):  # noqa: E501
     """Asignar un actor a una serie
 
@@ -43,7 +41,6 @@ def asignar_actor_a_serie(serie_id, asignar_actor_a_serie_request):  # noqa: E50
     if request.is_json:
         asignar_actor_a_serie_request = AsignarActorASerieRequest.from_dict(request.get_json())  # noqa: E501
     return 'do some magic!'
-
 
 @app.route('/crear_serie', methods=['POST'])
 def crear_serie():  # noqa: E501
@@ -62,8 +59,6 @@ def crear_serie():  # noqa: E501
         serie_db.save()
         return jsonify({"message": "Serie creada con éxito", "status": "success"}), 201
     
-
-
 def eliminar_actor_serie(serie_id, actor_id):  # noqa: E501
     """Elimnar un actor de una serie
 

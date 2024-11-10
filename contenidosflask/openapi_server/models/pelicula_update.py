@@ -69,23 +69,8 @@ class PeliculaUpdate(Model):
         self._actores = [ObjectId(actor) if isinstance(actor, str) else actor for actor in (actores or [])]
 
         # Se asume que secuela y precuela son IDs de otras películas u objetos de tipo Pelicula
-        if secuela is None:
-            self._secuela = None
-        else:
-            aux = ObjectId(secuela) if isinstance(secuela, str) else secuela
-            self._secuela = {
-                "id": aux.id,
-                "titulo": aux.titulo
-            }
-        
-        if precuela is None:
-            self._precuela = None
-        else:
-            aux = ObjectId(precuela) if isinstance(precuela, str) else precuela
-            self._precuela = {
-                "id": aux.id,
-                "titulo": aux.titulo
-            }
+        self._secuela = ObjectId(secuela) if isinstance(secuela, str) else secuela
+        self._precuela = ObjectId(precuela) if isinstance(precuela, str) else precuela
 
     def to_db_model(self):
         from openapi_server.models.pelicula_db import PeliculaDB
@@ -97,8 +82,8 @@ class PeliculaUpdate(Model):
             duracion=self._duracion,
             actores=[ObjectId(actor) for actor in self._actores],
 
-            secuela=ObjectId(self._secuela) if self._secuela else None,
-            precuela=ObjectId(self._precuela) if self._precuela else None
+            secuela=ObjectId(self._secuela),
+            precuela=ObjectId(self._precuela)
         )
 
     @classmethod

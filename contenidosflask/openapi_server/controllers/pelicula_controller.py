@@ -93,7 +93,15 @@ def crear_pelicula():  # noqa: E501
     if request.is_json:
         pelicula_api = Pelicula.from_dict(request.get_json())
 
-    if (pelicula_api):
+    if pelicula_api:
+        if pelicula_api.secuela:
+            if not PeliculaDB.objects.get(titulo=pelicula_api.secuela):
+                return jsonify({"message": "Error al crear la película, la secuela no existe en la base de datos", "status": "error"}), 400
+
+        if pelicula_api.precuela:
+             if not PeliculaDB.objects.get(titulo=pelicula_api.precuela):
+                return jsonify({"message": "Error al crear la película, la precuela no existe en la base de datos", "status": "error"}), 400
+
         pelicula_db = pelicula_api.to_db_model()
         pelicula_db.save()
         return jsonify({"message": "Película creada con éxito", "status": "success"}), 201
@@ -212,7 +220,8 @@ def obtener_precuela_pelicula(pelicula_id):  # noqa: E501
     if not pelicula_db:
         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
 
-    return jsonify(pelicula_db.precuela), 200
+    pelicula_api = pelicula_db.to_api_model()
+    return jsonify(pelicula_api.precuela), 200
 
 @app.route('/obtener_secuela_pelicula/<pelicula_id>', methods=['GET'])
 def obtener_secuela_pelicula(pelicula_id):  # noqa: E501
@@ -230,4 +239,5 @@ def obtener_secuela_pelicula(pelicula_id):  # noqa: E501
     if not pelicula_db:
         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
 
-    return jsonify(pelicula_db.secuela), 200
+    pelicula_api = pelicula_db.to_api_model()
+    return jsonify(pelicula_api.secuela), 200

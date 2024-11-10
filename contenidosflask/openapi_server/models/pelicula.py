@@ -65,8 +65,10 @@ class Pelicula(Model):
         self._anio_estreno = anio_estreno
         self._duracion = duracion
         self._actores = [ObjectId(actor) if isinstance(actor, str) else actor for actor in (actores or [])]
-        self._secuela = secuela if isinstance(secuela, str) else secuela
-        self._precuela = precuela if isinstance(precuela, str) else precuela
+        
+        # Secuela y precuela son strings con el título de la película
+        self._secuela = secuela
+        self._precuela = precuela
         
     def serialize(self):
         return {
@@ -92,8 +94,9 @@ class Pelicula(Model):
             duracion=self._duracion,
             actores=[ObjectId(actor) for actor in self._actores],
 
-            secuela=ObjectId(self._secuela) if self._secuela else None,
-            precuela=ObjectId(self._precuela) if self._precuela else None
+            # Se asume que la secuela y precuela son títulos de otras películas
+            secuela=PeliculaDB.objects.get(titulo=self._secuela) if self._secuela else None,
+            precuela=PeliculaDB.objects.get(titulo=self._precuela) if self._precuela else None
         )
 
     @classmethod
@@ -263,7 +266,7 @@ class Pelicula(Model):
         self._actores = actores
 
     @property
-    def secuela(self) -> {str, str}:
+    def secuela(self) -> str:
         """Gets the secuela of this Pelicula.
 
 
@@ -273,7 +276,7 @@ class Pelicula(Model):
         return self._secuela
 
     @secuela.setter
-    def secuela(self, secuela: {str, str}):
+    def secuela(self, secuela: str):
         """Sets the secuela of this Pelicula.
 
 
@@ -284,7 +287,7 @@ class Pelicula(Model):
         self._secuela = secuela
 
     @property
-    def precuela(self) -> {str, str}:
+    def precuela(self) -> str:
         """Gets the precuela of this Pelicula.
 
 
@@ -294,7 +297,7 @@ class Pelicula(Model):
         return self._precuela
 
     @precuela.setter
-    def precuela(self, precuela: {str, str}):
+    def precuela(self, precuela: str):
         """Sets the precuela of this Pelicula.
 
 

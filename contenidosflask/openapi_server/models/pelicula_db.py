@@ -16,21 +16,6 @@ class PeliculaDB(db.Document):
 
     def to_api_model(self):
         from openapi_server.models.pelicula import Pelicula
-
-        secuela_update = None
-        precuela_update = None
-
-        if self.secuela:
-            secuela_update = {
-                "id": str(self.secuela.id),
-                "titulo": self.secuela.titulo
-            }
-        if self.precuela:
-            precuela_update = {
-                "id": str(self.precuela.id),
-                "titulo": self.precuela.titulo
-            }
-
         return Pelicula(
             id=str(self.id),  
             titulo=self.titulo,
@@ -39,6 +24,8 @@ class PeliculaDB(db.Document):
             anio_estreno=self.anio_estreno,
             duracion=self.duracion,
             actores=[actor.to_api_model() for actor in self.actores],
-            secuela=secuela_update,
-            precuela=precuela_update
+
+            # Se retorna el título de la secuela y la precuela
+            secuela=self.secuela.titulo if self.secuela else None,
+            precuela=self.precuela.titulo if self.precuela else None
         )
