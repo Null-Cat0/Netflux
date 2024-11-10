@@ -8,19 +8,50 @@
 
     <!-- Sección Mi Lista -->
     <!-- Sección de Tendencias -->
-    <h3 class="text-white mb-3">Mi Lista</h3>
-    <div class="row mb-5">
-        {% for i in range() %}
-            <div class="col-md-2">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-white">Mi lista</h1>
+        </div>
+    </div>
+
+
+    <!-- Sección de Películas -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-white">Películas</h2>
+        </div>
+    </div>
+    <div class="row">
+        {% for i in range(1,5) %}
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
                 <div class="card bg-dark text-white">
-                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Tendencia {{ i }}">
+                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Recomendación {{ i }}">
                     <div class="card-body">
-                        <h5 class="card-title">Título {{ i + 1 }}</h5>
+                        <h5 class="card-title">Movie title</h5>
                         <a href="#" class="btn btn-danger btn-sm">Ver</a>
                     </div>
                 </div>
             </div>
         {% endfor %}
     </div>
+        <!-- Sección de Series -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-white">Series</h2>
+            </div>
+        </div>
+        <div class="row">
+            {% for i in range(1,5) %}
+                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <div class="card bg-dark text-white">
+                        <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Recomendación {{ i }}">
+                        <div class="card-body">
+                            <h5 class="card-title">Serie title</h5>
+                            <a href="#" class="btn btn-danger btn-sm">Ver</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
 
 {% endblock %}

@@ -23,17 +23,15 @@
                         href="{{ url_for('pagina_inicio', perfil_id=session['perfil_id']) }}">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Series</a>
+                    <a class="nav-link" href="{{url_for('serie.obtener_series')}}">Series</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Películas</a>
+                    <a class="nav-link" href="{{url_for('pelicula.obtener_peliculas')}}">Películas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Novedades</a>
+                    <a class="nav-link" href="{{url_for('perfil.obtener_mi_lista', perfil_id=session['perfil_id'])}}">Mi lista</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Mi lista</a>
-                </li>
+               
                 {% endif %}
             </ul>
 

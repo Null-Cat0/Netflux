@@ -1,0 +1,69 @@
+ {% extends 'base.html' %}
+
+{% block title %}Añadir Película - Netflux{% endblock %}
+
+{% block head %}
+    <title>Añadir Película - Netflux</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
+    <div class="card p-5 shadow-lg" style="max-width: 450px; width: 100%; background-color: #1c1c1c; border-radius: 12px;">
+        <h2 class="text-center text-white mb-4">Añadir Película</h2>
+
+        <!-- Formulario para añadir película -->
+        <form action="" method="POST">
+            <div class="mb-4">
+                <label for="titulo" class="form-label text-white">Título de la Película</label>
+                <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="titulo" name="titulo" 
+                       placeholder="Ingrese el título de la película" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="genero" class="form-label text-white">Género</label>
+                {% set genres_list = ['comedia', 'drama', 'accion', 'terror', 'ciencia_ficcion', 'romance',
+                'documental'] %}
+                {% for genre in genres_list %}
+                <div class="form-check me-3 mb-2">
+                    <input type="checkbox" class="form-check-input" id="genre_{{ genre }}" name="generos"
+                        value="{{ genre }}" {% if perfil and genre in perfil.preferencias_contenido.generos %} checked {% endif %}>
+                    <label class="form-check-label text-white" for="genre_{{ genre }}">{{ genre.capitalize()
+                        }}</label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-4">
+                <label for="sinopsis" class="form-label text-white">Sinopsis</label>
+                <textarea class="form-control bg-dark text-white border-0 rounded px-3" id="sinopsis" name="sinopsis" 
+                          rows="4" placeholder="Escriba una breve sinopsis de la película" required></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="anio_estreno" class="form-label text-white">Año de estreno</label>
+                <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="anio_estreno" name="anio_estreno" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="duracion" class="form-label text-white">Duración</label>
+                <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="duracion" name="duracion" min="0" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="actores" class="form-label text-white">Actores</label>
+                <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="actores" name="actores">
+                    <option value="" selected>Seleccione un Actor</option>
+                    {% for actor in actores %}
+                        <option value="{{ actor.id }}">{{ actor.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100 rounded-pill">
+                Crear película
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

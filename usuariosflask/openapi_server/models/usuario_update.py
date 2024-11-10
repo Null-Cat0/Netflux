@@ -14,7 +14,7 @@ class UsuarioUpdate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, nombre=None, correo_electronico=None, password=None, pais=None, plan_suscripcion=None, dispositivos=None, perfiles=None):  # noqa: E501
+    def __init__(self, id=None, nombre=None, correo_electronico=None, password=None, pais=None, plan_suscripcion=None, dispositivos=None, perfiles=None, esAdmin=None):  # noqa: E501
         """UsuarioUpdate - a model defined in OpenAPI
 
         :param id: The id of this UsuarioUpdate.  # noqa: E501
@@ -40,7 +40,8 @@ class UsuarioUpdate(Model):
             'pais': str,
             'plan_suscripcion': str,
             'dispositivos': List[str],
-            'perfiles': List[Perfil]
+            'perfiles': List[Perfil],
+            'esAdmin': bool
         }
 
         self.attribute_map = {
@@ -51,7 +52,8 @@ class UsuarioUpdate(Model):
             'pais': 'pais',
             'plan_suscripcion': 'plan_suscripcion',
             'dispositivos': 'dispositivos',
-            'perfiles': 'perfiles'
+            'perfiles': 'perfiles',
+            'esAdmin': 'esAdmin'    
         }
 
         self._id = id
@@ -62,6 +64,7 @@ class UsuarioUpdate(Model):
         self._plan_suscripcion = plan_suscripcion
         self._dispositivos = dispositivos
         self._perfiles = perfiles
+        self._esAdmin = esAdmin
 
     @classmethod
     def from_dict(cls, dikt) -> 'UsuarioUpdate':
@@ -69,19 +72,26 @@ class UsuarioUpdate(Model):
 
         :param dikt: A dict.
         :type: dict
-        :return: The UsuarioUpdate of this UsuarioUpdate.  # noqa: E501
+        :return: The UsuarioUpdate instance created from the dict.
         :rtype: UsuarioUpdate
         """
+        # Convertir 'esAdmin' a booleano explícitamente antes de instanciar
+        if 'esAdmin' in dikt:
+            dikt['esAdmin'] = True if str(dikt['esAdmin']) == '1' else False
+
         return util.deserialize_model(dikt, cls)
+
     
     def to_db_model(self):
         from openapi_server.models.usuario_db import UsuarioDB
+        
         return UsuarioDB(
             nombre=self.nombre,
             correo_electronico=self.correo_electronico,
             password=self.password,
             pais=self.pais,
             plan_suscripcion=self.plan_suscripcion,
+            esAdmin=self.esAdmin
         )
 
     @property
@@ -265,3 +275,24 @@ class UsuarioUpdate(Model):
         """
 
         self._perfiles = perfiles
+        
+    @property
+    def esAdmin(self) -> bool:
+        """Gets the esAdmin of this UsuarioUpdate.
+
+
+        :return: The esAdmin of this UsuarioUpdate.
+        :rtype: bool
+        """
+        return self._esAdmin
+    @esAdmin.setter
+    def esAdmin(self, esAdmin: bool):
+        """Sets the esAdmin of this UsuarioUpdate.
+
+
+        :param esAdmin: The esAdmin of this UsuarioUpdate.
+        :type esAdmin: bool
+        """
+        if esAdmin is None:
+            raise ValueError("Invalid value for `esAdmin`, must not be `None`")
+        self._esAdmin = esAdmin

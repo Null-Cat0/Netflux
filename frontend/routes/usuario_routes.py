@@ -24,7 +24,6 @@ def login():
             'correo_electronico': correo_electronico,
             'password': password
         }
-
         # Hacer la llamada POST al microservicio de autenticación
         response = requests.post(
             f"{userConf.USUARIOS_BASE_URL}/iniciar_sesion", json=login_data)
@@ -80,6 +79,7 @@ def crear_usuario():
         pais = request.form.get('pais')
         plan_suscripcion = request.form.get('plan_suscripcion')
         dispositivos.append(request.form.get('dispositivos'))
+        esAdmin = request.form.get('admin')
 
         # Crear el payload para enviar al microservicio
         usuario_data = {
@@ -88,7 +88,8 @@ def crear_usuario():
             'password': password,
             'pais': pais,
             'plan_suscripcion': plan_suscripcion,
-            'dispositivos': dispositivos
+            'dispositivos': dispositivos,
+            'esAdmin': esAdmin
         }
 
         # Hacer la solicitud POST al microservicio para crear el usuario
@@ -133,6 +134,7 @@ def editar_usuario():
         pais = request.form.get('pais')
         plan_suscripcion = request.form.get('plan_suscripcion')
         dispositivos.append(request.form.get('dispositivos'))
+        esAdmin = request.form.get('admin')
 
         # Verificación de campos obligatorios
         if not nombre or not correo_electronico:
@@ -146,9 +148,10 @@ def editar_usuario():
             'correo_electronico': correo_electronico,
             'pais': pais,
             'plan_suscripcion': plan_suscripcion,
-            'dispositivos': dispositivos
+            'dispositivos': dispositivos,
+            'esAdmin': esAdmin
         }
-
+        print(usuario_data)
         # Hacer la solicitud PUT al microservicio para actualizar el usuario
         response = requests.put(
             f"{userConf.USUARIOS_BASE_URL}/actualizar_usuario/{usuario_id}", json=usuario_data)
@@ -219,3 +222,4 @@ def borrar_cuenta():
         data = response.json()
         flash(f"Error: {data['message']}", 'danger')
         return redirect(url_for('user.login'))
+    

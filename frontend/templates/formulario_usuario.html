@@ -1,103 +1,88 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>{% if session['logged_user_id'] %}Editar Usuario - Netflux{% else %}Crear cuenta - Netflux{% endif %}</title>
+    <title>{{ "Editar Usuario - Netflux" if session['logged_user_id'] else "Crear cuenta - Netflux" }}</title>
 {% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
-    <div class="card p-5 shadow-lg"
-        style="max-width: 450px; width: 100%; background-color: #1c1c1c; border-radius: 12px;">
+    <div class="card p-5 shadow-lg" style="max-width: 450px; width: 100%; background-color: #1c1c1c; border-radius: 12px;">
         <h2 class="mb-4 text-center text-white">
-            {% if session['logged_user_id'] %}Editar Usuario{% else %}Crea tu cuenta{% endif %}
+            {{ "Editar Usuario" if session['logged_user_id'] else "Crea tu cuenta" }}
         </h2>
-        {% if session['logged_user_id'] %}
-        <form method="POST" action="{{ url_for('user.editar_usuario') }}">
-            {% else %}
-            <form method="POST" action="{{ url_for('user.crear_usuario') }}">
-                {% endif %}
+        
+        <form method="POST" action="{{ url_for('user.editar_usuario' if session['logged_user_id'] else 'user.crear_usuario') }}">
+            
+            <div class="mb-3">
+                <label for="nombre" class="form-label text-white">Nombre</label>
+                <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="nombre" name="nombre" placeholder="Nombre" value="{{ cuenta['nombre'] if cuenta else '' }}" required>
+            </div>
 
-                <div class="mb-3">
-                    <label for="nombre" class="form-label text-white">Nombre</label>
-                    <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="nombre"
-                        name="nombre" placeholder="Nombre" value="{{ cuenta['nombre'] if cuenta else '' }}" required>
-                </div>
-                <div class="mb-3">
-                    <label for="correo_electronico" class="form-label text-white">Correo Electrónico</label>
-                    <input type="email" class="form-control bg-dark text-white border-0 rounded-pill px-3"
-                        id="correo_electronico" name="correo_electronico" placeholder="Correo Electrónico"
-                        value="{{ cuenta['correo_electronico'] if cuenta else '' }}" {% if session['logged_user_id']
-                        %}disabled{% else %}required{% endif %}>
-                    {% if session['logged_user_id'] %}
-                    <input type="hidden" name="correo_electronico"
-                        value="{{ cuenta['correo_electronico'] if cuenta else '' }}">
-                    {% endif %}
-                </div>
-                {% if not session['logged_user_id'] %}
+            <div class="mb-3">
+                <label for="correo_electronico" class="form-label text-white">Correo Electrónico</label>
+                <input type="email" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="correo_electronico" name="correo_electronico" placeholder="Correo Electrónico" value="{{ cuenta['correo_electronico'] if cuenta else '' }}" {% if session['logged_user_id'] %}disabled{% else %}required{% endif %}>
+                {% if session['logged_user_id'] %}
+                    <input type="hidden" name="correo_electronico" value="{{ cuenta['correo_electronico'] if cuenta else '' }}">
+                {% endif %}
+            </div>
+
+            {% if not session['logged_user_id'] %}
                 <div class="mb-3">
                     <label for="password" class="form-label text-white">Contraseña</label>
-                    <input type="password" class="form-control bg-dark text-white border-0 rounded-pill px-3"
-                        id="contrasena" name="password" placeholder="Contraseña" required>
+                    <input type="password" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="contrasena" name="password" placeholder="Contraseña" required>
                 </div>
-                {% endif %}
-                <div class="mb-3">
-                    <label for="pais" class="form-label text-white">País</label>
-                    <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="pais"
-                        name="pais" placeholder="País" value="{{ cuenta['pais'] if cuenta else '' }}">
-                </div>
-                <div class="mb-3">
-                    <label for="plan_suscripcion" class="form-label text-white">Plan de Suscripción</label>
-                    <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="plan_suscripcion"
-                        name="plan_suscripcion" required>
-                        <option value="" disabled {% if not cuenta or not cuenta.get('plan_suscripcion') %}selected{%
-                            endif %}>Selecciona un plan</option>
-                        <option value="Basico" {% if cuenta and cuenta.get('plan_suscripcion')=='Basico' %}selected{%
-                            endif %}>Básico</option>
-                        <option value="Estandar" {% if cuenta and cuenta.get('plan_suscripcion')=='Estandar'
-                            %}selected{% endif %}>Estándar</option>
-                        <option value="Premium" {% if cuenta and cuenta.get('plan_suscripcion')=='Premium' %}selected{%
-                            endif %}>Premium</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="dispositivos" class="form-label text-white">Dispositivos</label>
-                    <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="dispositivos"
-                        name="dispositivos" required>
-                        <option value="" disabled {% if not cuenta or not cuenta.get('dispositivos') %}selected{% endif
-                            %}>Selecciona un dispositivo</option>
-                        <option value="pc" {% if cuenta and 'pc' in cuenta.get('dispositivos', []) %}selected{% endif
-                            %}>PC</option>
-                        <option value="movil" {% if cuenta and 'movil' in cuenta.get('dispositivos', []) %}selected{%
-                            endif %}>Móvil</option>
-                        <option value="tv" {% if cuenta and 'tv' in cuenta.get('dispositivos', []) %}selected{% endif
-                            %}>TV</option>
-                    </select>
-                </div>
+            {% endif %}
 
-                <button type="submit" class="btn btn-danger w-100 rounded-pill">
-                    {{ "Editar Cuenta" if session['logged_user_id'] else "Crear Cuenta" }}
-                </button>
-            </form>
+            <div class="mb-3">
+                <label for="pais" class="form-label text-white">País</label>
+                <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="pais" name="pais" placeholder="País" value="{{ cuenta['pais'] if cuenta else '' }}">
+            </div>
 
-            {% if session['logged_user_id'] %}
+            <div class="mb-3">
+                <label for="plan_suscripcion" class="form-label text-white">Plan de Suscripción</label>
+                <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="plan_suscripcion" name="plan_suscripcion" required>
+                    <option value="" disabled {% if not cuenta or not cuenta.get('plan_suscripcion') %}selected{% endif %}>Selecciona un plan</option>
+                    <option value="Basico" {% if cuenta and cuenta.get('plan_suscripcion') == 'Basico' %}selected{% endif %}>Básico</option>
+                    <option value="Estandar" {% if cuenta and cuenta.get('plan_suscripcion') == 'Estandar' %}selected{% endif %}>Estándar</option>
+                    <option value="Premium" {% if cuenta and cuenta.get('plan_suscripcion') == 'Premium' %}selected{% endif %}>Premium</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-white">Eres administrador (Se bueno y no mientas)</label>
+                <div class="d-flex gap-3">
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="admin_si" name="admin" value="1" {% if cuenta and cuenta.get('esAdmin') %}checked{% endif %}>
+                        <label class="form-check-label text-white" for="admin_si">Sí</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="admin_no" name="admin" value="0" {% if cuenta and not cuenta.get('esAdmin') %}checked{% endif %}>
+                        <label class="form-check-label text-white" for="admin_no">No</label>
+                    </div>
+                </div>
+            </div>  
+
+            <button type="submit" class="btn btn-danger w-100 rounded-pill">
+                {{ "Editar Cuenta" if session['logged_user_id'] else "Crear Cuenta" }}
+            </button>
+        </form>
+
+        {% if session['logged_user_id'] %}
             <!-- Botón de borrar cuenta -->
             <div class="text-center mt-4">
-                <a href="#" class="text-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Borrar
-                    cuenta</a>
+                <a href="#" class="text-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Borrar cuenta</a>
             </div>
-            {% endif %}
+        {% endif %}
     </div>
 </div>
 
 <!-- Modal de confirmación para borrar cuenta -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-white rounded">
             <div class="modal-header border-0">
                 <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar eliminación</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 ¿Estás seguro de que quieres borrar esta cuenta?

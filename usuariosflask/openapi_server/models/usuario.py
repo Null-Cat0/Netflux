@@ -12,7 +12,7 @@ class Usuario(Model):
     	Do not edit the class manually.
     """
 
-    def __init__(self, user_id=None, nombre=None, correo_electronico=None, password=None, pais=None, plan_suscripcion=None, dispositivos=None, perfiles=None):  # noqa: E501
+    def __init__(self, user_id=None, nombre=None, correo_electronico=None, password=None, pais=None, plan_suscripcion=None, dispositivos=None, perfiles=None,esAdmin=None ):  # noqa: E501
         """Usuario - a model defined in OpenAPI
 
         :param id: The id of this Usuario.  # noqa: E501
@@ -38,7 +38,8 @@ class Usuario(Model):
             'pais': str,
             'plan_suscripcion': str,
             'dispositivos': List[str],
-            'perfiles': List[Perfil]
+            'perfiles': List[Perfil],
+            'esAdmin': bool
         }
 
         self.attribute_map = {
@@ -49,7 +50,8 @@ class Usuario(Model):
             'pais': 'pais',
             'plan_suscripcion': 'plan_suscripcion',
             'dispositivos': 'dispositivos',
-            'perfiles': 'perfiles'
+            'perfiles': 'perfiles',
+            'esAdmin': 'esAdmin'
         }
 
         self._id = user_id
@@ -60,6 +62,7 @@ class Usuario(Model):
         self._plan_suscripcion = plan_suscripcion
         self._dispositivos = dispositivos
         self._perfiles = perfiles
+        self._esAdmin = esAdmin
 
 
     def serialize(self):
@@ -71,7 +74,8 @@ class Usuario(Model):
             'pais': self.pais,
             'plan_suscripcion': self.plan_suscripcion,
             'dispositivos': self.dispositivos,
-            'perfiles': self.perfiles
+            'perfiles': self.perfiles,
+            'esAdmin': self.esAdmin
         }
     
     def to_db_model(self):
@@ -82,6 +86,7 @@ class Usuario(Model):
             password=self.password,
             pais=self.pais,
             plan_suscripcion=self.plan_suscripcion,
+            esAdmin=self.esAdmin
         )
 
     @classmethod
@@ -272,3 +277,21 @@ class Usuario(Model):
          """
     
          self._perfiles = perfiles
+     
+    @property
+    def esAdmin(self) -> bool:
+         """Gets the esAdmin of this Usuario.
+
+         :return: The esAdmin of this Usuario.
+         :rtype: bool
+         """
+         return self._esAdmin
+     
+    @esAdmin.setter
+    def esAdmin(self, esAdmin: bool):
+           """Sets the esAdmin of this Usuario.     
+           :param esAdmin: The esAdmin of this Usuario.
+           :type esAdmin: bool
+           """
+
+           self._esAdmin = esAdmin

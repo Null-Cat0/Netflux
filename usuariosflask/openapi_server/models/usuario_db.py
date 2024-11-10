@@ -14,16 +14,19 @@ class UsuarioDB(db.Model):
     password = db.Column(db.String(255))
     pais = db.Column(db.String(255))
     plan_suscripcion = db.Column(db.String(255))
+    esAdmin = db.Column(db.Boolean, default=False)
+    
 
     perfiles = db.relationship('PerfilDB', backref='usuario', cascade='all, delete')
     dispositivos = db.relationship('DispositivosUsuarioDB', backref='usuario', cascade='all, delete')
 
-    def __init__(self, nombre, correo_electronico, password, pais, plan_suscripcion):  # noqa: E501
+    def __init__(self, nombre, correo_electronico, password, pais, plan_suscripcion, esAdmin):  # noqa: E501
         self.nombre = nombre
         self.correo_electronico = correo_electronico
         self.password = password
         self.pais = pais
         self.plan_suscripcion = plan_suscripcion
+        self.esAdmin = esAdmin
     
     def get_dispositivos(self):
         dispositivos_ids = [dispositivo.dispositivo_id for dispositivo in self.dispositivos]
@@ -40,5 +43,6 @@ class UsuarioDB(db.Model):
             pais=self.pais,
             plan_suscripcion=self.plan_suscripcion,
             dispositivos=self.get_dispositivos(),
-            perfiles=[perfil.to_api_model() for perfil in self.perfiles]
+            perfiles=[perfil.to_api_model() for perfil in self.perfiles],
+            esAdmin=self.esAdmin
         )

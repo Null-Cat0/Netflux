@@ -15,50 +15,53 @@ from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
 from openapi_server import app
 
-@app.route('/actualizar_usuario/<user_id>', methods=['PUT'])
+@app.route('/actualizar_usuario/<int:user_id>', methods=['PUT'])
 def actualizar_usuario(user_id):  # noqa: E501
-    """Actualizar un usuario existente
+    """Actualizar un usuario existente"""
 
-    Actualiza la información de un usuario específico por su ID. # noqa: E501
-
-    :param user_id: ID del usuario a actualizar
-    :type user_id: int
-    :param usuario_update: Objeto del usuario con la información actualizada
-    :type usuario_update: dict | bytes
-
-    :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
-    """
     if request.is_json:
         usuario_update = UsuarioUpdate.from_dict(request.get_json())
-    
+        print(f"Valor de esAdmin en usuario_update: {usuario_update.esAdmin}")
+    else:
+        return jsonify({"message": "Solicitud no contiene JSON válido", "status": "error"}), 400
+
+    # Buscar el usuario en la base de datos
     usuario = UsuarioDB.query.filter_by(user_id=user_id).first()
     if usuario is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 404
-    
-    usuario_db = usuario_update.to_db_model()
 
-    usuario.nombre = usuario_db.nombre
-    usuario.correo_electronico = usuario_db.correo_electronico
-    usuario.pais = usuario_db.pais
-    usuario.plan_suscripcion = usuario_db.plan_suscripcion
+    # Mostrar datos recibidos para verificación de debug
+    print("Datos recibidos:", request.get_json())
 
-    dispositivos_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
-    for dispositivo_usuario_db in dispositivos_usuario_db:
-        db.session.delete(dispositivo_usuario_db)
+    # Actualizar atributos del usuario
+    usuario.nombre = usuario_update.nombre
+    usuario.correo_electronico = usuario_update.correo_electronico
+    usuario.pais = usuario_update.pais
+    usuario.plan_suscripcion = usuario_update.plan_suscripcion
 
+    # Convertir 'admin' a booleano correctamente
+    usuario.esAdmin =  usuario_update.esAdmin
+    print(f"Valor de esAdmin después de la conversión: {usuario.esAdmin}")
+
+    # Eliminar los dispositivos actuales del usuario para agregar los nuevos
+    DispositivosUsuarioDB.query.filter_by(user_id=user_id).delete()
+
+    # Agregar nuevos dispositivos asociados al usuario
     for nombre in usuario_update.dispositivos:
         disp_enc = DispositivoDB.query.filter_by(tipo_dispositivo=nombre).first()
-        if disp_enc is not None:
-            dispositivos_usuario_db = DispositivosUsuarioDB(
+        if disp_enc:
+            dispositivo_usuario_db = DispositivosUsuarioDB(
                 dispositivo_id=disp_enc.dispositivo_id,
                 user_id=usuario.user_id,
-                nombre_dispositivo=disp_enc.tipo_dispositivo + " de " + usuario.nombre
+                nombre_dispositivo=f"{disp_enc.tipo_dispositivo} de {usuario.nombre}"
             )
-            db.session.add(dispositivos_usuario_db)
+            db.session.add(dispositivo_usuario_db)
 
+    # Confirmar los cambios en la base de datos
     db.session.commit()
 
     return jsonify({"message": "Usuario actualizado con éxito", "status": "success"}), 200
+
 
 
 @app.route('/actualizar_password/<user_id>', methods=['PATCH'])
