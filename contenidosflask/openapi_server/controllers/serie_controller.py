@@ -1,16 +1,17 @@
 from openapi_server.models.actor import Actor  # noqa: E501
-from openapi_server.models.asignar_actor_a_serie_request import AsignarActorASerieRequest  # noqa: E501
+from openapi_server.models.actor_db import ActorDB  # noqa: E501
+from openapi_server.models.asignar_actor_request import AsignarActorRequest  # noqa: E501
+
 from openapi_server.models.serie import Serie  # noqa: E501
-from openapi_server.models.serie_update import SerieUpdate  # noqa: E501
-from openapi_server import util
-
-from flask import request
-from openapi_server import app
-from flask import jsonify
-from bson import ObjectId
 from openapi_server.models.serie_db import SerieDB
+from openapi_server.models.serie_update import SerieUpdate  # noqa: E501
 
-def actualizar_serie(serie_id, serie_update):  # noqa: E501
+from openapi_server import app, db, util
+from flask import jsonify, request
+from bson import ObjectId
+
+@app.route('/actualizar_serie/<serie_id>', methods=['PUT'])
+def actualizar_serie(serie_id):  # noqa: E501
     """Actualizar una serie existente
 
     Actualiza la información de una serie específica por su ID. # noqa: E501
@@ -23,10 +24,28 @@ def actualizar_serie(serie_id, serie_update):  # noqa: E501
     :rtype: Union[Serie, Tuple[Serie, int], Tuple[Serie, int, Dict[str, str]]
     """
     if request.is_json:
-        serie_update = SerieUpdate.from_dict(request.get_json())  # noqa: E501
-    return 'do some magic!'
+        serie_update = SerieUpdate.from_dict(request.get_json())
+ 
+    serie_to_update = SerieDB.objects.get(id=ObjectId(serie_id))
+    if not serie_to_update:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
 
-def asignar_actor_a_serie(serie_id, asignar_actor_a_serie_request):  # noqa: E501
+    serie_db = serie_update.to_db_model()
+    serie_to_update.titulo = serie_db.titulo
+    serie_to_update.genero = serie_db.genero
+    serie_to_update.sinopsis = serie_db.sinopsis
+    serie_to_update.anio_estreno = serie_db.anio_estreno
+    serie_to_update.temporadas = serie_db.temporadas
+
+    # Reemplazar los actores
+    actores_db = [ActorDB.objects.get(id=ObjectId(id)) for id in serie_update.actores]
+    serie_to_update.actores = actores_db # Se cambia la lista de actores por la nueva
+
+    serie_to_update.save()
+    return jsonify({"message": "Serie actualizada correctamente", "status": "success"}), 200
+
+@app.route('/asignar_actor_serie/<serie_id>', methods=['POST'])
+def asignar_actor_a_serie(serie_id): # noqa: E501
     """Asignar un actor a una serie
 
     Asigna un actor existente a una serie específica. # noqa: E501
@@ -39,8 +58,17 @@ def asignar_actor_a_serie(serie_id, asignar_actor_a_serie_request):  # noqa: E50
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     if request.is_json:
-        asignar_actor_a_serie_request = AsignarActorASerieRequest.from_dict(request.get_json())  # noqa: E501
-    return 'do some magic!'
+        actor_a_asignar = AsignarActorRequest.from_dict(request.get_json())  # noqa: E501
+    
+    serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
+    if not serie_db:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
+    
+    if not ActorDB.objects.get(id=ObjectId(actor_a_asignar.actor_id)):
+        return jsonify({"message": "Actor no encontrado", "status": "error"}), 404
+
+    serie_db.update(add_to_set__actores=ObjectId(actor_a_asignar.actor_id))
+    return jsonify({"message": "Actor asignado a la serie", "status": "success"}), 200
 
 @app.route('/crear_serie', methods=['POST'])
 def crear_serie():  # noqa: E501
@@ -55,10 +83,15 @@ def crear_serie():  # noqa: E501
     """
     if request.is_json:
         serie_api = Serie.from_dict(request.get_json())
+
+    if serie_api:
         serie_db = serie_api.to_db_model()
         serie_db.save()
         return jsonify({"message": "Serie creada con éxito", "status": "success"}), 201
-    
+    else:
+        return jsonify({"message": "Error al crear la serie", "status": "error"}), 400
+
+@app.route('/eliminar_actor_serie/<serie_id>/<actor_id>', methods=['DELETE'])
 def eliminar_actor_serie(serie_id, actor_id):  # noqa: E501
     """Elimnar un actor de una serie
 
@@ -71,9 +104,18 @@ def eliminar_actor_serie(serie_id, actor_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
+    if not serie_db:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
 
+    actor_db = ActorDB.objects.get(id=ObjectId(actor_id))
+    if not actor_db in serie_db.actores:
+        return jsonify({"message": "Actor no encontrado en la serie", "status": "error"}), 404
+    
+    serie_db.update(pull__actores=actor_db)
+    return jsonify({"message": "Actor eliminado de la serie", "status": "success"}), 200
 
+@app.route('/eliminar_serie/<serie_id>', methods=['DELETE'])
 def eliminar_serie(serie_id):  # noqa: E501
     """Eliminar una serie
 
@@ -84,9 +126,14 @@ def eliminar_serie(serie_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
+    if not serie_db:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
 
+    serie_db.delete()
+    return jsonify({"message": "Serie eliminada correctamente", "status": "success"}), 200
 
+@app.route('/listar_actores_serie/<serie_id>', methods=['GET'])
 def listar_actores_de_serie(serie_id):  # noqa: E501
     """Listar los actores de una serie específica
 
@@ -97,7 +144,13 @@ def listar_actores_de_serie(serie_id):  # noqa: E501
 
     :rtype: Union[List[Actor], Tuple[List[Actor], int], Tuple[List[Actor], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
+    if not serie_db:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
+
+    actores = serie_db.actores
+    actores_api = [actor.to_api_model() for actor in actores]
+    return jsonify(actores_api), 200
 
 @app.route('/listar_series', methods=['GET'])
 def listar_series():  # noqa: E501
@@ -105,12 +158,11 @@ def listar_series():  # noqa: E501
 
     Obtiene una lista de todas las series de televisión disponibles en el sistema, incluyendo información básica como el título, género y año de estreno. # noqa: E501
 
-
     :rtype: Union[List[Serie], Tuple[List[Serie], int], Tuple[List[Serie], int, Dict[str, str]]
     """
-
-    serie_db = SerieDB.objects()
-    return [serie.to_api_model() for serie in serie_db]
+    series_db = SerieDB.objects()
+    list_series_api = [serie.to_api_model() for serie in series_db]
+    return jsonify(list_series_api), 200
 
 @app.route('/obtener_serie/<serie_id>', methods=['GET'])
 def obtener_serie(serie_id):  # noqa: E501
@@ -124,4 +176,7 @@ def obtener_serie(serie_id):  # noqa: E501
     :rtype: Union[Serie, Tuple[Serie, int], Tuple[Serie, int, Dict[str, str]]
     """
     serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
-    return jsonify(serie_db.to_api_model())
+    if not serie_db:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
+
+    return jsonify(serie_db.to_api_model()), 200

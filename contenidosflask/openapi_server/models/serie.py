@@ -185,7 +185,7 @@ class Serie(Model):
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             temporadas=[temporada.to_db_model() for temporada in self._temporadas],
-            actores=[ObjectId(id) for id in self._actores]
+            actores=[ObjectId(actor) for actor in self._actores]
         )
 
 

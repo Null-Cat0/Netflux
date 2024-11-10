@@ -1,15 +1,14 @@
 from openapi_server.models.actor import Actor  # noqa: E501
 from openapi_server.models.actor_db import ActorDB  # noqa: E501
-from openapi_server.models.asignar_actor_a_serie_request import AsignarActorASerieRequest  # noqa: E501
+from openapi_server.models.asignar_actor_request import AsignarActorRequest  # noqa: E501
+
 from openapi_server.models.pelicula import Pelicula  # noqa: E501
-from openapi_server.models.pelicula_update import PeliculaUpdate  # noqa: E501
-from openapi_server import util
-from openapi_server import db
-from flask import request
-from openapi_server import app
-from flask import jsonify
-from bson import ObjectId
 from openapi_server.models.pelicula_db import PeliculaDB
+from openapi_server.models.pelicula_update import PeliculaUpdate  # noqa: E501
+
+from openapi_server import app, db, util
+from flask import jsonify, request
+from bson import ObjectId
 
 @app.route('/actualizar_pelicula/<pelicula_id>', methods=['PUT'])
 def actualizar_pelicula(pelicula_id):  # noqa: E501
@@ -53,7 +52,7 @@ def actualizar_pelicula(pelicula_id):  # noqa: E501
     return jsonify({"message": "Película actualizada correctamente", "status": "success"}), 200
 
 @app.route('/asignar_actor_pelicula/<pelicula_id>', methods=['POST'])
-def asignar_actor_a_pelicula(pelicula_id):  # noqa: E501
+def asignar_actor_a_pelicula(pelicula_id): # noqa: E501
     """Asignar un actor a una película
 
     Asigna un actor existente a una película específica. # noqa: E501
@@ -67,7 +66,7 @@ def asignar_actor_a_pelicula(pelicula_id):  # noqa: E501
     """
     
     if request.is_json:
-        actor_a_asignar = AsignarActorASerieRequest.from_dict(request.get_json())
+        actor_a_asignar = AsignarActorRequest.from_dict(request.get_json())
 
     pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
     if not pelicula_db:
@@ -108,7 +107,6 @@ def crear_pelicula():  # noqa: E501
     else:
         return jsonify({"message": "Error al crear la película", "status": "error"}), 400
 
-
 @app.route('/eliminar_actor_pelicula/<pelicula_id>/<actor_id>', methods=['DELETE'])
 def eliminar_actor_pelicula(pelicula_id, actor_id):  # noqa: E501
     """Elimnar un actor de una película
@@ -132,7 +130,6 @@ def eliminar_actor_pelicula(pelicula_id, actor_id):  # noqa: E501
 
     pelicula_db.update(pull__actores=actor_db)
     return jsonify({"message": "Actor eliminado con éxito", "status": "success"}), 200
-
 
 @app.route('/eliminar_pelicula/<pelicula_id>', methods=['DELETE'])
 def eliminar_pelicula(pelicula_id):  # noqa: E501
@@ -173,7 +170,6 @@ def listar_actores_de_pelicula(pelicula_id):  # noqa: E501
     actores_json = [actor for actor in pelicula_api.actores]
     return jsonify(actores_json), 200
     
-
 @app.route('/listar_peliculas', methods=['GET'])
 def listar_peliculas():  # noqa: E501
     """Listar todas las películas
