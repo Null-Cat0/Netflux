@@ -68,8 +68,8 @@ class SerieUpdate(Model):
             genero=self._genero,
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
-            temporadas=[temporada.to_db_model() for temporada in self._temporadas],
-            actores=[ObjectId(actor) for actor in self._actores]
+            temporadas=[temporada.to_db_model() for temporada in self._temporadas] if self._temporadas else [],
+            actores=[ObjectId(actor) for actor in self._actores] if self._actores else []
         )
 
     @classmethod
@@ -97,7 +97,6 @@ class SerieUpdate(Model):
     def id(self, id: int):
         """Sets the id of this SerieUpdate.
 
-
         :param id: The id of this SerieUpdate.
         :type id: int
         """
@@ -110,7 +109,6 @@ class SerieUpdate(Model):
     def titulo(self) -> str:
         """Gets the titulo of this SerieUpdate.
 
-
         :return: The titulo of this SerieUpdate.
         :rtype: str
         """
@@ -119,7 +117,6 @@ class SerieUpdate(Model):
     @titulo.setter
     def titulo(self, titulo: str):
         """Sets the titulo of this SerieUpdate.
-
 
         :param titulo: The titulo of this SerieUpdate.
         :type titulo: str
@@ -132,7 +129,6 @@ class SerieUpdate(Model):
     @property
     def genero(self) -> List[str]:
         """Gets the genero of this SerieUpdate.
-
 
         :return: The genero of this SerieUpdate.
         :rtype: str

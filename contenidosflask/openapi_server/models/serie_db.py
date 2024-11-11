@@ -3,6 +3,7 @@ from openapi_server.models.actor_db import ActorDB
 from bson import ObjectId
 
 class CapituloEmbeddedDB(db.EmbeddedDocument):
+    capitulo_id = db.ObjectIdField(default=ObjectId)
     numero = db.IntField(required=True)
     titulo = db.StringField(required=True)
     duracion = db.IntField(required=True)  # Duración en minutos
@@ -11,6 +12,7 @@ class CapituloEmbeddedDB(db.EmbeddedDocument):
     def to_api_model(self):
         from openapi_server.models.serie import CapituloEmbedded
         return CapituloEmbedded(
+            capitulo_id=str(self.capitulo_id),
             numero=self.numero,
             titulo=self.titulo,
             duracion=self.duracion,
@@ -18,6 +20,7 @@ class CapituloEmbeddedDB(db.EmbeddedDocument):
         )
 
 class TemporadaEmbeddedDB(db.EmbeddedDocument):
+    temporada_id = db.ObjectIdField(default=ObjectId)
     numero = db.IntField(required=True)
     anio_lanzamiento = db.IntField(required=True)
     capitulos = db.ListField(db.EmbeddedDocumentField(CapituloEmbeddedDB))
@@ -25,6 +28,7 @@ class TemporadaEmbeddedDB(db.EmbeddedDocument):
     def to_api_model(self):
         from openapi_server.models.serie import TemporadaEmbedded
         return TemporadaEmbedded(
+            temporada_id=str(self.temporada_id),
             numero=self.numero,
             anio_lanzamiento=self.anio_lanzamiento,
             capitulos=[capitulo.to_api_model() for capitulo in self.capitulos]
@@ -48,6 +52,6 @@ class SerieDB(db.Document):
             genero=self.genero,
             sinopsis=self.sinopsis,
             anio_estreno=self.anio_estreno,
-            temporadas=[temporada.to_api_model() for temporada in self.temporadas],
-            actores=[actor.to_api_model() for actor in self.actores]
+            temporadas=[temporada.to_api_model() for temporada in self.temporadas] if self.temporadas else [],
+            actores=[actor.to_api_model() for actor in self.actores] if self.actores else []
         )

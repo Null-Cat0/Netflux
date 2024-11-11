@@ -23,7 +23,7 @@ class PeliculaDB(db.Document):
             sinopsis=self.sinopsis,
             anio_estreno=self.anio_estreno,
             duracion=self.duracion,
-            actores=[actor.to_api_model() for actor in self.actores],
+            actores=[actor.to_api_model() for actor in self.actores] if self.actores else [],
 
             # Se retorna el título de la secuela y la precuela
             secuela=self.secuela.titulo if self.secuela else None,

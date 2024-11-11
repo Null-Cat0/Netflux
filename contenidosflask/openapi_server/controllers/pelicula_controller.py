@@ -31,15 +31,21 @@ def actualizar_pelicula(pelicula_id):  # noqa: E501
         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
     
     pelicula_db = pelicula_update.to_db_model()
-    pelicula_to_update.titulo = pelicula_db.titulo
-    pelicula_to_update.genero = pelicula_db.genero
-    pelicula_to_update.sinopsis = pelicula_db.sinopsis
-    pelicula_to_update.anio_estreno = pelicula_db.anio_estreno
-    pelicula_to_update.duracion = pelicula_db.duracion
+    if pelicula_db.titulo:
+        pelicula_to_update.titulo = pelicula_db.titulo
+    if pelicula_db.genero:
+        pelicula_to_update.genero = pelicula_db.genero
+    if pelicula_db.sinopsis:
+        pelicula_to_update.sinopsis = pelicula_db.sinopsis
+    if pelicula_db.anio_estreno:
+        pelicula_to_update.anio_estreno = pelicula_db.anio_estreno
+    if pelicula_db.duracion:
+        pelicula_to_update.duracion = pelicula_db.duracion
 
     # Reemplazar los actores
-    actores_db = [ActorDB.objects.get(id=ObjectId(id)) for id in pelicula_update.actores]
-    pelicula_to_update.actores = actores_db # Se cambia la lista de actores por la nueva
+    if pelicula_db.actores:
+        actores_db = [ActorDB.objects.get(id=ObjectId(id)) for id in pelicula_update.actores]
+        pelicula_to_update.actores = actores_db # Se cambia la lista de actores por la nueva
 
     # Reemplazar la secuela y precuela
     if pelicula_update.secuela:

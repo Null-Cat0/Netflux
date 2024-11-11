@@ -30,10 +30,15 @@ def actualizar_actor(actor_id):  # noqa: E501
         return jsonify({"message": "Actor no encontrado", "status": "error"}), 404
 
     actor_db = actor_update.to_db_model()
-    actor_to_update.nombre = actor_db.nombre
-    actor_to_update.fecha_nacimiento = actor_db.fecha_nacimiento
-    actor_to_update.nacionalidad = actor_db.nacionalidad
-    actor_to_update.biografia = actor_db.biografia
+
+    if actor_db.nombre:
+        actor_to_update.nombre = actor_db.nombre
+    if actor_db.fecha_nacimiento:
+        actor_to_update.fecha_nacimiento = actor_db.fecha_nacimiento
+    if actor_db.nacionalidad:
+        actor_to_update.nacionalidad = actor_db.nacionalidad
+    if actor_db.biografia:
+        actor_to_update.biografia = actor_db.biografia
 
     actor_to_update.save()
     return jsonify({"message": "Actor actualizado correctamente", "status": "success"}), 200

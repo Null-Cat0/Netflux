@@ -1,14 +1,20 @@
 import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
+from typing import Dict, Tuple, Union
+
+from openapi_server.models.serie import Serie
+from openapi_server.models.serie_db import SerieDB
+
+from openapi_server.models.serie import CapituloEmbedded  # noqa: E501
+from openapi_server.models.serie_db import CapituloEmbeddedDB
 
 # from openapi_server.models.capitulo import Capitulo  # noqa: E501
 # from openapi_server.models.capitulo_update import CapituloUpdate  # noqa: E501
-from openapi_server import util
+from openapi_server import app, db, util
+from flask import jsonify, request
+from bson import ObjectId
 
-
-def actualizar_capitulo(serie_id, temporada_id, capitulo_id, capitulo_update):  # noqa: E501
+@app.route('/actualizar_capitulo_serie/<serie_id>/<temporada_id>/<capitulo_id>', methods=['PUT'])
+def actualizar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
     """Actualizar un capítulo existente
 
     Actualiza la información de un capítulo específico de una temporada de una serie. # noqa: E501
@@ -24,12 +30,38 @@ def actualizar_capitulo(serie_id, temporada_id, capitulo_id, capitulo_update):  
 
     :rtype: Union[Capitulo, Tuple[Capitulo, int], Tuple[Capitulo, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        capitulo_update = CapituloUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    if not request.is_json:
+        return jsonify({"message": "Formato de datos no válido", "status": "error"}), 400
 
+    capitulo_update_data = CapituloEmbedded.from_dict(request.get_json())
 
-def crear_capitulo(serie_id, temporada_id, capitulo):  # noqa: E501
+    serie = SerieDB.objects(id=ObjectId(serie_id)).first()
+    if not serie:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
+
+    temporada = next((temporada for temporada in serie.temporadas if temporada.temporada_id == ObjectId(temporada_id)), None)
+    if not temporada:
+        return jsonify({"message": "Temporada no encontrada", "status": "error"}), 404
+
+    capitulo = next((capitulo for capitulo in temporada.capitulos if capitulo.capitulo_id == ObjectId(capitulo_id)), None)
+
+    if not capitulo:
+        return jsonify({"message": "Capítulo no encontrado", "status": "error"}), 404
+
+    if capitulo_update_data.numero and capitulo_update_data.numero > -1:
+        capitulo.numero = capitulo_update_data.numero
+    if capitulo_update_data.titulo:
+        capitulo.titulo = capitulo_update_data.titulo
+    if capitulo_update_data.duracion:
+        capitulo.duracion = capitulo_update_data.duracion
+    if capitulo_update_data.sinopsis:
+        capitulo.sinopsis = capitulo_update_data.sinopsis
+
+    serie.save()
+    return jsonify({"message": "Capítulo actualizado correctamente", "status": "success"}), 200
+
+@app.route('/asignar_capitulo_serie/<serie_id>/<temporada_id>', methods=['POST'])
+def crear_capitulo(serie_id, temporada_id):  # noqa: E501
     """Crear un nuevo capítulo para una temporada
 
     Crea un nuevo capítulo para una temporada específica de una serie. # noqa: E501
@@ -43,11 +75,28 @@ def crear_capitulo(serie_id, temporada_id, capitulo):  # noqa: E501
 
     :rtype: Union[Capitulo, Tuple[Capitulo, int], Tuple[Capitulo, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        capitulo = Capitulo.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    if not request.is_json:
+        return jsonify({"message": "Formato de datos no válido", "status": "error"}), 400
 
+    capitulo_data = CapituloEmbedded.from_dict(request.get_json())
 
+    serie = SerieDB.objects(id=ObjectId(serie_id)).first()
+    if not serie:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
+
+    temporada = next((temporada for temporada in serie.temporadas if temporada.temporada_id == ObjectId(temporada_id)), None)
+    if not temporada:
+        return jsonify({"message": "Temporada no encontrada", "status": "error"}), 404
+
+    capitulo_db = capitulo_data.to_db_model()
+    if capitulo_db.numero < 0:
+        return jsonify({"message": "Número de capítulo no válido", "status": "error"}), 400
+
+    temporada.capitulos.append(capitulo_db)
+    serie.save()
+    return jsonify({"message": "Capítulo creado correctamente", "status": "success"}), 201
+
+@app.route('/eliminar_capitulo_serie/<serie_id>/<temporada_id>/<capitulo_id>', methods=['DELETE'])
 def eliminar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
     """Eliminar un capítulo
 
@@ -62,9 +111,23 @@ def eliminar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    serie = SerieDB.objects(id=ObjectId(serie_id)).first()
+    if not serie:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
 
+    temporada = next((temporada for temporada in serie.temporadas if temporada.temporada_id == ObjectId(temporada_id)), None)
+    if not temporada:
+        return jsonify({"message": "Temporada no encontrada", "status": "error"}), 404
 
+    capitulo = next((capitulo for capitulo in temporada.capitulos if capitulo.capitulo_id == ObjectId(capitulo_id)), None)
+    if not capitulo:
+        return jsonify({"message": "Capítulo no encontrado", "status": "error"}), 404
+
+    temporada.capitulos.remove(capitulo)
+    serie.save()
+    return jsonify({"message": "Capítulo eliminado correctamente", "status": "success"}), 200
+
+@app.route('/listar_capitulos_serie/<serie_id>/<temporada_id>', methods=['GET'])
 def listar_capitulos(serie_id, temporada_id):  # noqa: E501
     """Listar todos los capítulos de una temporada
 
@@ -77,9 +140,19 @@ def listar_capitulos(serie_id, temporada_id):  # noqa: E501
 
     :rtype: Union[List[Capitulo], Tuple[List[Capitulo], int], Tuple[List[Capitulo], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    serie = SerieDB.objects(id=ObjectId(serie_id)).first()
+    if not serie:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
+    
+    temporada = next((temporada for temporada in serie.temporadas if temporada.temporada_id == ObjectId(temporada_id)), None)
+    if not temporada:
+        return jsonify({"message": "Temporada no encontrada", "status": "error"}), 404
 
+    temporada_api = temporada.to_api_model()
+    capitulos_json = [capitulo for capitulo in temporada_api.capitulos]
+    return jsonify(capitulos_json), 200
 
+@app.route('/obtener_capitulo_serie/<serie_id>/<temporada_id>/<capitulo_id>', methods=['GET'])
 def obtener_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
     """Obtener un capítulo específico de una temporada
 
@@ -94,4 +167,16 @@ def obtener_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
 
     :rtype: Union[Capitulo, Tuple[Capitulo, int], Tuple[Capitulo, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    serie = SerieDB.objects(id=ObjectId(serie_id)).first()
+    if not serie:
+        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
+
+    temporada = next((temporada for temporada in serie.temporadas if temporada.temporada_id == ObjectId(temporada_id)), None)
+    if not temporada:
+        return jsonify({"message": "Temporada no encontrada", "status": "error"}), 404
+
+    capitulo = next((capitulo for capitulo in temporada.capitulos if capitulo.capitulo_id == ObjectId(capitulo_id)), None)
+    if not capitulo:
+        return jsonify({"message": "Capítulo no encontrado", "status": "error"}), 404
+
+    return jsonify(capitulo.to_api_model()), 200

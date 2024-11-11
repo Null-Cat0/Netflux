@@ -92,7 +92,7 @@ class Pelicula(Model):
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             duracion=self._duracion,
-            actores=[ObjectId(actor) for actor in self._actores],
+            actores=[ObjectId(actor) for actor in self._actores] if self._actores else [],
 
             # Se asume que la secuela y precuela son títulos de otras películas
             secuela=PeliculaDB.objects.get(titulo=self._secuela) if self._secuela else None,
@@ -114,7 +114,6 @@ class Pelicula(Model):
     def id(self) -> int:
         """Gets the id of this Pelicula.
 
-
         :return: The id of this Pelicula.
         :rtype: int
         """
@@ -123,7 +122,6 @@ class Pelicula(Model):
     @id.setter
     def id(self, id: int):
         """Sets the id of this Pelicula.
-
 
         :param id: The id of this Pelicula.
         :type id: int

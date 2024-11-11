@@ -31,15 +31,22 @@ def actualizar_serie(serie_id):  # noqa: E501
         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
 
     serie_db = serie_update.to_db_model()
-    serie_to_update.titulo = serie_db.titulo
-    serie_to_update.genero = serie_db.genero
-    serie_to_update.sinopsis = serie_db.sinopsis
-    serie_to_update.anio_estreno = serie_db.anio_estreno
-    serie_to_update.temporadas = serie_db.temporadas
+    if serie_db.titulo:
+        serie_to_update.titulo = serie_db.titulo
+    if serie_db.genero:
+        serie_to_update.genero = serie_db.genero
+    if serie_db.sinopsis:
+        serie_to_update.sinopsis = serie_db.sinopsis
+    if serie_db.anio_estreno:
+        serie_to_update.anio_estreno = serie_db.anio_estreno
+
+    if serie_db.temporadas:
+        serie_to_update.temporadas = serie_db.temporadas
 
     # Reemplazar los actores
-    actores_db = [ActorDB.objects.get(id=ObjectId(id)) for id in serie_update.actores]
-    serie_to_update.actores = actores_db # Se cambia la lista de actores por la nueva
+    if serie_db.actores:
+        actores_db = [ActorDB.objects.get(id=ObjectId(id)) for id in serie_update.actores]
+        serie_to_update.actores = actores_db # Se cambia la lista de actores por la nueva
 
     serie_to_update.save()
     return jsonify({"message": "Serie actualizada correctamente", "status": "success"}), 200
