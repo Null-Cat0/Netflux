@@ -123,11 +123,7 @@ def crear_usuario():  # noqa: E501
 
     if (usuario_api):
         usuario_db = usuario_api.to_db_model()
-
-        existe_dispositivo = DispositivoDB.query.filter_by(tipo_dispositivo=usuario_api.dispositivos[0]).first()
-        if existe_dispositivo is None:
-            return jsonify({"message": "Ha habido un error con su solicitud, inténtelo de nuevo más tarde", "status": "error"}), 404
-
+        
         db.session.add(usuario_db)
         db.session.commit()
 
