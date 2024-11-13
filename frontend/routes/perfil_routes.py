@@ -213,3 +213,23 @@ def obtener_mi_lista(perfil_id):
     #     flash(f"Error: {data['message']}", 'danger')
         
     return render_template("mi_lista.html")
+
+@perfil_bp.route('/agregar_a_lista_perfil/<perfil_id>', methods=['POST'])
+def agregar_a_lista_perfil(perfil_id):
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Debes iniciar sesión para acceder a esta página", 'danger')
+        return redirect(url_for('user.login'))
+    
+    # response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/lista")
+    
+    # # Manejar la respuesta del microservicio
+    # if response.status_code == 200:
+    #     data = response.json()
+    #     print(data)
+    #     return render_template("mi_lista", peliculas=data.peliculas, series=data.series)
+    # else:
+    #     data = response.json()
+    #     flash(f"Error: {data['message']}", 'danger')
+        
+    return render_template("mi_lista.html")
