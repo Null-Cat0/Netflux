@@ -1,8 +1,9 @@
 # Se importa el fichero de configuración de los microservicios
 import os, sys, requests
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
+sys.path.append(app_path)
 
-# from global_config import ContenidosConfig as contConf
+from global_config import ContenidosConfig as contConf
 
 from openapi_server import db
 from flask import request, jsonify
@@ -26,8 +27,6 @@ from openapi_server.models.preferencias_contenido import PreferenciasContenido
 from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
 
 from openapi_server import app
-
-base_url = "http://localhost:8081"
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['PUT'])
 def actualizar_perfil_usuario(user_id, profile_id):  
@@ -200,14 +199,14 @@ def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
             lista_peliculas.append(h.contenido)
 
     # Ahora se hace la petición al microservicio de contenidos para obtener los datos de las series y películas
-    response_series = requests.get(f'{base_url}/obtener_lista_series', json=lista_series)
+    response_series = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_series', json=lista_series)
 
     if response_series.status_code == 200:
         series = response_series.json()
     else:
         return jsonify({"message": "No se ha podido obtener la lista de series", "status": "error"}), 404
 
-    response_peliculas = requests.get(f'{base_url}/obtener_lista_peliculas', json=lista_peliculas)
+    response_peliculas = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_peliculas', json=lista_peliculas)
 
     if response_peliculas.status_code == 200:
         peliculas = response_peliculas.json()
@@ -228,12 +227,12 @@ def agregar_contenido_historial(user_id, profile_id, contenido_id):
 
     # Buscamos el contenido en la base de datos
     ## Hay que ver si es una serie o una película
-    response_serie = requests.get(f'{base_url}/obtener_serie/{contenido_id}')
+    response_serie = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_serie/{contenido_id}')
     if response_serie.status_code == 200:
         contenido_db = response_serie.json()
         es_serie = True
     else:
-        response_pelicula = requests.get(f'{base_url}/obtener_pelicula/{contenido_id}')
+        response_pelicula = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_pelicula/{contenido_id}')
         if response_pelicula.status_code == 200:
             contenido_db = response_pelicula.json()
             es_serie = False
@@ -299,16 +298,16 @@ def obtener_lista_perfil(user_id, profile_id):  # noqa: E501
         else:
             lista_peliculas.append(h.contenido)
 
-    base_url = "http://localhost:8081"
+    contConf.CONTENIDOS_BASE_URL = "http://localhost:8081"
     # Ahora se hace la petición al microservicio de contenidos para obtener los datos de las series y películas
-    response_series = requests.get(f'{base_url}/obtener_lista_series', json=lista_series)
+    response_series = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_series', json=lista_series)
 
     if response_series.status_code == 200:
         series = response_series.json()
     else:
         return jsonify({"message": "No se ha podido obtener la lista de series", "status": "error"}), 404
 
-    response_peliculas = requests.get(f'{base_url}/obtener_lista_peliculas', json=lista_peliculas)
+    response_peliculas = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_peliculas', json=lista_peliculas)
 
     if response_peliculas.status_code == 200:
         peliculas = response_peliculas.json()
