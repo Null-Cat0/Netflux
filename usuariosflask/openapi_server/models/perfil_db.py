@@ -46,12 +46,12 @@ class PerfilDB(db.Model):
         return preferencias_api
     
     def get_lista_perfil(self):
-        from openapi_server.models.lista_perfil import ListaPerfilDB
+        from openapi_server.models.lista_perfil_db import ListaPerfilDB
         lista_perfil = [contenido for (contenido,) in db.session.query(ListaPerfilDB.contenido).filter(ListaPerfilDB.perfil_id == self.perfil_id).all()]
         return lista_perfil
     
     def get_historial_perfil(self):
-        from openapi_server.models.historial_perfil import HistorialPerfilDB
+        from openapi_server.models.historial_perfil_db import HistorialPerfilDB
         historial_perfil = [contenido for (contenido,) in db.session.query(HistorialPerfilDB.contenido).filter(HistorialPerfilDB.perfil_id == self.perfil_id).all()]
         return historial_perfil
     
