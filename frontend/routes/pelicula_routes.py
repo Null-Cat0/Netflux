@@ -220,4 +220,25 @@ def eliminar_pelicula(pelicula_id):
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
+    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}")
+    if response.status_code == 200:
+        data = response.json()
+        es_admin = data.get('esAdmin')
+    else:
+        data = response.json()
+        flash(f"Error: {data['message']}", 'danger')
+        return redirect(url_for('user.login'))
+    
+    if es_admin:
+        # Hacer la solicitud DELETE al microservicio para eliminar la película
+        response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/eliminar_pelicula/{pelicula_id}")
+        if response.status_code == 200:
+            flash("Película eliminada con éxito.", 'success')
+        else:
+            data = response.json()
+            flash(f"Error al eliminar la película: {data['message']}", 'danger')
+            
+        return redirect(url_for('pelicula.obtener_peliculas'))
+    
+    
     return redirect(url_for('pelicula.lista_peliculas'))

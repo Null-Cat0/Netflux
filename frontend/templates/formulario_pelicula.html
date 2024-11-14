@@ -69,12 +69,6 @@
             <button type="submit" class="btn btn-danger w-100 rounded-pill">
                 {{ 'Guardar cambios' if pelicula else 'Crear película' }}
             </button>
-
-            {% if pelicula %}
-                <button type="button" onclick="confirmDeletion()" class="btn btn-outline-danger w-100 rounded-pill mt-3">
-                    Eliminar película
-                </button>
-            {% endif %}
         </form>
     </div>
 </div>
