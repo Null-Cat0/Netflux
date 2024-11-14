@@ -12,14 +12,14 @@
     <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Lista de Películas</h1>
 
     <!-- Botón de Añadir Película -->
+
     {% if es_admin %}    
         <div class="d-flex justify-content-end mb-4">
-            <a href="{{ url_for('pelicula.crear_pelicula') }}" class="btn btn-danger">
+            <a href="{{url_for('pelicula.crear_pelicula')}}" class="btn btn-danger">
                 <i class="fas fa-plus me-2"></i> Añadir Película
             </a>
         </div>
-    {% endif %}
-
+    {%endif%}
     <!-- Lista de Películas -->
     {% if peliculas %}
         <div class="row">   
@@ -32,16 +32,12 @@
                         <p class="card-text">{{ pelicula.descripcion | truncate(100) }}</p>
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <a href="" class="btn btn-outline-light btn-sm">Ver Más</a>
-                            <a href="{{ url_for('usuario.agregar_a_mi_lista', pelicula_id=pelicula.id) }}" 
-                               class="btn btn-outline-success btn-sm ms-2">
-                                <i class="fas fa-plus"></i> Añadir a Mi Lista
-                            </a>
                             <div class="d-flex">
                                 <!-- Botón de Editar -->
                                 <a href="{{ url_for('pelicula.editar_pelicula', pelicula_id=pelicula.id) }}" class="text-warning mx-2" title="Editar">
                                     <i class="fas fa-pencil-alt fa-lg"></i>
                                 </a>
-                                <!-- Botón de Eliminar -->
+                                <!-- Botón de Eliminar con el data-bs-toggle y href adecuados -->
                                 <a href="#confirmDeleteModal{{ pelicula.id }}" class="text-danger mx-2" title="Eliminar" data-bs-toggle="modal">
                                     <i class="fas fa-trash-alt fa-lg"></i>
                                 </a>
@@ -50,7 +46,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Modal de confirmación para eliminar película -->
             <div class="modal fade" id="confirmDeleteModal{{ pelicula.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ pelicula.id }}" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -69,7 +64,7 @@
                     </div>
                 </div>
             </div>
-            {% endfor %}
+        {% endfor %}
         </div>
     {% else %}
         <p class="text-center text-white">No hay películas disponibles.</p>
