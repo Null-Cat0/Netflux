@@ -86,8 +86,9 @@ def crear_pelicula():
                     flash(data['message'], 'danger')
                 except requests.exceptions.JSONDecodeError:
                     flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
-            
-        return render_template("peliculas.html")
+                    return render_template("formulario_pelicula.html")
+                
+        return redirect(url_for('pelicula.obtener_peliculas'))
     else:
         flash("No tienes permisos para crear una película.", 'danger')
         return redirect(url_for('pelicula.obtener_peliculas'))
