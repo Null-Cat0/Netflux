@@ -12,44 +12,63 @@
     <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Lista de Películas</h1>
 
     <!-- Botón de Añadir Película -->
-
     {% if es_admin %}    
         <div class="d-flex justify-content-end mb-4">
-            <a href="{{url_for('pelicula.crear_pelicula')}}" class="btn btn-danger">
+            <a href="{{ url_for('pelicula.crear_pelicula') }}" class="btn btn-danger">
                 <i class="fas fa-plus me-2"></i> Añadir Película
             </a>
-
-            <a href="{{url_for('actor.crear_actor')}}" class="ms-5 btn btn-danger">
-                <i class="fas fa-plus me-2"></i> Añadir Actor
-            </a>
         </div>
-    {%endif%}
+    {% endif %}
+
     <!-- Lista de Películas -->
     {% if peliculas %}
         <div class="row">   
             {% for pelicula in peliculas %}
-                <div class="col-md-4 col-lg-3 mb-4">
-                    <div class="card bg-dark text-white shadow-sm h-100">
-                        <img src="" class="card-img-top" alt="{{ pelicula.titulo }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ pelicula.titulo }}</h5>
-                            <p class="card-text">{{ pelicula.descripcion | truncate(100) }}</p>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <a href="" class="btn btn-outline-light btn-sm">Ver Más</a>
-                                <div class="d-flex">
-                                    <!-- Botón de Editar -->
-                                    <a href="{{url_for('pelicula.editar_pelicula', pelicula_id=pelicula.id)}}" class="text-warning mx-2" title="Editar">
-                                        <i class="fas fa-pencil-alt fa-lg"></i>
-                                    </a>
-                                    <!-- Botón de Eliminar -->
-                                    <a href="{{url_for('pelicula.eliminar_pelicula', pelicula_id=pelicula.id)}}" class="text-danger mx-2" title="Eliminar" onclick="return confirm('¿Estás seguro de que quieres eliminar esta película?');">
-                                        <i class="fas fa-trash-alt fa-lg"></i>
-                                    </a>
-                                </div>
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card bg-dark text-white shadow-sm h-100">
+                    <img src="" class="card-img-top" alt="{{ pelicula.titulo }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ pelicula.titulo }}</h5>
+                        <p class="card-text">{{ pelicula.descripcion | truncate(100) }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <a href="" class="btn btn-outline-light btn-sm">Ver Más</a>
+                            <a href="{{ url_for('usuario.agregar_a_mi_lista', pelicula_id=pelicula.id) }}" 
+                               class="btn btn-outline-success btn-sm ms-2">
+                                <i class="fas fa-plus"></i> Añadir a Mi Lista
+                            </a>
+                            <div class="d-flex">
+                                <!-- Botón de Editar -->
+                                <a href="{{ url_for('pelicula.editar_pelicula', pelicula_id=pelicula.id) }}" class="text-warning mx-2" title="Editar">
+                                    <i class="fas fa-pencil-alt fa-lg"></i>
+                                </a>
+                                <!-- Botón de Eliminar -->
+                                <a href="#confirmDeleteModal{{ pelicula.id }}" class="text-danger mx-2" title="Eliminar" data-bs-toggle="modal">
+                                    <i class="fas fa-trash-alt fa-lg"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Modal de confirmación para eliminar película -->
+            <div class="modal fade" id="confirmDeleteModal{{ pelicula.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ pelicula.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content bg-dark text-white rounded">
+                        <div class="modal-header border-0">
+                            <h5 class="modal-title" id="confirmDeleteModalLabel{{ pelicula.id }}">Confirmar eliminación</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Estás seguro de que quieres eliminar la película <strong>{{ pelicula.titulo }}</strong>?
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                            <a href="{{ url_for('pelicula.eliminar_pelicula', pelicula_id=pelicula.id) }}" class="btn btn-danger rounded-pill">Eliminar película</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
         </div>
     {% else %}

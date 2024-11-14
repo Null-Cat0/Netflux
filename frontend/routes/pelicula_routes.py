@@ -17,14 +17,7 @@ def crear_pelicula():
     # Se llama al bakced de actor_controller para obtener la lista de actores
     # y se envia al formulario de pelicula
         # Obtener el usuario correspondiente al ID y comprobar si es admin
-    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}")
-    if response.status_code == 200:
-        data = response.json()
-        es_admin = data.get('esAdmin')
-    else:
-        data = response.json()
-        flash(f"Error: {data['message']}", 'danger')
-        return redirect(url_for('user.login'))
+    es_admin = session.get('es_admin')
     
     if es_admin:
         if request.method == 'GET':
@@ -47,32 +40,33 @@ def crear_pelicula():
                 return render_template("formulario_pelicula.html", actores=[], es_admin=es_admin)
         
         if request.method == 'POST':
+            # Otros datos del formulario
             titulo = request.form.get('titulo')
             sinopsis = request.form.get('sinopsis')
             genero = request.form.getlist('generos')
             anio_estreno = request.form.get('anio_estreno')
             duracion = request.form.get('duracion')
-            actores = request.form.getlist('actores')
-            secuela = None
-            precuela = None
             
-            print (type(actores))
-            # Crear el payload para enviar al microservicio
+            # Obtener los IDs de actores seleccionados
+            actores = request.form.getlist('actores')
+            
             pelicula_data = {
                 'titulo': titulo,
                 'sinopsis': sinopsis,
                 'genero': genero,
                 'anio_estreno': anio_estreno,
                 'duracion': duracion,
-                'actores': actores,
-                'secuela': secuela,
-                'precuela': precuela
+                'actores': actores,  # Lista de IDs de actores seleccionados
             }
-            # Hacer la llamada POST al microservicio de películas
+            
+            # Realizar la llamada POST al microservicio o procesar la información
+
+
             response = requests.post(
                 f"{contConf.CONTENIDOS_BASE_URL}/crear_pelicula", json=pelicula_data)
+            
             # Manejar la respuesta del microservicio
-            if response.status_code == 200:
+            if response.status_code == 201:
                 try:
                     data = response.json()
                     flash(data['message'], 'success')
@@ -87,11 +81,13 @@ def crear_pelicula():
                 except requests.exceptions.JSONDecodeError:
                     flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
                     return render_template("formulario_pelicula.html")
-                
-        return redirect(url_for('pelicula.obtener_peliculas'))
+                        
+            return redirect(url_for('pelicula.obtener_peliculas'))
     else:
         flash("No tienes permisos para crear una película.", 'danger')
         return redirect(url_for('pelicula.obtener_peliculas'))
+    
+        
     
 
 @pelicula_bp.route('/lista_peliculas', methods=['GET'])
@@ -101,15 +97,7 @@ def obtener_peliculas():
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
 
-    # Obtener el usuario correspondiente al ID y comprobar si es admin
-    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}")
-    if response.status_code == 200:
-        data = response.json()
-        es_admin = data.get('esAdmin')
-    else:
-        data = response.json()
-        flash(f"Error: {data['message']}", 'danger')
-        return redirect(url_for('user.login'))
+    es_admin = session.get('es_admin')
     
     # Se realiza la solicitud GET al microservicio de contenidos para obtener la lista de películas
     response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_peliculas")
@@ -147,15 +135,7 @@ def editar_pelicula(pelicula_id):
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
-    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}")
-    if response.status_code == 200:
-        data = response.json()
-        es_admin = data.get('esAdmin')
-    else:
-        data = response.json()
-        flash(f"Error: {data['message']}", 'danger')
-        return redirect(url_for('user.login'))
+    es_admin = session.get('es_admin')
     
     if es_admin:
         if request.method == 'GET':
@@ -164,7 +144,18 @@ def editar_pelicula(pelicula_id):
             
             if response.status_code == 200:
                 pelicula = response.json()
-                return render_template("formulario_pelicula.html", pelicula=pelicula, es_admin=es_admin)
+                # Obtener todos los actores
+                response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
+                if response.status_code == 200:
+                    data = response.json()
+                    actor_nombre_id = []  # Crear una lista para almacenar los actores como diccionarios
+                    for actor in data:
+                        actor_nombre_id.append({
+                            'id': actor.get('id', 'N/A'),  
+                            'nombre': actor.get('nombre', 'N/A')  
+                        })
+                
+                return render_template("formulario_pelicula.html", actores=actor_nombre_id, pelicula=pelicula, es_admin=es_admin)
             else:
                 try:
                     data = response.json()
@@ -221,14 +212,8 @@ def eliminar_pelicula(pelicula_id):
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}")
-    if response.status_code == 200:
-        data = response.json()
-        es_admin = data.get('esAdmin')
-    else:
-        data = response.json()
-        flash(f"Error: {data['message']}", 'danger')
-        return redirect(url_for('user.login'))
+    es_admin = session.get('es_admin')
+    
     
     if es_admin:
         # Hacer la solicitud DELETE al microservicio para eliminar la película

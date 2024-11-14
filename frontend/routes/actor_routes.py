@@ -13,15 +13,8 @@ def crear_actor():
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
-    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}")
-    if response.status_code == 200:
-        data = response.json()
-        es_admin = data.get('esAdmin')
-    else:
-        data = response.json()
-        flash(f"Error: {data['message']}", 'danger')
-        return redirect(url_for('user.login'))
+    es_admin = session.get('es_admin')
+    
     
     if es_admin:
         if request.method == 'GET':
@@ -48,11 +41,11 @@ def crear_actor():
             response = requests.post(
                 f"{contConf.CONTENIDOS_BASE_URL}/crear_actor", json=actor_data)
             # Manejar la respuesta del microservicio
-            if response.status_code == 200:
+            if response.status_code == 201:
                 try:
                     data = response.json()
                     flash(data['message'], 'success')
-                    return redirect(url_for('pelicula.obtener_peliculas'))
+                    return redirect(url_for('actor.obtener_actores'))
                 except requests.exceptions.JSONDecodeError:
                     flash("Error al procesar la respuesta del servidor.", 'danger')
                     return render_template("formulario_actor.html")
@@ -62,8 +55,7 @@ def crear_actor():
                     flash(data['message'], 'danger')
                 except requests.exceptions.JSONDecodeError:
                     flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
-        
-        return render_template("formulario_actor.html")
+                return render_template("formulario_actor.html")
     else:
         flash("No tienes permisos para crear una película.", 'danger')
         return redirect(url_for('pelicula.obtener_peliculas'))
@@ -75,15 +67,8 @@ def editar_actor(actor_id):
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
-    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}")
-    if response.status_code == 200:
-        data = response.json()
-        es_admin = data.get('esAdmin')
-    else:
-        data = response.json()
-        flash(f"Error: {data['message']}", 'danger')
-        return redirect(url_for('user.login'))
+    es_admin = session.get('es_admin')
+    
     
     if es_admin:
         if request.method == 'GET':
@@ -137,15 +122,7 @@ def eliminar_actor(actor_id):
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
-    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}")
-    if response.status_code == 200:
-        data = response.json()
-        es_admin = data.get('esAdmin')
-    else:
-        data = response.json()
-        flash(f"Error: {data['message']}", 'danger')
-        return redirect(url_for('user.login'))
+    es_admin = session.get('es_admin')
     
     if es_admin:
         # Hacer la llamada DELETE al microservicio de actores
@@ -169,11 +146,13 @@ def obtener_actores():
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
+    es_admin = session.get('es_admin')
+    
     # Se llama al microservicio de actores para obtener la lista de actores
     response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
     if response.status_code == 200:
         actores = response.json()
-        return render_template("actores.html", actores=actores)
+        return render_template("actores.html", actores=actores, es_admin=es_admin)
     else:
         try:
             data = response.json()

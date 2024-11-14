@@ -11,14 +11,13 @@
 <div class="container my-5">
     <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Lista de Actores</h1>
 
-    <!-- Botón de Añadir Actor -->
-    {% if es_admin %}
+    {% if es_admin %}    
         <div class="d-flex justify-content-end mb-4">
-            <a href="{{url_for('actor.crear_actor')}}" class="btn btn-danger">
+            <a href="{{url_for('actor.crear_actor')}}" class="ms-5 btn btn-danger">
                 <i class="fas fa-plus me-2"></i> Añadir Actor
             </a>
         </div>
-    {% endif %}
+    {%endif%}
     
     <!-- Lista de Actores -->
     {% if actores %}
@@ -38,10 +37,29 @@
                                         <i class="fas fa-pencil-alt fa-lg"></i>
                                     </a>
                                     <!-- Botón de Eliminar -->
-                                    <a href="{{url_for('actor.eliminar_actor', actor_id=actor.id)}}" class="text-danger mx-2" title="Eliminar" onclick="return confirm('¿Estás seguro de que quieres eliminar este actor?');">
+                                    <a href="#" class="text-danger mx-2" title="Eliminar" 
+                                       data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ actor.id }}">
                                         <i class="fas fa-trash-alt fa-lg"></i>
                                     </a>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de confirmación para eliminar perfil -->
+                <div class="modal fade" id="confirmDeleteModal{{ actor.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ actor.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white rounded">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title" id="confirmDeleteModalLabel{{ actor.id }}">Confirmar eliminación</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ¿Estás seguro de que quieres eliminar el perfil de {{ actor.nombre }}?
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                                <a href="{{ url_for('actor.eliminar_actor', actor_id=actor.id) }}" class="btn btn-danger rounded-pill">Eliminar actor</a>
                             </div>
                         </div>
                     </div>

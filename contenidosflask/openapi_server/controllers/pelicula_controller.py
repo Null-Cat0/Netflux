@@ -10,7 +10,7 @@ from openapi_server import app, db, util
 from flask import jsonify, request
 from bson import ObjectId
 
-@app.route('/actualizar_pelicula/<pelicula_id>', methods=['PUT'])
+@app.route('/editar_pelicula/<pelicula_id>', methods=['PUT'])
 def actualizar_pelicula(pelicula_id):  # noqa: E501
     """Actualizar una película existente
 
@@ -107,6 +107,9 @@ def crear_pelicula():  # noqa: E501
              if not PeliculaDB.objects.get(titulo=pelicula_api.precuela):
                 return jsonify({"message": "Error al crear la película, la precuela no existe en la base de datos", "status": "error"}), 400
 
+        if pelicula_api.genero  == []:
+            return jsonify({"message": "Error al crear la película, el género no puede estar vacío", "status": "error"}), 400
+        
         pelicula_db = pelicula_api.to_db_model()
         pelicula_db.save()
         return jsonify({"message": "Película creada con éxito", "status": "success"}), 201
