@@ -99,7 +99,7 @@ def editar_actor(actor_id):
                     flash(data['message'], 'danger')
                 except requests.exceptions.JSONDecodeError:
                     flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
-                return redirect(url_for('pelicula.obtener_peliculas'))
+                return redirect(url_for('pelicula.obtener_actores'))
         
         if request.method == 'POST':
             nombre = request.form.get('nombre')
@@ -121,14 +121,14 @@ def editar_actor(actor_id):
             
             if response.status_code == 200:
                 flash("Actor actualizado correctamente.", 'success')
-                return redirect(url_for('pelicula.obtener_peliculas'))
+                return redirect(url_for('actor.obtener_actores'))
             else:
                 try:
                     data = response.json()
                     flash(data['message'], 'danger')
                 except requests.exceptions.JSONDecodeError:
                     flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
-                return redirect(url_for('pelicula.obtener_peliculas'))
+                return redirect(url_for('actor.obtener_actores'))
 
 @actor_bp.route('/eliminar_actor/<actor_id>', methods=['GET'])
 def eliminar_actor(actor_id):
@@ -161,3 +161,25 @@ def eliminar_actor(actor_id):
             except requests.exceptions.JSONDecodeError:
                 flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
             return redirect(url_for('pelicula.obtener_peliculas'))
+
+@actor_bp.route('/lista_actores', methods=['GET'])
+def obtener_actores():
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))
+    
+    # Se llama al microservicio de actores para obtener la lista de actores
+    response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
+    if response.status_code == 200:
+        actores = response.json()
+        return render_template("actores.html", actores=actores)
+    else:
+        try:
+            data = response.json()
+            flash(data['message'], 'danger')
+        except requests.exceptions.JSONDecodeError:
+            flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
+        return render_template("actores.html", actores=[])
+    
+    
