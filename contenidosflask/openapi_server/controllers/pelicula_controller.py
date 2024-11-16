@@ -208,6 +208,17 @@ def obtener_pelicula(pelicula_id):  # noqa: E501
         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
     
     return jsonify(pelicula_db.to_api_model()), 200
+
+@app.route('/obtener_lista_peliculas', methods=['GET'])
+def obtener_lista_peliculas():
+    if request.is_json:
+        lista_ids = request.get_json()
+    else:
+        return jsonify({"message": "Error al obtener la lista de películas", "status": "error"}), 400
+
+    lista_peliculas = PeliculaDB.objects(id__in=lista_ids)
+    list_peliculas_api = [pelicula.to_api_model() for pelicula in lista_peliculas]
+    return jsonify(list_peliculas_api), 200
     
 @app.route('/obtener_precuela_pelicula/<pelicula_id>', methods=['GET'])
 def obtener_precuela_pelicula(pelicula_id):  # noqa: E501

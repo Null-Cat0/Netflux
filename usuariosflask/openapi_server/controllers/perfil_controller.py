@@ -1,7 +1,11 @@
-from openapi_server.models.perfil import Perfil  # noqa: E501
+# Se importa el fichero de configuración de los microservicios
+import os, sys, requests
+app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
+sys.path.append(app_path)
+
+from global_config import ContenidosConfig as contConf
 
 from openapi_server import db
-
 from flask import request, jsonify
 
 from openapi_server.models.perfil import Perfil
@@ -13,10 +17,14 @@ from openapi_server.models.preferencias_contenido_db import PreferenciasContenid
 from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
 from openapi_server.models.genero_db import GeneroDB
 
+# from openapi_server.models.historial_perfil import HistorialPerfil
+from openapi_server.models.historial_perfil_db import HistorialPerfilDB
+
+# from openapi_server.models.lista_perfil import ListaPerfil
+from openapi_server.models.lista_perfil_db import ListaPerfilDB
+
 from openapi_server.models.preferencias_contenido import PreferenciasContenido
 from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
-
-from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
 
 from openapi_server import app
 
@@ -163,6 +171,7 @@ def crear_perfil(user_id):  # noqa: E501
     else:
         return jsonify({"message": "Ha habido un error con su solicitud, inténtelo de nuevo más tarde", "status": "error"}), 404
  
+@app.route('/usuario/<user_id>/perfiles/<profile_id>/historial', methods=['GET'])
 def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
     """Obtiene el historial de contenido completado por de un perfil
 
@@ -175,9 +184,94 @@ def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
 
     :rtype: Union[List[Serie], Tuple[List[Serie], int], Tuple[List[Serie], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+    if perfil_db is None:
+        return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
+    
+    historial_db = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id).all()
+    lista_series = []
+    lista_peliculas = []
 
+    for h in historial_db:
+        if (h.es_serie):
+            lista_series.append(h.contenido)
+        else:
+            lista_peliculas.append(h.contenido)
 
+    # Ahora se hace la petición al microservicio de contenidos para obtener los datos de las series y películas
+    response_series = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_series', json=lista_series)
+
+    if response_series.status_code == 200:
+        series = response_series.json()
+    else:
+        return jsonify({"message": "No se ha podido obtener la lista de series", "status": "error"}), 404
+
+    response_peliculas = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_peliculas', json=lista_peliculas)
+
+    if response_peliculas.status_code == 200:
+        peliculas = response_peliculas.json()
+    else:
+        return jsonify({"message": "No se ha podido obtener la lista de películas", "status": "error"}), 404
+    
+    print(f"\n\nSeries: {series}\n")
+    print(f"\nPeliculas: {peliculas}\n")
+
+    return jsonify({"series": series, "peliculas": peliculas}), 200
+
+@app.route('/usuario/<user_id>/perfiles/<profile_id>/historial/<contenido_id>', methods=['POST'])
+def agregar_contenido_historial(user_id, profile_id, contenido_id):
+    # Buscamos el perfil en la base de datos
+    perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+    if perfil_db is None:
+        return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
+
+    # Buscamos el contenido en la base de datos
+    ## Hay que ver si es una serie o una película
+    response_serie = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_serie/{contenido_id}')
+    if response_serie.status_code == 200:
+        contenido_db = response_serie.json()
+        es_serie = True
+    else:
+        response_pelicula = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_pelicula/{contenido_id}')
+        if response_pelicula.status_code == 200:
+            contenido_db = response_pelicula.json()
+            es_serie = False
+        else:
+            return jsonify({"message": "No se ha encontrado el contenido", "status": "error"}), 404
+
+    # Comprobar si el contenido ya está en el historial
+    historial_db = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
+
+    if historial_db is not None:
+        return jsonify({"message": "El contenido ya está en el historial", "status": "error"}), 409
+
+    # Creamos el objeto HistorialPerfilDB
+    historial_db = HistorialPerfilDB(
+        perfil_id=perfil_db.perfil_id,
+        contenido=contenido_db['id'],
+        es_serie=es_serie
+    )
+    db.session.add(historial_db)
+    db.session.commit()
+
+    return jsonify({"message": "Contenido añadido al historial", "status": "success"}), 201
+
+@app.route('/usuario/<user_id>/perfiles/<profile_id>/historial/<contenido_id>', methods=['DELETE'])
+def eliminar_contenido_historial(user_id, profile_id, contenido_id):
+    perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+    if perfil_db is None:
+        return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
+
+    historial_db = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
+    if historial_db is None:
+        return jsonify({"message": "No se ha encontrado el contenido en el historial", "status": "error"}), 404
+
+    db.session.delete(historial_db)
+    db.session.commit()
+
+    return jsonify({"message": "Contenido eliminado del historial", "status": "success"}), 200
+
+@app.route('/usuario/<user_id>/perfiles/<profile_id>/lista', methods=['GET'])
 def obtener_lista_perfil(user_id, profile_id):  # noqa: E501
     """Obtiene la lista de un perfil concreto
 
@@ -190,7 +284,88 @@ def obtener_lista_perfil(user_id, profile_id):  # noqa: E501
 
     :rtype: Union[List[Serie], Tuple[List[Serie], int], Tuple[List[Serie], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+    if perfil_db is None:
+        return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
+    
+    lista_perfil = ListaPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id).all()
+    lista_series = []
+    lista_peliculas = []
+
+    for h in historial_db:
+        if (h.es_serie):
+            lista_series.append(h.contenido)
+        else:
+            lista_peliculas.append(h.contenido)
+
+    contConf.CONTENIDOS_BASE_URL = "http://localhost:8081"
+    # Ahora se hace la petición al microservicio de contenidos para obtener los datos de las series y películas
+    response_series = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_series', json=lista_series)
+
+    if response_series.status_code == 200:
+        series = response_series.json()
+    else:
+        return jsonify({"message": "No se ha podido obtener la lista de series", "status": "error"}), 404
+
+    response_peliculas = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_peliculas', json=lista_peliculas)
+
+    if response_peliculas.status_code == 200:
+        peliculas = response_peliculas.json()
+    else:
+        return jsonify({"message": "No se ha podido obtener la lista de películas", "status": "error"}), 404
+    
+    print(f"\n\nSeries: {series}\n")
+    print(f"\nPeliculas: {peliculas}\n")
+
+    return jsonify({"series": series, "peliculas": peliculas}), 200
+
+@app.route('/usuario/<user_id>/perfiles/<profile_id>/lista/<contenido_id>', methods=['POST'])
+def agregar_contenido_lista(user_id, profile_id, contenido_id):
+    # Buscamos el perfil en la base de datos
+    perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+    if perfil_db is None:
+        return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
+
+    # Buscamos el contenido en la base de datos
+    ## Hay que ver si es una serie o una película
+    serie_db = SerieDB.query.filter_by(serie_id=contenido_id).first()
+    if serie_db is not None:
+        es_serie = True
+        contenido_db = serie_db
+    else:
+        pelicula_db = PeliculaDB.query.filter_by(pelicula_id=contenido_id).first()
+        if pelicula_db is not None:
+            es_serie = False
+            contenido_db = pelicula_db
+        else:
+            return jsonify({"message": "No se ha encontrado el contenido", "status": "error"}), 404
+
+    # Comprobar si el contenido ya está en el historial
+    lista_db = ListaPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
+    if lista_db is not None:
+        return jsonify({"message": "El contenido ya está en la lista", "status": "error"}), 409
+
+    # Creamos el objeto HistorialPerfilDB
+    lista_db = ListaPerfilDB(perfil_id=perfil_db.perfil_id, contenido=contenido_db.contenido_id, es_serie=es_serie)
+    db.session.add(lista_db)
+    db.session.commit()
+
+    return jsonify({"message": "Contenido añadido al historial", "status": "success"}), 201
+
+@app.route('/usuario/<user_id>/perfiles/<profile_id>/lista/<contenido_id>', methods=['DELETE'])
+def eliminar_contenido_lista(user_id, profile_id, contenido_id):
+    perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+    if perfil_db is None:
+        return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
+
+    lista_db = ListaPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
+    if lista_db is None:
+        return jsonify({"message": "No se ha encontrado el contenido en el historial", "status": "error"}), 404
+
+    db.session.delete(lista_db)
+    db.session.commit()
+
+    return jsonify({"message": "Contenido eliminado del historial", "status": "success"}), 200
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['GET'])
 def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501

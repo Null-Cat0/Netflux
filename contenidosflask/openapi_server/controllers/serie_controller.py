@@ -187,3 +187,14 @@ def obtener_serie(serie_id):  # noqa: E501
         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
 
     return jsonify(serie_db.to_api_model()), 200
+
+@app.route('/obtener_lista_series', methods=['GET'])
+def obtener_lista_series():
+    if request.is_json:
+        lista_ids = request.get_json()
+    else:
+        return jsonify({"message": "Error al obtener la lista de series", "status": "error"}), 400
+
+    series_db = SerieDB.objects(id__in=lista_ids)
+    list_series_api = [serie.to_api_model() for serie in series_db]
+    return jsonify(list_series_api), 200
