@@ -3,8 +3,56 @@
 {% block title %}Series - Netflux{% endblock %}
 
 {% block head %}
-    <title>Series - Netflux</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<title>Series - Netflux</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<style>
+    .series-card {
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #1c1c1c;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .series-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .series-card img {
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .series-card .card-body {
+        padding: 15px;
+    }
+
+    .series-card h5 {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .series-card .card-text {
+        font-size: 0.9rem;
+        color: #bbb;
+    }
+
+    .series-card .btn-outline-light {
+        border-radius: 50px;
+        padding: 5px 15px;
+        font-size: 0.85rem;
+    }
+
+    .series-card .actions a {
+        font-size: 1rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .series-card .actions a:hover {
+        color: #e50914;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -14,43 +62,63 @@
     {% if es_admin %}
         <!-- Botón de Añadir Serie -->
         <div class="d-flex justify-content-end mb-4">
-            <a href="" class="btn btn-danger">
+            <a href="{{ url_for('serie.crear_serie') }}" class="btn btn-danger">
                 <i class="fas fa-plus me-2"></i> Añadir Serie
             </a>
         </div>
     {% endif %}
-    <!-- Tabla de Series -->
+
+    <!-- Lista de Series -->
     {% if series %}
-        <div class="table-responsive">
-            <table class="table table-dark table-hover text-center" style="border-radius: 8px; overflow: hidden;">
-                <thead class="table-secondary text-dark">
-                    <tr>
-                        <th scope="col">Título</th>
-                        <th scope="col">Género</th>
-                        <th scope="col">Fecha de Estreno</th>
-                        <th scope="col">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for serie in series %}
-                        <tr class="align-middle">
-                            <td>{{ serie.titulo }}</td>
-                            <td>{{ serie.genero }}</td>
-                            <td>{{ serie.fecha_estreno.strftime('%d/%m/%Y') }}</td>
-                            <td>
+        <div class="row g-4">
+            {% for serie in series %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card series-card shadow-sm h-100">
+                    <img src="{{ serie.imagen_url if serie.imagen_url else 'static/default-series.jpg' }}" class="card-img-top" alt="{{ serie.titulo }}">
+                    <div class="card-body text-white">
+                        <h5 class="card-title">{{ serie.titulo }}</h5>
+                        <p class="card-text">
+                            {% for genero in serie.genero %}
+                                {{ genero.capitalize() }}
+                            {% endfor %} | {{ serie.anio_estreno }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <a href="" class="btn btn-outline-light btn-sm">Ver Más</a>
+                            <div class="d-flex">
+                                {% if es_admin %}
                                 <!-- Botón de Editar -->
-                                <a href="" class="text-warning mx-2" title="Editar">
+                                <a href="{{ url_for('serie.editar_serie', serie_id=serie.id) }}" class="text-warning mx-2" title="Editar">
                                     <i class="fas fa-pencil-alt fa-lg"></i>
                                 </a>
                                 <!-- Botón de Eliminar -->
-                                <a href="" class="text-danger mx-2" title="Eliminar" onclick="return confirm('¿Estás seguro de que quieres eliminar esta serie?');">
+                                <a href="#confirmDeleteModal{{ serie.id }}" class="text-danger mx-2" title="Eliminar" data-bs-toggle="modal">
                                     <i class="fas fa-trash-alt fa-lg"></i>
                                 </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de confirmación para eliminar serie -->
+            <div class="modal fade" id="confirmDeleteModal{{ serie.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ serie.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content bg-dark text-white rounded">
+                        <div class="modal-header border-0">
+                            <h5 class="modal-title" id="confirmDeleteModalLabel{{ serie.id }}">Confirmar eliminación</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Estás seguro de que quieres eliminar la serie <strong>{{ serie.titulo }}</strong>?
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                            <a href="{{ url_for('serie.eliminar_serie', serie_id=serie.id) }}" class="btn btn-danger rounded-pill">Eliminar serie</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     {% else %}
         <p class="text-center text-white">No hay series disponibles.</p>

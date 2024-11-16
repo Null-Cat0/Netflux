@@ -154,7 +154,7 @@ def editar_pelicula(pelicula_id):
                             'id': actor.get('id', 'N/A'),  
                             'nombre': actor.get('nombre', 'N/A')  
                         })
-                
+
                 return render_template("formulario_pelicula.html", actores=actor_nombre_id, pelicula=pelicula, es_admin=es_admin)
             else:
                 try:
@@ -163,7 +163,6 @@ def editar_pelicula(pelicula_id):
                 except requests.exceptions.JSONDecodeError:
                     flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
                 return redirect(url_for('pelicula.obtener_peliculas'))
-        
         if request.method == 'POST':
             titulo = request.form.get('titulo')
             sinopsis = request.form.get('sinopsis')
@@ -214,10 +213,8 @@ def eliminar_pelicula(pelicula_id):
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
-    
     es_admin = session.get('es_admin')
-    
-    
+
     if es_admin:
         # Hacer la solicitud DELETE al microservicio para eliminar la película
         response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/eliminar_pelicula/{pelicula_id}")
@@ -226,8 +223,6 @@ def eliminar_pelicula(pelicula_id):
         else:
             data = response.json()
             flash(f"Error al eliminar la película: {data['message']}", 'danger')
-            
         return redirect(url_for('pelicula.obtener_peliculas'))
-    
-    
+
     return redirect(url_for('pelicula.lista_peliculas'))
