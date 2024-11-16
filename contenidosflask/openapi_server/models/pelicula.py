@@ -88,7 +88,7 @@ class Pelicula(Model):
         from openapi_server.models.pelicula_db import PeliculaDB
         return PeliculaDB(
             titulo=self._titulo,
-            genero=self._genero,
+            genero=self._genero if self._genero else [],
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             duracion=self._duracion,

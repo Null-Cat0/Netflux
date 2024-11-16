@@ -1,38 +1,49 @@
 {% extends 'base.html' %}
 
-{% block title %}Añadir Actor - Netflux{% endblock %}
+{% block title %}{{ 'Editar Actor' if actor else 'Añadir Actor' }} - Netflux{% endblock %}
 
 {% block head %}
-    <title>Añadir Actor - Netflux</title>
+    <title>{{ 'Editar Actor' if actor else 'Añadir Actor' }} - Netflux</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #141414;">
     <div class="card p-5 shadow-lg" style="max-width: 450px; width: 100%; background-color: #1c1c1c; border-radius: 12px;">
-        <h2 class="text-center text-white mb-4">Añadir Actor</h2>
+        <h2 class="text-center text-white mb-4">{{ 'Editar Actor' if actor else 'Añadir Actor' }}</h2>
 
-        <!-- Formulario para añadir actor -->
+        <!-- Formulario para añadir o editar actor -->
         <form action="" method="POST">
+            {% if actor %}
+                <input type="hidden" name="editing" value="true">
+            {% endif %}
+
             <div class="mb-4">
                 <label for="nombre" class="form-label text-white">Nombre del Actor</label>
                 <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="nombre" name="nombre" 
-                       placeholder="Ingrese el nombre del actor" required>
+                       placeholder="Ingrese el nombre del actor" value="{{ actor.nombre if actor else '' }}" required>
             </div>
 
             <div class="mb-4">
                 <label for="fecha_nacimiento" class="form-label text-white">Fecha de Nacimiento</label>
-                <input type="date" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                <input type="date" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="fecha_nacimiento" name="fecha_nacimiento" 
+                       value="{{ actor.fecha_nacimiento if actor else '' }}" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="nacionalidad" class="form-label text-white">Nacionalidad</label>
+                <textarea class="form-control bg-dark text-white border-0 rounded px-3" id="nacionalidad" name="nacionalidad" 
+                          rows="1" placeholder="Introduzca su nacionalidad" required>{{ actor.nacionalidad if actor else '' }}</textarea>
             </div>
 
             <div class="mb-4">
                 <label for="biografia" class="form-label text-white">Biografía</label>
                 <textarea class="form-control bg-dark text-white border-0 rounded px-3" id="biografia" name="biografia" 
-                          rows="4" placeholder="Escriba una breve biografía del actor" required></textarea>
+                          rows="4" placeholder="Escriba una breve biografía del actor" required>{{ actor.biografia if actor else '' }}</textarea>
             </div>
 
             <button type="submit" class="btn btn-danger w-100 rounded-pill">
-                Crear actor
+                {{ 'Guardar cambios' if actor else 'Crear actor' }}
             </button>
         </form>
     </div>

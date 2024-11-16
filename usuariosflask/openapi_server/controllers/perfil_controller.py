@@ -409,3 +409,50 @@ def obtener_perfiles(user_id):  # noqa: E501
         return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
     else:
         return jsonify([perfil.serialize() for perfil in perfiles]), 200    
+    
+# @app.route('/usuario/<user_id>/perfiles/<profile_id>/historial', methods=['GET'])
+# def obtener_historial_perfil(user_id, profile_id):
+#     """Obtiene el historial de contenido completado por de un perfil
+
+#     Obtiene el historial de contenido completado por un perfil. Esta lista contendrá las series o películas terminadas de ver por el perfil. # noqa: E501
+
+#     :param user_id: ID del usuario específicado
+#     :type user_id: int
+#     :param profile_id: ID del perfil específico
+#     :type profile_id: int
+
+#     :rtype: Union[List[Serie], Tuple[List[Serie], int], Tuple[List[Serie], int, Dict[str, str]]
+#     """
+#     return 'do some magic!'
+
+# @app.route('/usuario/<user_id>/perfiles/<profile_id>/lista', methods=['GET'])
+# def obtener_lista_perfil(user_id, profile_id):
+#     """Obtiene la lista de un perfil concreto
+
+#     Obtiene la lista de contenidos guardados para ver de un perfil # noqa: E501
+    
+#     :param user_id: ID del usuario específicado
+#     :type user_id: int
+#     :param profile_id: ID del perfil específico
+#     :type profile_id: int
+    
+#     :rtype: Union[List[Serie], Tuple[List[Serie], int], Tuple[List[Serie], int, Dict[str, str]]
+#     """
+    
+#     return 'do some magic!'
+
+# @app.route('/usuario/<user_id>/perfiles/<profile_id>/agregar_contenido_lista', methods=['GET'])
+# def obtener_lista_perfil(user_id, profile_id):
+#     """Obtiene la lista de un perfil concreto
+
+#     Obtiene la lista de contenidos guardados para ver de un perfil # noqa: E501
+    
+#     :param user_id: ID del usuario específicado
+#     :type user_id: int
+#     :param profile_id: ID del perfil específico
+#     :type profile_id: int
+    
+#     :rtype: Union[List[Serie], Tuple[List[Serie], int], Tuple[List[Serie], int, Dict[str, str]]
+#     """
+    
+#     return 'do some magic!'

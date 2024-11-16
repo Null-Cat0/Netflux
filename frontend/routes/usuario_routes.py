@@ -37,6 +37,7 @@ def login():
                 session.permanent = True
                 session['logged_user_id'] = data['usuario']['user_id']
                 session['logged_user_name'] = data['usuario']['nombre']
+                session['es_admin'] = data['usuario']['esAdmin']
 
                 # Redirigir al perfil del usuario
                 return redirect(url_for('perfil.obtener_perfiles'))
@@ -159,6 +160,8 @@ def editar_usuario():
         if response.status_code == 200:
             session['logged_user_name'] = nombre
             flash("Usuario actualizado con éxito", 'success')
+
+            session['es_admin'] = esAdmin
             # Redirigir a la vista de perfiles
             return redirect(url_for('perfil.obtener_perfiles'))
         else:
