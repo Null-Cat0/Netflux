@@ -96,6 +96,10 @@
                     {% endfor %}
                 {% endif %}
             </div>
+
+            <!-- Contenedor oculto para los IDs de actores eliminados -->
+            <div id="removedActorsContainer"></div>
+
             <div class="mt-3">
                 <h5 class="text-white">Actores seleccionados:</h5>
                 <ul id="selectedActors" class="selected-actors">
@@ -121,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const selectedActors = new Set();
     const selectedActorsContainer = document.getElementById("selectedActors");
     const hiddenInputsContainer = document.getElementById("selectedActorsContainer");
-
+    const removedActorsContainer = document.getElementById("removedActorsContainer");
 
     document.querySelectorAll('.actor-option').forEach(option => {
         option.addEventListener('click', function(e) {
@@ -161,10 +165,18 @@ document.addEventListener("DOMContentLoaded", function() {
             selectedActors.delete(actorId);
             e.target.remove();
 
+            // Remove the corresponding hidden input in selectedActorsContainer
             const hiddenInput = hiddenInputsContainer.querySelector(`input[data-id="${actorId}"]`);
             if (hiddenInput) {
                 hiddenInput.remove();
             }
+
+            // Add a hidden input in removedActorsContainer to mark actor for removal
+            const removedInput = document.createElement('input');
+            removedInput.type = 'hidden';
+            removedInput.name = 'removed_actors';
+            removedInput.value = actorId;
+            removedActorsContainer.appendChild(removedInput);
         }
     });
 });

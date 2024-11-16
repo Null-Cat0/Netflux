@@ -173,7 +173,10 @@ def editar_pelicula(pelicula_id):
             actores = request.form.getlist('actores')
             secuela = None
             precuela = None
-            
+
+            print(actores)
+            if actores is None: 
+                actores = []    
             # Crear el payload para enviar al microservicio
             pelicula_data = {
                 'titulo': titulo,
@@ -181,7 +184,7 @@ def editar_pelicula(pelicula_id):
                 'genero': genero,
                 'anio_estreno': anio_estreno,
                 'duracion': duracion,
-                'actores': actores,
+                'actores': actores if actores else [],  # Lista de IDs de actores seleccionados
                 'secuela': secuela,
                 'precuela': precuela
             }
