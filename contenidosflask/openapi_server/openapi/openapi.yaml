@@ -1218,8 +1218,157 @@ paths:
       tags:
       - Capitulo
       x-openapi-router-controller: openapi_server.controllers.capitulo_controller
+paths:
+  /generos:
+    get:
+      description: Obtiene una lista de todos los géneros registrados en el sistema.
+      operationId: listar_generos
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Genero'
+          description: Lista de géneros obtenida exitosamente
+        "500":
+          description: Error interno del servidor
+      summary: Listar todos los géneros
+      tags:
+      - Genero
+      x-openapi-router-controller: openapi_server.controllers.genero_controller
+    post:
+      description: Crea un nuevo género con la información proporcionada.
+      operationId: crear_genero
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genero'
+      responses:
+        "201":
+          description: Género creado con éxito
+        "400":
+          description: Solicitud inválida
+        "500":
+          description: Error interno del servidor
+      summary: Crear un nuevo género
+      tags:
+      - Genero
+      x-openapi-router-controller: openapi_server.controllers.genero_controller
+
+  /generos/{generoId}:
+    get:
+      description: Obtiene la información detallada de un género específico por su ID.
+      operationId: obtener_genero
+      parameters:
+        - name: generoId
+          in: path
+          description: ID del género a obtener
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genero'
+          description: Género obtenido con éxito
+        "404":
+          description: Género no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Obtener un género específico
+      tags:
+      - Genero
+      x-openapi-router-controller: openapi_server.controllers.genero_controller
+    put:
+      description: Actualiza un género existente por su ID.
+      operationId: actualizar_genero
+      parameters:
+        - name: generoId
+          in: path
+          description: ID del género a actualizar
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genero'
+      responses:
+        "200":
+          description: Género actualizado con éxito
+        "400":
+          description: Datos inválidos
+        "404":
+          description: Género no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Actualizar un género existente
+      tags:
+      - Genero
+      x-openapi-router-controller: openapi_server.controllers.genero_controller
+
+  /obtener_lista_generos:
+    get:
+      description: Obtiene una lista de géneros por sus IDs.
+      operationId: obtener_lista_generos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Genero'
+          description: Lista de géneros obtenida con éxito
+        "400":
+          description: Solicitud inválida
+        "500":
+          description: Error interno del servidor
+      summary: Obtener una lista de géneros por sus IDs
+      tags:
+      - Genero
+      x-openapi-router-controller: openapi_server.controllers.genero_controller
 components:
   schemas:
+    Genero:
+      example:
+        id: 1
+        nombre: Acción
+        descripcion: Género que incluye escenas de acción intensa y aventura.
+      properties:
+        id:
+          example: 1
+          format: int64
+          title: id
+          type: integer
+        nombre:
+          example: Acción
+          title: nombre
+          type: string
+        descripcion:
+          example: Género que incluye escenas de acción intensa y aventura.
+          title: descripcion
+          type: string
+      required:
+        - nombre
+      title: Genero
+      type: object
     Serie:
       example:
         actores:
@@ -1685,3 +1834,4 @@ components:
           type: integer
       title: asignarActorASerie_request
       type: object
+      

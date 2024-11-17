@@ -1,7 +1,6 @@
 from typing import List # noqa: F401
 
 from openapi_server.models.base_model import Model
-from openapi_server.models.capitulo import Capitulo
 from openapi_server.models.preferencias_contenido import PreferenciasContenido
 from openapi_server import util
 

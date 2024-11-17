@@ -15,7 +15,6 @@ from openapi_server.models.preferencias_contenido import PreferenciasContenido
 from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
 
 from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
-from openapi_server.models.genero_db import GeneroDB
 
 # from openapi_server.models.historial_perfil import HistorialPerfil
 from openapi_server.models.historial_perfil_db import HistorialPerfilDB
@@ -81,14 +80,16 @@ def actualizar_perfil_usuario(user_id, profile_id):
                 for gpdb in genero_preferencias_db:
                     db.session.delete(gpdb)
 
-                for nombre_genero in perfil_api.preferencias_contenido.generos:
-                    genero = GeneroDB.query.filter_by(nombre=nombre_genero).first()
-                    if genero is not None:
-                        gpdb = GeneroPreferenciasDB(preferencias_id=preferencias_db.preferencias_id, genero_id=genero.genero_id)
-                        db.session.add(gpdb)
-
-            # Guarda los cambios en la base de datos
-            db.session.commit()
+                generos_name_list = perfil_api.preferencias_contenido.generos
+                print(f"\n\nGeneros: {generos_name_list}\n")
+                generos_response = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/listar_generos')
+                if generos_response.status_code == 200:
+                    generos = generos_response.json()
+                    for genero in generos:
+                        if genero['nombre'] in generos_name_list:
+                            genero_preferencias_db = GeneroPreferenciasDB(preferencias_id=preferencias_db.preferencias_id, genero_id=genero['id'])
+                            db.session.add(genero_preferencias_db)
+                    db.session.commit()
 
             # Devuelve el perfil actualizado
             return jsonify(perfil_api.serialize()), 200
@@ -159,12 +160,14 @@ def crear_perfil(user_id):  # noqa: E501
         db.session.commit()
 
         generos_name_list = preferencias_api.generos
-        generos_db = [GeneroDB.query.filter_by(nombre=nombre).first() for nombre in generos_name_list]
-
-        if not None in generos_db:
-            for genero in generos_db:
-                genero_preferencias_db = GeneroPreferenciasDB(preferencias_id=preferencias_db.preferencias_id, genero_id=genero.genero_id)
-                db.session.add(genero_preferencias_db)
+        print(f"\n\nGeneros: {generos_name_list}\n")
+        generos_response = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/listar_generos')
+        if generos_response.status_code == 200:
+            generos = generos_response.json()
+            for genero in generos:
+                if genero['nombre'] in generos_name_list:
+                    genero_preferencias_db = GeneroPreferenciasDB(preferencias_id=preferencias_db.preferencias_id, genero_id=genero['id'])
+                    db.session.add(genero_preferencias_db)
             db.session.commit()
 
         return jsonify(perfil_api.serialize()), 201
@@ -288,11 +291,11 @@ def obtener_lista_perfil(user_id, profile_id):  # noqa: E501
     if perfil_db is None:
         return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
     
-    lista_perfil = ListaPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id).all()
+    lista_perfil_db = ListaPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id).all()
     lista_series = []
     lista_peliculas = []
 
-    for h in historial_db:
+    for h in lista_perfil_db:
         if (h.es_serie):
             lista_series.append(h.contenido)
         else:
@@ -327,29 +330,34 @@ def agregar_contenido_lista(user_id, profile_id, contenido_id):
 
     # Buscamos el contenido en la base de datos
     ## Hay que ver si es una serie o una película
-    serie_db = SerieDB.query.filter_by(serie_id=contenido_id).first()
-    if serie_db is not None:
+    response_serie = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_serie/{contenido_id}')
+    if response_serie.status_code == 200:
+        contenido_db = response_serie.json()
         es_serie = True
-        contenido_db = serie_db
     else:
-        pelicula_db = PeliculaDB.query.filter_by(pelicula_id=contenido_id).first()
-        if pelicula_db is not None:
+        response_pelicula = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_pelicula/{contenido_id}')
+        if response_pelicula.status_code == 200:
+            contenido_db = response_pelicula.json()
             es_serie = False
-            contenido_db = pelicula_db
         else:
             return jsonify({"message": "No se ha encontrado el contenido", "status": "error"}), 404
 
-    # Comprobar si el contenido ya está en el historial
-    lista_db = ListaPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
-    if lista_db is not None:
+    # Comprobar si el contenido ya está en la lista
+    lista_perfil_db = ListaPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
+
+    if lista_perfil_db is not None:
         return jsonify({"message": "El contenido ya está en la lista", "status": "error"}), 409
 
-    # Creamos el objeto HistorialPerfilDB
-    lista_db = ListaPerfilDB(perfil_id=perfil_db.perfil_id, contenido=contenido_db.contenido_id, es_serie=es_serie)
-    db.session.add(lista_db)
+    # Creamos el objeto ListaPerfilDB
+    lista_perfil_db = ListaPerfilDB(
+        perfil_id=perfil_db.perfil_id,
+        contenido=contenido_db['id'],
+        es_serie=es_serie
+    )
+    db.session.add(lista_perfil_db)
     db.session.commit()
 
-    return jsonify({"message": "Contenido añadido al historial", "status": "success"}), 201
+    return jsonify({"message": "Contenido añadido a la lista", "status": "success"}), 201
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>/lista/<contenido_id>', methods=['DELETE'])
 def eliminar_contenido_lista(user_id, profile_id, contenido_id):

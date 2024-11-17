@@ -6,7 +6,7 @@ class GeneroPreferenciasDB(db.Model):
     __tablename__ = 'genero_preferencias'
 
     preferencias_id = db.Column(db.Integer, db.ForeignKey('preferencias_contenido.preferencias_id'), nullable=False)
-    genero_id = db.Column(db.Integer, db.ForeignKey('genero.genero_id'), nullable=False)
+    genero_id = db.Column(db.String(255), nullable=False)
 
     __table_args__ = (
         db.PrimaryKeyConstraint('preferencias_id', 'genero_id'),
