@@ -16,7 +16,7 @@ class RecomendacionPelicula(Model):
 
         :param id_perfil: The id_perfil of this RecomendacionPelicula.  # noqa: E501
         :type id_perfil: int
-        :param peliculas_recomendadas: The contenido_recomendado of this RecomendacionPelicula.  # noqa: E501
+        :param peliculas_recomendadas: The peliculas_recomendadas of this RecomendacionPelicula.  # noqa: E501
         :type peliculas_recomendadas: List[str]
         """
         self.openapi_types = {
@@ -26,11 +26,11 @@ class RecomendacionPelicula(Model):
 
         self.attribute_map = {
             'id_perfil': 'id_perfil',
-            'peliculas_recomendadas': 'contenido_recomendado'
+            'peliculas_recomendadas': 'peliculas_recomendadas'
         }
 
         self._id_perfil = id_perfil
-        self._peliculas_recomendadas = contenido_recomendado
+        self._peliculas_recomendadas = peliculas_recomendadas
 
     def serialize(self):
         return {
@@ -92,7 +92,7 @@ class RecomendacionPelicula(Model):
         """Sets the peliculas_recomendadas of this RecomendacionPelicula.
 
 
-        :param peliculas_recomendadas: The contenido_recomendado of this RecomendacionPelicula.
+        :param peliculas_recomendadas: The peliculas_recomendadas of this RecomendacionPelicula.
         :type peliculas_recomendadas: List[Pelicula]
         """
 

@@ -5,5 +5,5 @@ from openapi_server.models.recomendacion_serie import RecomendacionSerie
 from openapi_server.models.recomendacion_serie_db import RecomendacionSerieDB
 from openapi_server.models.recomendacion_pelicula_db import RecomendacionPeliculaDB
 
-from openapi_server.models.recomendacion import Recomendacion
+# from openapi_server.models.recomendacion import Recomendacion
 from openapi_server.models.visualizacion import Visualizacion
