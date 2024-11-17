@@ -1,5 +1,6 @@
 from openapi_server import db
 from openapi_server.models.actor_db import ActorDB
+from openapi_server.models.genero_db import GeneroDB
 from bson import ObjectId
 
 class CapituloEmbeddedDB(db.EmbeddedDocument):
@@ -38,7 +39,7 @@ class SerieDB(db.Document):
     meta = {'collection': 'series'}
 
     titulo = db.StringField(required=True)
-    genero = db.ListField(db.StringField(), required=True)
+    genero = db.ListField(db.ReferenceField(GeneroDB))
     sinopsis = db.StringField(required=True)
     anio_estreno = db.IntField(required=True)
     temporadas = db.ListField(db.EmbeddedDocumentField(TemporadaEmbeddedDB))  # Temporadas con capítulos anidados
@@ -49,7 +50,7 @@ class SerieDB(db.Document):
         return Serie(
             id=str(self.id),
             titulo=self.titulo,
-            genero=self.genero,
+            genero=[genero.to_api_model() for genero in self.genero] if self.genero else [],
             sinopsis=self.sinopsis,
             anio_estreno=self.anio_estreno,
             temporadas=[temporada.to_api_model() for temporada in self.temporadas] if self.temporadas else [],

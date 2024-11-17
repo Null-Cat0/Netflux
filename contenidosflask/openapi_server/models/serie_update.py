@@ -6,7 +6,7 @@ from bson import ObjectId
 from openapi_server.models.base_model import Model
 from openapi_server.models.actor import Actor
 from openapi_server.models.serie import Serie, TemporadaEmbedded
-# from openapi_server.models.temporada import Temporada
+from openapi_server.models.genero import Genero
 from openapi_server import util
 
 class SerieUpdate(Model):
@@ -65,7 +65,7 @@ class SerieUpdate(Model):
         from openapi_server.models.serie_db import SerieDB
         return SerieDB(
             titulo=self._titulo,
-            genero=self._genero,
+            genero=[ObjectId(genero) for genero in self._genero] if self._genero else [],
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             temporadas=[temporada.to_db_model() for temporada in self._temporadas] if self._temporadas else [],
@@ -127,7 +127,7 @@ class SerieUpdate(Model):
         self._titulo = titulo
 
     @property
-    def genero(self) -> List[str]:
+    def genero(self) -> List[Genero]:
         """Gets the genero of this SerieUpdate.
 
         :return: The genero of this SerieUpdate.
@@ -136,7 +136,7 @@ class SerieUpdate(Model):
         return self._genero
 
     @genero.setter
-    def genero(self, genero: List[str]):
+    def genero(self, genero: List[Genero]):
         """Sets the genero of this SerieUpdate.
 
 

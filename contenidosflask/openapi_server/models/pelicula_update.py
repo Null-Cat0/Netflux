@@ -5,7 +5,7 @@ from bson import ObjectId
 
 from openapi_server.models.base_model import Model
 from openapi_server.models.actor import Actor
-# from openapi_server.models.temporada import Temporada
+from openapi_server.models.genero import Genero
 from openapi_server import util
 
 class PeliculaUpdate(Model):
@@ -62,7 +62,7 @@ class PeliculaUpdate(Model):
 
         self._id = id
         self._titulo = titulo
-        self._genero = genero
+        self._genero = [ObjectId(genero) if isinstance(genero, str) else genero for genero in (genero or [])]
         self._sinopsis = sinopsis
         self._anio_estreno = anio_estreno
         self._duracion = duracion
@@ -76,7 +76,7 @@ class PeliculaUpdate(Model):
         from openapi_server.models.pelicula_db import PeliculaDB
         return PeliculaDB(
             titulo=self._titulo,
-            genero=self._genero,
+            genero=[ObjectId(genero) for genero in self._genero] if self._genero else [],
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             duracion=self._duracion,
@@ -144,7 +144,7 @@ class PeliculaUpdate(Model):
         self._titulo = titulo
 
     @property
-    def genero(self) -> List[str]:
+    def genero(self) -> List[Genero]:
         """Gets the genero of this PeliculaUpdate.
 
 
@@ -154,7 +154,7 @@ class PeliculaUpdate(Model):
         return self._genero
 
     @genero.setter
-    def genero(self, genero: List[str]):
+    def genero(self, genero: List[Genero]):
         """Sets the genero of this PeliculaUpdate.
 
 
@@ -232,27 +232,6 @@ class PeliculaUpdate(Model):
         """
 
         self._duracion = duracion
-
-    # @property
-    # def temporadas(self) -> List[Temporada]:
-    #     """Gets the temporadas of this PeliculaUpdate.
-
-
-    #     :return: The temporadas of this PeliculaUpdate.
-    #     :rtype: List[Temporada]
-    #     """
-    #     return self._temporadas
-
-    # @temporadas.setter
-    # def temporadas(self, temporadas: List[Temporada]):
-    #     """Sets the temporadas of this PeliculaUpdate.
-
-
-    #     :param temporadas: The temporadas of this PeliculaUpdate.
-    #     :type temporadas: List[Temporada]
-    #     """
-
-    #     self._temporadas = temporadas
 
     @property
     def actores(self) -> List[Actor]:

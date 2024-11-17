@@ -4,6 +4,7 @@ from typing import List  # noqa: F401
 
 from openapi_server.models.base_model import Model
 from openapi_server.models.actor import Actor  # noqa: E501
+from openapi_server.models.genero import Genero 
 from openapi_server import util
 from bson import ObjectId
 
@@ -204,7 +205,7 @@ class Serie(Model):
         }
         self._id = id
         self._titulo = titulo
-        self._genero = genero
+        self._genero = [ObjectId(genero) if isinstance(genero, str) else genero for genero in (genero or [])]
         self._sinopsis = sinopsis
         self._anio_estreno = anio_estreno
 
@@ -220,7 +221,7 @@ class Serie(Model):
         return {
             "id": self.id,
             "titulo": self.titulo,
-            "genero": self.genero,
+            "genero": [genero.serialize() for genero in self.genero] if self.genero else [],
             "sinopsis": self.sinopsis,
             "anio_estreno": self.anio_estreno,
             "temporadas": [temporada.serialize() for temporada in self.temporadas],
@@ -231,7 +232,7 @@ class Serie(Model):
         from openapi_server.models.serie_db import SerieDB
         return SerieDB(
             titulo=self._titulo,
-            genero=self._genero,
+            genero=[ObjectId(genero) for genero in self._genero] if self._genero else [],
             sinopsis=self._sinopsis,
             anio_estreno=self._anio_estreno,
             temporadas=[temporada.to_db_model() for temporada in self._temporadas] if self._temporadas else [],
@@ -295,7 +296,7 @@ class Serie(Model):
         self._titulo = titulo
 
     @property
-    def genero(self) -> List[str]:
+    def genero(self) -> List[Genero]:
         """Gets the genero of this Serie.
 
 
@@ -305,7 +306,7 @@ class Serie(Model):
         return self._genero
 
     @genero.setter
-    def genero(self, genero: List[str]):
+    def genero(self, genero: List[Genero]):
         """Sets the genero of this Serie.
 
 

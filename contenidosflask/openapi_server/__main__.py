@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from openapi_server import connex_app, app
+from openapi_server import connex_app, app, util
 
 # Se importa el fichero de configuración de los microservicios
 import os, sys, requests
@@ -9,4 +9,5 @@ sys.path.append(app_path)
 from global_config import ContenidosConfig
 
 if __name__ == '__main__':
+    util.populate_genresDB()
     connex_app.run(port=ContenidosConfig.CONTENIDOS_PORT)
