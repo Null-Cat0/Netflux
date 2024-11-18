@@ -1,10 +1,22 @@
-import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
+# Se importa el fichero de configuración de los microservicios
+import os, sys, requests
+app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
+sys.path.append(app_path)
 
-from openapi_server.models.visualizacion import Visualizacion  # noqa: E501
+from global_config import ContenidosConfig, UsuariosConfig
+
+import connexion
+from datetime import datetime
+from flask import jsonify, request
+from typing import Dict, Tuple, Union
+
+from openapi_server.models.visualizacion_pelicula import VisualizacionPelicula  # noqa: E501
+from openapi_server.models.visualizacion_capitulo import VisualizacionCapitulo  # noqa: E501
+from openapi_server.models.visualizacion_pelicula_db import VisualizacionPeliculaDB
+from openapi_server.models.visualizacion_capitulo_db import VisualizacionCapituloDB
+
 from openapi_server import util
+from openapi_server import app
 
 
 def actualizar_visualizacion_capitulo_perfil(perfil_id, capitulo_id):  # noqa: E501
@@ -37,7 +49,8 @@ def actualizar_visualizacion_pelicula_perfil(perfil_id, pelicula_id):  # noqa: E
     return 'do some magic!'
 
 
-def crear_visualizacion_contenido_perfil(perfil_id, visualizacion):  # noqa: E501
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion', methods=['POST'])
+def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
     """Inicia la visualización de un capítulo o película por un perfil
 
     Inicia la visualización de un capítulo o película por un perfil # noqa: E501
@@ -49,10 +62,55 @@ def crear_visualizacion_contenido_perfil(perfil_id, visualizacion):  # noqa: E50
 
     :rtype: Union[Visualizacion, Tuple[Visualizacion, int], Tuple[Visualizacion, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        visualizacion = Visualizacion.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    # Se obtiene el perfil con una petición al microservicio de usuario
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
 
+    if response_perfil.status_code != 200:
+        return jsonify({"message": "Perfil no encontrado"}), 404
+
+    # Se obtiene el contenido a visualizar
+    es_capitulo = False
+    visualizacion = request.get_json()
+    if "pelicula_id" in visualizacion:
+        visualizacion_db = VisualizacionPeliculaDB(
+            id_perfil=perfil_id,
+            pelicula_id=visualizacion["pelicula_id"],
+            fecha_visualizacion=datetime.now()
+        )
+    elif "serie_id" and "temporada_id" and "capitulo_id" in visualizacion:
+        visualizacion_db = VisualizacionCapituloDB(
+            id_perfil=perfil_id,
+            serie_id=visualizacion["serie_id"],
+            temporada_id=visualizacion["temporada_id"],
+            capitulo_id=visualizacion["capitulo_id"],
+            fecha_visualizacion=datetime.now()
+        )
+        es_capitulo = True
+    else:
+        return jsonify({"message": "Contenido no encontrado"}), 404
+
+    # Se actualiza el historial de visualizaciones del perfil
+    payload = {}
+    if es_capitulo:
+        payload = {
+            "serie_id": visualizacion["serie_id"],
+            "temporada_id": visualizacion["temporada_id"],
+            "capitulo_id": visualizacion["capitulo_id"],
+        }
+    else:
+        payload = {
+            "pelicula_id": visualizacion["pelicula_id"]
+        }
+
+    response_historial = requests.post(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}/historial", json=payload)
+
+    if response_historial.status_code != 201:
+        return jsonify({"message": "Error al actualizar el historial de visualizaciones"}), 500
+
+    # Se guarda la visualización en la base de datos
+    visualizacion_db.save()
+
+    return jsonify({"message": "Visualización creada"}), 201
 
 def listar_visualizaciones_contenido(contenido_id):  # noqa: E501
     """Lista de perfiles que han visto el contenido especificado

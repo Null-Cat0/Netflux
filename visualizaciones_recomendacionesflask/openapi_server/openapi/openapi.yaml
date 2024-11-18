@@ -119,38 +119,38 @@ paths:
       tags:
       - Recomendacion
       x-openapi-router-controller: openapi_server.controllers.recomendacion_controller
-  /visualizacion/{contenidoId}:
-    get:
-      description: Lista de perfiles que han visto el contenido especificado.
-      operationId: listar_visualizaciones_contenido
-      parameters:
-      - description: ID del perfil a obtener
-        explode: false
-        in: path
-        name: contenidoId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/Perfil'
-                type: array
-          description: Lista de visualizaciones obtenida exitosamente
-        "404":
-          description: Perfil no encontrado
-        "500":
-          description: Error interno del servidor
-      summary: Lista de perfiles que han visto el contenido especificado
-      tags:
-      - Visualizacion
-      x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
+  # /visualizacion/{contenidoId}:
+  #   get:
+  #     description: Lista de perfiles que han visto el contenido especificado.
+  #     operationId: listar_visualizaciones_contenido
+  #     parameters:
+  #     - description: ID del perfil a obtener
+  #       explode: false
+  #       in: path
+  #       name: contenidoId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     responses:
+  #       "200":
+  #         content:
+  #           application/json:
+  #             schema:
+  #               items:
+  #                 $ref: '#/components/schemas/Perfil'
+  #               type: array
+  #         description: Lista de visualizaciones obtenida exitosamente
+  #       "404":
+  #         description: Perfil no encontrado
+  #       "500":
+  #         description: Error interno del servidor
+  #     summary: Lista de perfiles que han visto el contenido especificado
+  #     tags:
+  #     - Visualizacion
+  #     x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
   /visualizacion/{perfilId}:
     get:
       description: Obtiene una lista de todos los capítulos o películas visualizados

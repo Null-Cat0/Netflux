@@ -498,6 +498,48 @@ paths:
       tags:
       - Perfil
       x-openapi-router-controller: openapi_server.controllers.perfil_controller
+    # post:
+    #   description: Añade un nuevo contenido al historial de un perfil
+    #   operationId: agregar_historial_perfil
+    #   parameters:
+    #   - description: ID del usuario específicado
+    #     explode: false
+    #     in: path
+    #     name: userId
+    #     required: true
+    #     schema:
+    #       example: 1
+    #       format: int64
+    #       type: integer
+    #     style: simple
+    #   - description: ID del perfil específico
+    #     explode: false
+    #     in: path
+    #     name: profileId
+    #     required: true
+    #     schema:
+    #       example: 1
+    #       format: int64
+    #       type: integer
+    #     style: simple
+    #   requestBody:
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: '#/components/schemas/Capitulo'
+    #     description: Objeto del contenido a añadir
+    #     required: true
+    #   responses:
+    #     "201":
+    #       description: Contenido añadido exitosamente
+    #     "404":
+    #       description: Usuario o perfil no encontrado
+    #     "500":
+    #       description: Error del servidor
+    #   summary: Añade un nuevo contenido al historial de un perfil
+    #   tags:
+    #   - Perfil
+    #   x-openapi-router-controller: openapi_server.controllers.perfil_controller
   /usuario/{userId}/perfiles/{profileId}/lista:
     get:
       description: Obtiene la lista de contenidos guardados para ver de un perfil
