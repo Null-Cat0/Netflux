@@ -1,30 +1,86 @@
-import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
+# Se importa el fichero de configuración de los microservicios
+import os, sys, requests
+app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
+sys.path.append(app_path)
 
-from openapi_server.models.recomendacion import Recomendacion  # noqa: E501
+from global_config import ContenidosConfig, UsuariosConfig
+
+import connexion
+from flask import jsonify, request
+from typing import Dict, Tuple, Union
+
+from openapi_server.models.recomendacion_pelicula import RecomendacionPelicula
+from openapi_server.models.recomendacion_serie import RecomendacionSerie  #
+from openapi_server.models.recomendacion_pelicula_db import RecomendacionPeliculaDB
+from openapi_server.models.recomendacion_serie_db import RecomendacionSerieDB
+
 from openapi_server import util
 
+from openapi_server import app
 
-def crear_recomendacion_perfil(perfil_id, recomendacion):  # noqa: E501
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['POST'])
+def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     """Crea una recomendación para un perfil
 
     Crea una recomendación para un perfil en específico # noqa: E501
 
+    :param user_id: ID del usuario especificado
+    :type user_id: int
     :param perfil_id: ID del perfil especificado
     :type perfil_id: int
-    :param recomendacion: ID del contenido a visualizar
-    :type recomendacion: dict | bytes
 
     :rtype: Union[Recomendacion, Tuple[Recomendacion, int], Tuple[Recomendacion, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        recomendacion = Recomendacion.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
 
+    # Obtener el perfil con una petición al microservicio de usuario
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
 
-def eliminar_recomendacion_perfil(perfil_id, recomendacion_id):  # noqa: E501
+    if response_perfil.status_code != 200:
+        return jsonify({"message": "Perfil no encontrado"}), 404
+
+    preferencias_perfil = response_perfil.json()["preferencias_contenido"]
+    generos_perfil = preferencias_perfil["generos"]
+
+    # Se obtienen todas las películas y series
+    lista_peliculas_api = requests.get(f"{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_peliculas")
+    lista_series_api = requests.get(f"{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_series")
+
+    if lista_peliculas_api.status_code != 200 or lista_series_api.status_code != 200:
+        return jsonify({"message": "Error al obtener las películas o series"}), 500
+
+    # Se filtran las películas y series por los géneros del perfil
+    lista_peliculas_genero = []
+    for pelicula in lista_peliculas_api.json():
+        for genero in pelicula["genero"]:
+            if genero.strip().lower() in generos_perfil:
+                lista_peliculas_genero.append(pelicula['id'])
+                break
+
+    lista_series_genero = []
+    for serie in lista_series_api.json():
+        for genero in serie["genero"]:
+            if genero.strip().lower() in generos_perfil:
+                lista_series_genero.append(serie['id'])
+                break
+
+    # Se crea el objecto recomendacion con las películas y series
+    recomendacion_pelicula = RecomendacionPeliculaDB(
+        id_perfil=perfil_id,
+        peliculas_recomendadas=lista_peliculas_genero
+    )
+    recomendacion_serie = RecomendacionSerieDB(
+        id_perfil=perfil_id,
+        series_recomendadas=lista_series_genero
+    )
+
+    # Se guardan las recomendaciones en la base de datos
+    recomendacion_pelicula.save()
+    recomendacion_serie.save()
+
+    return jsonify({"message": "Recomendaciones creadas correctamente"}), 201
+    
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['DELETE'])
+def eliminar_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     """Elimina una recomendación en específico de un perfil
 
     Elimina una recomendación en específico de un perfil # noqa: E501
@@ -36,25 +92,16 @@ def eliminar_recomendacion_perfil(perfil_id, recomendacion_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    recomendaciones_pelicula = RecomendacionPeliculaDB.objects.get(id_perfil=perfil_id)
+    recomendaciones_serie = RecomendacionSerieDB.objects.get(id_perfil=perfil_id)
 
+    recomendaciones_pelicula.delete()
+    recomendaciones_serie.delete()
 
-def obtener_recomendacion_perfil(perfil_id, recomendacion_id):  # noqa: E501
-    """Obtiene una recomendación en específico de un perfil
+    return jsonify({"message": "Recomendaciones eliminadas correctamente"}), 200
 
-    Obtiene una recomendación en específico de un perfil # noqa: E501
-
-    :param perfil_id: ID del perfil especificado
-    :type perfil_id: int
-    :param recomendacion_id: ID de la recomendacion especificada
-    :type recomendacion_id: int
-
-    :rtype: Union[Recomendacion, Tuple[Recomendacion, int], Tuple[Recomendacion, int, Dict[str, str]]
-    """
-    return 'do some magic!'
-
-
-def obtener_recomendaciones_perfil(perfil_id):  # noqa: E501
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['GET'])
+def obtener_recomendaciones_perfil(user_id, perfil_id):  # noqa: E501
     """Obtiene una lista de las recomendaciones para el perfil
 
     Obtiene una lista de las recomendaciones para el perfil # noqa: E501
@@ -64,4 +111,16 @@ def obtener_recomendaciones_perfil(perfil_id):  # noqa: E501
 
     :rtype: Union[List[Recomendacion], Tuple[List[Recomendacion], int], Tuple[List[Recomendacion], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    recomendaciones_pelicula = RecomendacionPeliculaDB.objects.get(id_perfil=perfil_id) 
+    recomendaciones_serie = RecomendacionSerieDB.objects.get(id_perfil=perfil_id)
+
+    rp = recomendaciones_pelicula.to_api_model()
+    rs = recomendaciones_serie.to_api_model()
+
+    # Se junta la información de las recomendaciones de películas y series
+    recomendaciones = {
+        "peliculas": rp.peliculas_recomendadas,
+        "series": rs.series_recomendadas
+    }
+
+    return jsonify(recomendaciones), 200

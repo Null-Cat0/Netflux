@@ -3,7 +3,6 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from openapi_server.models.base_model import Model
-from openapi_server.models.capitulo import Capitulo
 from openapi_server.models.preferencias_contenido import PreferenciasContenido
 from openapi_server import util
 
@@ -13,7 +12,7 @@ class PerfilUpdate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, user_id=None, nombre=None, foto_perfil=None, historial_vistos=None, mi_lista=None, preferencias_contenido=None):  # noqa: E501
+    def __init__(self, id=None, user_id=None, nombre=None, foto_perfil=None, historial_perfil=None, lista_perfil=None, preferencias_contenido=None):  # noqa: E501
         """PerfilUpdate - a model defined in OpenAPI
 
         :param id: The id of this PerfilUpdate.  # noqa: E501
@@ -36,8 +35,8 @@ class PerfilUpdate(Model):
             'user_id': int,
             'nombre': str,
             'foto_perfil': str,
-            'historial_vistos': List[Capitulo],
-            'mi_lista': List[Capitulo],
+            'historial_perfil': List[str],
+            'lista_perfil': List[str],
             'preferencias_contenido': PreferenciasContenido
         }
 
@@ -46,8 +45,8 @@ class PerfilUpdate(Model):
             'user_id': 'user_id',
             'nombre': 'nombre',
             'foto_perfil': 'foto_perfil',
-            'historial_vistos': 'historial_vistos',
-            'mi_lista': 'mi_lista',
+            'historial_perfil': 'historial_perfil',
+            'lista_perfil': 'lista_perfil',
             'preferencias_contenido': 'preferencias_contenido'
         }
 
@@ -55,8 +54,8 @@ class PerfilUpdate(Model):
         self._user_id = user_id
         self._nombre = nombre
         self._foto_perfil = foto_perfil
-        self._historial_vistos = historial_vistos
-        self._mi_lista = mi_lista
+        self._historial_perfil = historial_perfil
+        self.lista_perfil = lista_perfil
         self._preferencias_contenido = preferencias_contenido
 
     @classmethod
@@ -164,49 +163,50 @@ class PerfilUpdate(Model):
 
         self._foto_perfil = foto_perfil
 
+    
     @property
-    def historial_vistos(self) -> List[Capitulo]:
-        """Gets the historial_vistos of this PerfilUpdate.
+    def historial_perfil(self) -> List[str]:
+        """Gets the historial_perfil of this Perfil.
 
 
-        :return: The historial_vistos of this PerfilUpdate.
+        :return: The historial_perfil of this Perfil.
         :rtype: List[Capitulo]
         """
-        return self._historial_vistos
+        return self._historial_perfil
 
-    @historial_vistos.setter
-    def historial_vistos(self, historial_vistos: List[Capitulo]):
-        """Sets the historial_vistos of this PerfilUpdate.
+    @historial_perfil.setter
+    def historial_perfil(self, historial_perfil: List[str]):
+        """Sets the historial_perfil of this Perfil.
 
 
-        :param historial_vistos: The historial_vistos of this PerfilUpdate.
-        :type historial_vistos: List[Capitulo]
+        :param historial_perfil: The historial_perfil of this Perfil.
+        :type historial_perfil: List[Capitulo]
         """
 
-        self._historial_vistos = historial_vistos
+        self._historial_perfil = historial_perfil
 
     @property
-    def mi_lista(self) -> List[Capitulo]:
-        """Gets the mi_lista of this PerfilUpdate.
+    def lista_perfil(self) -> List[str]:
+        """Gets the lista_perfil of this Perfil.
 
         Lista con el contenido que el usuario ha guardado  # noqa: E501
 
-        :return: The mi_lista of this PerfilUpdate.
+        :return: The lista_perfil of this Perfil.
         :rtype: List[Capitulo]
         """
-        return self._mi_lista
+        return self._lista_perfil
 
-    @mi_lista.setter
-    def mi_lista(self, mi_lista: List[Capitulo]):
-        """Sets the mi_lista of this PerfilUpdate.
+    @lista_perfil.setter
+    def lista_perfil(self, lista_perfil: List[str]):
+        """Sets the lista_perfil of this Perfil.
 
         Lista con el contenido que el usuario ha guardado  # noqa: E501
 
-        :param mi_lista: The mi_lista of this PerfilUpdate.
-        :type mi_lista: List[Capitulo]
+        :param lista_perfil: The lista_perfil of this Perfil.
+        :type lista_perfil: List[Capitulo]
         """
 
-        self._mi_lista = mi_lista
+        self._lista_perfil = lista_perfil
 
     @property
     def preferencias_contenido(self) -> PreferenciasContenido:

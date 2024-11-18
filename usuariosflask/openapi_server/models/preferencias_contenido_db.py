@@ -1,7 +1,12 @@
+# Se importa el fichero de configuración de los microservicios
+import os, sys, requests
+app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
+sys.path.append(app_path)
+from global_config import ContenidosConfig as contConf
+
 from openapi_server import util
 from openapi_server import db
 
-from openapi_server.models.genero_db import GeneroDB
 from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
 
 class PreferenciasContenidoDB(db.Model):
@@ -25,10 +30,13 @@ class PreferenciasContenidoDB(db.Model):
         # Lista de los ids de los generos asociados a este perfil
         generos_ids = [genero.genero_id for genero in self.generos]
 
-        # Ahora obtenemos los nombres de los generos asociados a este perfil con los ids obtenidos
-        generos = GeneroDB.query.filter(GeneroDB.genero_id.in_(generos_ids)).all()
-        nombre_generos = [genero.nombre for genero in generos]
-        return nombre_generos
+        # Ahora obtenemos los nombres de los generos asociados a este perfil con los ids obtenidos. 
+        # Para ello, realizamos una petición al microservicio de contenidos
+        response_generos = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_generos', json=generos_ids)
+        if response_generos.status_code == 200:
+            return response_generos.json()
+        else:
+            return []
     
     def to_api_model(self):
         from openapi_server.models.preferencias_contenido import PreferenciasContenido
@@ -37,5 +45,5 @@ class PreferenciasContenidoDB(db.Model):
             perfil_id=self.perfil_id,
             subtitulos=self.subtitulos,
             idioma_audio=self.idioma_audio,
-            generos=get_lista_generos()
+            generos=self.get_lista_generos()
         )

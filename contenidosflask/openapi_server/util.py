@@ -145,3 +145,20 @@ def _deserialize_dict(data, boxed_type):
     """
     return {k: _deserialize(v, boxed_type)
             for k, v in data.items() }
+
+def populate_genresDB():
+    from openapi_server.models.genero_db import GeneroDB
+
+    # Verificar si ya existen géneros en la base de datos
+    if GeneroDB.objects.first() is None:
+        # Lista de géneros predefinidos
+        list_genres = ["comedia", "drama", "accion", "terror", "ciencia ficcion", "romance", "documental", "animacion", "fantasia", "aventura"]
+
+        # Crear objetos de GeneroDB para cada género
+        genre_objects = [GeneroDB(nombre=genre) for genre in list_genres]
+
+        # Guardar los objetos en la base de datos
+        GeneroDB.objects.insert(genre_objects)
+        print("Géneros iniciales agregados a la base de datos.")
+    else:
+        print("La base de datos ya contiene géneros.")

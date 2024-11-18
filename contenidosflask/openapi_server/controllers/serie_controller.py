@@ -1,5 +1,6 @@
 from openapi_server.models.actor import Actor  # noqa: E501
 from openapi_server.models.actor_db import ActorDB  # noqa: E501
+from openapi_server.models.genero_db import GeneroDB 
 from openapi_server.models.asignar_actor_request import AsignarActorRequest  # noqa: E501
 
 from openapi_server.models.serie import Serie  # noqa: E501
@@ -49,6 +50,11 @@ def actualizar_serie(serie_id):  # noqa: E501
 
     if serie_db.temporadas:
         serie_to_update.temporadas = serie_db.temporadas
+
+    # Reemplazar los generos
+    if serie_db.genero:
+        generos_db = [GeneroDB.objects.get(id=ObjectId(id)) for id in serie_update.genero]
+        serie_to_update.genero = generos_db # Se cambia la lista de generos por la nueva
 
     # Reemplazar los actores
     if serie_db.actores:
@@ -100,6 +106,17 @@ def crear_serie():  # noqa: E501
         serie_api = Serie.from_dict(request.get_json())
 
     if serie_api:
+        if not serie_api.genero or not isinstance(serie_api.genero, list):
+            return jsonify({"message": "Error: El campo 'genero' es obligatorio y debe contener al menos un género.", "status": "error"}), 400
+        
+        from openapi_server.models.genero_db import GeneroDB
+        generos_invalidos = [g for g in serie_api.genero if not GeneroDB.objects(id=g).first()]
+        if generos_invalidos:
+            return jsonify({
+                "message": f"Error: Los siguientes géneros no son válidos o no existen: {generos_invalidos}",
+                "status": "error"
+            }), 400
+        
         serie_db = serie_api.to_db_model()
         serie_db.save()
         return jsonify({"message": "Serie creada con éxito", "status": "success"}), 201

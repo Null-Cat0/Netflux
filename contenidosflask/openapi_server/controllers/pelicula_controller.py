@@ -1,5 +1,6 @@
 from openapi_server.models.actor import Actor  # noqa: E501
 from openapi_server.models.actor_db import ActorDB  # noqa: E501
+from openapi_server.models.genero_db import GeneroDB 
 from openapi_server.models.asignar_actor_request import AsignarActorRequest  # noqa: E501
 
 from openapi_server.models.pelicula import Pelicula  # noqa: E501
@@ -41,6 +42,11 @@ def actualizar_pelicula(pelicula_id):  # noqa: E501
         pelicula_to_update.anio_estreno = pelicula_db.anio_estreno
     if pelicula_db.duracion:
         pelicula_to_update.duracion = pelicula_db.duracion
+
+    # Reemplazar los generos
+    if pelicula_db.genero:
+        generos_db = [GeneroDB.objects.get(id=ObjectId(id)) for id in pelicula_update.genero]
+        pelicula_to_update.genero = generos_db
 
     # Reemplazar los actores
     if pelicula_db.actores:
@@ -99,6 +105,18 @@ def crear_pelicula():  # noqa: E501
         pelicula_api = Pelicula.from_dict(request.get_json())
 
     if pelicula_api:
+
+        if not pelicula_api.genero or not isinstance(pelicula_api.genero, list):
+            return jsonify({"message": "Error: El campo 'genero' es obligatorio y debe contener al menos un género.", "status": "error"}), 400
+        
+        from openapi_server.models.genero_db import GeneroDB
+        generos_invalidos = [g for g in pelicula_api.genero if not GeneroDB.objects(id=g).first()]
+        if generos_invalidos:
+            return jsonify({
+                "message": f"Error: Los siguientes géneros no son válidos o no existen: {generos_invalidos}",
+                "status": "error"
+            }), 400
+        
         if pelicula_api.secuela:
             if not PeliculaDB.objects.get(titulo=pelicula_api.secuela):
                 return jsonify({"message": "Error al crear la película, la secuela no existe en la base de datos", "status": "error"}), 400
@@ -107,9 +125,6 @@ def crear_pelicula():  # noqa: E501
              if not PeliculaDB.objects.get(titulo=pelicula_api.precuela):
                 return jsonify({"message": "Error al crear la película, la precuela no existe en la base de datos", "status": "error"}), 400
 
-        if pelicula_api.genero  == []:
-            return jsonify({"message": "Error al crear la película, el género no puede estar vacío", "status": "error"}), 400
-        
         pelicula_db = pelicula_api.to_db_model()
         pelicula_db.save()
         return jsonify({"message": "Película creada con éxito", "status": "success"}), 201

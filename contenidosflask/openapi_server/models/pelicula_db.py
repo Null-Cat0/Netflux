@@ -1,11 +1,12 @@
 from openapi_server import db
 from openapi_server.models.actor_db import ActorDB
+from openapi_server.models.genero_db import GeneroDB
 
 class PeliculaDB(db.Document):
     meta = {'collection': 'peliculas'}  # Nombre de la colección en MongoDB
 
     titulo = db.StringField(required=True)
-    genero = db.ListField(db.StringField(), required=True)
+    genero = db.ListField(db.ReferenceField(GeneroDB))
     sinopsis = db.StringField(required=True)
     anio_estreno = db.IntField(required=True)
     duracion = db.IntField(required=True)
@@ -19,7 +20,7 @@ class PeliculaDB(db.Document):
         return Pelicula(
             id=str(self.id),  
             titulo=self.titulo,
-            genero=self.genero,
+            genero=[g.to_api_model() for g in self.genero],
             sinopsis=self.sinopsis,
             anio_estreno=self.anio_estreno,
             duracion=self.duracion,

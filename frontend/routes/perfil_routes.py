@@ -2,6 +2,7 @@ import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
 from global_config import UsuariosConfig as userConf
+from global_config import ContenidosConfig as contConf
 
 perfil_bp = Blueprint('perfil', __name__)
 
@@ -37,7 +38,13 @@ def crear_perfil():
         return redirect(url_for('user.login'))  # Asegúrate de tener una ruta de login
     
     if request.method == 'GET':
-        return render_template("formulario_perfil.html")
+        requests_generos = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/listar_generos')
+        if requests_generos.status_code == 200:
+            generos = requests_generos.json()
+            return render_template("formulario_perfil.html", generos=generos)
+        else:
+            flash("Error al cargar los géneros", 'danger')
+            return redirect(url_for('perfil.obtener_perfiles'))
 
     if request.method == 'POST':
         # Comprobación de que tiene 5 o menos perfiles
@@ -122,7 +129,13 @@ def editar_perfil(perfil_id):
         if response.status_code == 200:
             data = response.json()
             print(f"\n\nDATOS PERFIL EN ROUTES: {data}\n\n")
-            return render_template("formulario_perfil.html", perfil=data, is_edit=True)
+            response_generos = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/listar_generos')
+            if response_generos.status_code == 200:
+                generos = response_generos.json()
+                return render_template("formulario_perfil.html", perfil=data, generos=generos, is_edit=True)
+            else:
+                flash("Error al cargar los géneros", 'danger')
+                return redirect(url_for('perfil.obtener_perfiles'))
         else:
             # Manejar error en caso de no obtener datos del perfil
             try:

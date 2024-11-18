@@ -7,7 +7,7 @@ connex_app = connexion.App(__name__, specification_dir='./openapi/')
 app = connex_app.app  # Asocia la app de Flask con la de Connexion
 app.secret_key = 'mysecretkey'
 app.config["MONGODB_SETTINGS"] = {
-    "db": "Netflux",
+    "db": "Netflux_contenidos",
     "host": "localhost",
     "port": 27017
 }

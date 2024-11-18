@@ -3,7 +3,6 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from openapi_server.models.base_model import Model
-from openapi_server.models.pelicula import Pelicula
 from openapi_server import util
 
 class RecomendacionPelicula(Model):
@@ -12,31 +11,39 @@ class RecomendacionPelicula(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id_recomendacion_pelicula=None, id_perfil=None, peliculas_recomendadas=None):  # noqa: E501
+    def __init__(self, id_perfil=None, peliculas_recomendadas=None):  # noqa: E501
         """RecomendacionPelicula - a model defined in OpenAPI
 
-        :param id_recomendacion_pelicula: The id_recomendacion of this RecomendacionPelicula.  # noqa: E501
-        :type id_recomendacion_pelicula: int
         :param id_perfil: The id_perfil of this RecomendacionPelicula.  # noqa: E501
         :type id_perfil: int
-        :param peliculas_recomendadas: The contenido_recomendado of this RecomendacionPelicula.  # noqa: E501
-        :type peliculas_recomendadas: List[Pelicula]
+        :param peliculas_recomendadas: The peliculas_recomendadas of this RecomendacionPelicula.  # noqa: E501
+        :type peliculas_recomendadas: List[str]
         """
         self.openapi_types = {
-            'id_recomendacion_pelicula': int,
             'id_perfil': int,
-            'peliculas_recomendadas': List[Pelicula]
+            'peliculas_recomendadas': List[str]
         }
 
         self.attribute_map = {
-            'id_recomendacion_pelicula': 'id_recomendacion',
             'id_perfil': 'id_perfil',
-            'peliculas_recomendadas': 'contenido_recomendado'
+            'peliculas_recomendadas': 'peliculas_recomendadas'
         }
 
-        self._id_recomendacion_pelicula = id_recomendacion
         self._id_perfil = id_perfil
-        self._peliculas_recomendadas = contenido_recomendado
+        self._peliculas_recomendadas = peliculas_recomendadas
+
+    def serialize(self):
+        return {
+            'id_perfil': self.id_perfil,
+            'peliculas_recomendadas': self.peliculas_recomendadas
+        }
+
+    def to_db_model(self):
+        from openapi_server.models.recomendacion_pelicula_db import RecomendacionPeliculaDB
+        return RecomendacionPeliculaDB(
+            id_perfil=self.id_perfil,
+            peliculas_recomendadas=self.peliculas_recomendadas or []
+        )
 
     @classmethod
     def from_dict(cls, dikt) -> 'RecomendacionPelicula':
@@ -48,27 +55,6 @@ class RecomendacionPelicula(Model):
         :rtype: RecomendacionPelicula
         """
         return util.deserialize_model(dikt, cls)
-
-    @property
-    def id_recomendacion_pelicula(self) -> int:
-        """Gets the id_recomendacion_pelicula of this RecomendacionPelicula.
-
-
-        :return: The id_recomendacion_pelicula of this RecomendacionPelicula.
-        :rtype: int
-        """
-        return self._id_recomendacion_pelicula
-
-    @id_recomendacion_pelicula.setter
-    def id_recomendacion_pelicula(self, id_recomendacion_pelicula: int):
-        """Sets the id_recomendacion_pelicula of this RecomendacionPelicula.
-
-
-        :param id_recomendacion_pelicula: The id_recomendacion of this RecomendacionPelicula.
-        :type id_recomendacion_pelicula: int
-        """
-
-        self._id_recomendacion_pelicula = id_recomendacion_pelicula
 
     @property
     def id_perfil(self) -> int:
@@ -92,7 +78,7 @@ class RecomendacionPelicula(Model):
         self._id_perfil = id_perfil
 
     @property
-    def peliculas_recomendadas(self) -> List[Pelicula]:
+    def peliculas_recomendadas(self) -> List[str]:
         """Gets the peliculas_recomendadas of this RecomendacionPelicula.
 
 
@@ -102,11 +88,11 @@ class RecomendacionPelicula(Model):
         return self._peliculas_recomendadas
 
     @peliculas_recomendadas.setter
-    def peliculas_recomendadas(self, peliculas_recomendadas: List[Pelicula]):
+    def peliculas_recomendadas(self, peliculas_recomendadas: List[str]):
         """Sets the peliculas_recomendadas of this RecomendacionPelicula.
 
 
-        :param peliculas_recomendadas: The contenido_recomendado of this RecomendacionPelicula.
+        :param peliculas_recomendadas: The peliculas_recomendadas of this RecomendacionPelicula.
         :type peliculas_recomendadas: List[Pelicula]
         """
 
