@@ -40,6 +40,7 @@ def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
 
     preferencias_perfil = response_perfil.json()["preferencias_contenido"]
     generos_perfil = preferencias_perfil["generos"]
+    generos_perfil = [genero["id"] for genero in generos_perfil]
 
     # Se obtienen todas las películas y series
     lista_peliculas_api = requests.get(f"{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_peliculas")
@@ -52,14 +53,15 @@ def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     lista_peliculas_genero = []
     for pelicula in lista_peliculas_api.json():
         for genero in pelicula["genero"]:
-            if genero.strip().lower() in generos_perfil:
+            print(f"Genero: {genero}\n")
+            if genero["id"] in generos_perfil:
                 lista_peliculas_genero.append(pelicula['id'])
                 break
 
     lista_series_genero = []
     for serie in lista_series_api.json():
         for genero in serie["genero"]:
-            if genero.strip().lower() in generos_perfil:
+            if genero["id"] in generos_perfil:
                 lista_series_genero.append(serie['id'])
                 break
 
@@ -92,11 +94,23 @@ def eliminar_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-    recomendaciones_pelicula = RecomendacionPeliculaDB.objects.get(id_perfil=perfil_id)
-    recomendaciones_serie = RecomendacionSerieDB.objects.get(id_perfil=perfil_id)
+    # Se comprueba si existe el perfil
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
 
-    recomendaciones_pelicula.delete()
-    recomendaciones_serie.delete()
+    if response_perfil.status_code != 200:
+        return jsonify({"message": "Perfil no encontrado"}), 404
+
+    try:
+        recomendaciones_pelicula = RecomendacionPeliculaDB.objects.get(id_perfil=perfil_id)
+        recomendaciones_serie = RecomendacionSerieDB.objects.get(id_perfil=perfil_id)
+
+        if recomendaciones_pelicula:
+            recomendaciones_pelicula.delete()
+        if recomendaciones_serie:
+            recomendaciones_serie.delete()
+
+    except RecomendacionPeliculaDB.DoesNotExist:
+        raise RecomendacionPelicula.DoesNotExist
 
     return jsonify({"message": "Recomendaciones eliminadas correctamente"}), 200
 
@@ -114,13 +128,13 @@ def obtener_recomendaciones_perfil(user_id, perfil_id):  # noqa: E501
     recomendaciones_pelicula = RecomendacionPeliculaDB.objects.get(id_perfil=perfil_id) 
     recomendaciones_serie = RecomendacionSerieDB.objects.get(id_perfil=perfil_id)
 
-    rp = recomendaciones_pelicula.to_api_model()
-    rs = recomendaciones_serie.to_api_model()
+    rpl = [rp.to_api_model() for rp in recomendaciones_pelicula]
+    rsl = [rs.to_api_model() for rs in recomendaciones_serie]
 
     # Se junta la información de las recomendaciones de películas y series
     recomendaciones = {
-        "peliculas": rp.peliculas_recomendadas,
-        "series": rs.series_recomendadas
+        "peliculas": rpl.peliculas_recomendadas or [],
+        "series": rsl.series_recomendadas or []
     }
 
     return jsonify(recomendaciones), 200

@@ -262,46 +262,6 @@ paths:
       tags:
       - Visualizacion
       x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
-    patch:
-      description: Actualiza el progreso de la visualización de un capítulo por un
-        perfil
-      operationId: actualizar_visualizacion_capitulo_perfil
-      parameters:
-      - description: ID del perfil especificado
-        explode: false
-        in: path
-        name: perfilId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      - description: ID del capítulo especificado
-        explode: false
-        in: path
-        name: capituloId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Capitulo'
-          description: Película obtenida correctamente
-        "404":
-          description: Perfil o capítulo no encontrado
-        "500":
-          description: Error interno del servidor
-      summary: Actualiza la visualización de un capítulo por un perfil
-      tags:
-      - Visualizacion
-      x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
   /visualizacion/{perfilId}/{peliculaId}:
     get:
       description: Obtiene la película en visualización por el perfil especificado.
@@ -339,42 +299,6 @@ paths:
         "500":
           description: Error interno del servidor
       summary: Obtiene la película visualizada por el perfil especificado
-      tags:
-      - Visualizacion
-      x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
-    patch:
-      description: Actualiza el progreso de la visualización de la película por un
-        perfil
-      operationId: actualizar_visualizacion_pelicula_perfil
-      parameters:
-      - description: ID del perfil específicado
-        explode: false
-        in: path
-        name: perfilId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      - description: ID de la película a actualizar
-        explode: false
-        in: path
-        name: peliculaId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "204":
-          description: Visualización actualizada exitosamente
-        "404":
-          description: Perfil o película no encontrado
-        "500":
-          description: Error interno del servidor
-      summary: Actualiza la visualización de la película por un perfil
       tags:
       - Visualizacion
       x-openapi-router-controller: openapi_server.controllers.visualizacion_controller

@@ -10,7 +10,7 @@ class VisualizacionPeliculaDB(db.Document):
     def to_api_model(self):
         from openapi_server.models.visualizacion_pelicula import VisualizacionPelicula
         return VisualizacionPelicula(
-            id_perfil=self.id_perfil,
-            pelicula_id=self.pelicula_id,
+            id_perfil=str(self.id_perfil),
+            pelicula_id=str(self.pelicula_id),
             fecha_visualizacion=self.fecha_visualizacion
         )

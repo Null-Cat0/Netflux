@@ -14,13 +14,13 @@ class VisualizacionCapitulo(Model):
     """
 
     def __init__(self, id_perfil=None, serie_id=None, temporada_id=None, capitulo_id=None, fecha_visualizacion=None):  # noqa: E501
-        """VisualizacionPelicula - a model defined in OpenAPI
+        """VisualizacionCapitulo - a model defined in OpenAPI
 
-        :param id_perfil: The id_perfil of this VisualizacionPelicula.  # noqa: E501
+        :param id_perfil: The id_perfil of this VisualizacionCapitulo.  # noqa: E501
         :type id_perfil: int
-        :param capitulo_id: The capitulo_id of this VisualizacionPelicula.  # noqa: E501
+        :param capitulo_id: The capitulo_id of this VisualizacionCapitulo.  # noqa: E501
         :type capitulo_id: int
-        :param fecha_visualizacion: The fecha_visualizacion of this VisualizacionPelicula.  # noqa: E501
+        :param fecha_visualizacion: The fecha_visualizacion of this VisualizacionCapitulo.  # noqa: E501
         :type fecha_visualizacion: date
         """
         self.openapi_types = {
@@ -46,32 +46,32 @@ class VisualizacionCapitulo(Model):
         self._fecha_visualizacion = fecha_visualizacion
 
     @classmethod
-    def from_dict(cls, dikt) -> 'VisualizacionPelicula':
+    def from_dict(cls, dikt) -> 'VisualizacionCapitulo':
         """Returns the dict as a model
 
         :param dikt: A dict.
         :type: dict
-        :return: The VisualizacionPelicula of this Visualizacion.  # noqa: E501
-        :rtype: VisualizacionPelicula
+        :return: The VisualizacionCapitulo of this Visualizacion.  # noqa: E501
+        :rtype: VisualizacionCapitulo
         """
         return util.deserialize_model(dikt, cls)
 
     @property
     def id_perfil(self) -> int:
-        """Gets the id_perfil of this VisualizacionPelicula.
+        """Gets the id_perfil of this VisualizacionCapitulo.
 
 
-        :return: The id_perfil of this VisualizacionPelicula.
+        :return: The id_perfil of this VisualizacionCapitulo.
         :rtype: int
         """
         return self._id_perfil
 
     @id_perfil.setter
     def id_perfil(self, id_perfil: int):
-        """Sets the id_perfil of this VisualizacionPelicula.
+        """Sets the id_perfil of this VisualizacionCapitulo.
 
 
-        :param id_perfil: The id_perfil of this VisualizacionPelicula.
+        :param id_perfil: The id_perfil of this VisualizacionCapitulo.
         :type id_perfil: int
         """
 
@@ -79,20 +79,20 @@ class VisualizacionCapitulo(Model):
 
     @property
     def capitulo_id(self) -> str:
-        """Gets the capitulo_id of this VisualizacionPelicula.
+        """Gets the capitulo_id of this VisualizacionCapitulo.
 
 
-        :return: The capitulo_id of this VisualizacionPelicula.
+        :return: The capitulo_id of this VisualizacionCapitulo.
         :rtype: int
         """
         return self._capitulo_id
 
     @capitulo_id.setter
     def capitulo_id(self, capitulo_id: str):
-        """Sets the capitulo_id of this VisualizacionPelicula.
+        """Sets the capitulo_id of this VisualizacionCapitulo.
 
 
-        :param capitulo_id: The capitulo_id of this VisualizacionPelicula.
+        :param capitulo_id: The capitulo_id of this VisualizacionCapitulo.
         :type capitulo_id: int
         """
 
@@ -100,20 +100,20 @@ class VisualizacionCapitulo(Model):
 
     @property
     def serie_id(self) -> str:
-        """Gets the serie_id of this VisualizacionPelicula.
+        """Gets the serie_id of this VisualizacionCapitulo.
 
 
-        :return: The serie_id of this VisualizacionPelicula.
+        :return: The serie_id of this VisualizacionCapitulo.
         :rtype: int
         """
         return self._serie_id
 
     @serie_id.setter
     def serie_id(self, serie_id: str):
-        """Sets the serie_id of this VisualizacionPelicula.
+        """Sets the serie_id of this VisualizacionCapitulo.
 
 
-        :param serie_id: The serie_id of this VisualizacionPelicula.
+        :param serie_id: The serie_id of this VisualizacionCapitulo.
         :type serie_id: int
         """
 
@@ -121,20 +121,20 @@ class VisualizacionCapitulo(Model):
 
     @property
     def temporada_id(self) -> str:
-        """Gets the temporada_id of this VisualizacionPelicula.
+        """Gets the temporada_id of this VisualizacionCapitulo.
 
 
-        :return: The temporada_id of this VisualizacionPelicula.
+        :return: The temporada_id of this VisualizacionCapitulo.
         :rtype: int
         """
         return self._temporada_id
 
     @temporada_id.setter
     def temporada_id(self, temporada_id: str):
-        """Sets the temporada_id of this VisualizacionPelicula.
+        """Sets the temporada_id of this VisualizacionCapitulo.
 
 
-        :param temporada_id: The temporada_id of this VisualizacionPelicula.
+        :param temporada_id: The temporada_id of this VisualizacionCapitulo.
         :type temporada_id: int
         """
 
@@ -142,20 +142,20 @@ class VisualizacionCapitulo(Model):
 
     @property
     def fecha_visualizacion(self) -> date:
-        """Gets the fecha_visualizacion of this VisualizacionPelicula.
+        """Gets the fecha_visualizacion of this VisualizacionCapitulo.
 
 
-        :return: The fecha_visualizacion of this VisualizacionPelicula.
+        :return: The fecha_visualizacion of this VisualizacionCapitulo.
         :rtype: date
         """
         return self._fecha_visualizacion
 
     @fecha_visualizacion.setter
     def fecha_visualizacion(self, fecha_visualizacion: date):
-        """Sets the fecha_visualizacion of this VisualizacionPelicula.
+        """Sets the fecha_visualizacion of this VisualizacionCapitulo.
 
 
-        :param fecha_visualizacion: The fecha_visualizacion of this VisualizacionPelicula.
+        :param fecha_visualizacion: The fecha_visualizacion of this VisualizacionCapitulo.
         :type fecha_visualizacion: date
         """
 

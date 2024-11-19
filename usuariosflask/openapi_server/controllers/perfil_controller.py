@@ -3,9 +3,10 @@ import os, sys, requests
 app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
 sys.path.append(app_path)
 
-from global_config import ContenidosConfig as contConf
+from global_config import ContenidosConfig, VisualizacionesConfig
 
 from openapi_server import db
+from bson import ObjectId
 from flask import request, jsonify
 
 from openapi_server.models.perfil import Perfil
@@ -82,7 +83,7 @@ def actualizar_perfil_usuario(user_id, profile_id):
 
                 generos_name_list = perfil_api.preferencias_contenido.generos
                 print(f"\n\nGeneros: {generos_name_list}\n")
-                generos_response = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/listar_generos')
+                generos_response = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_generos')
                 if generos_response.status_code == 200:
                     generos = generos_response.json()
                     for genero in generos:
@@ -90,6 +91,19 @@ def actualizar_perfil_usuario(user_id, profile_id):
                             genero_preferencias_db = GeneroPreferenciasDB(preferencias_id=preferencias_db.preferencias_id, genero_id=genero['id'])
                             db.session.add(genero_preferencias_db)
                     db.session.commit()
+
+            # Se actualizan las recomendaciones al perfil
+            ## Primero se borrán las recomendaciones anteriores
+            recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
+
+            if recomendaciones_perfil.status_code != 200:
+                return jsonify({"message": "Error al eliminar las recomendaciones del perfil"}), 500
+
+            ## Se crean recomendaciones al perfil
+            recomendaciones_perfil = requests.post(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
+
+            if recomendaciones_perfil.status_code != 201:
+                return jsonify({"message": "Error al crear las recomendaciones del perfil"}), 500
 
             # Devuelve el perfil actualizado
             return jsonify(perfil_api.serialize()), 200
@@ -114,6 +128,15 @@ def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
     """
     perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
     if perfil_db is not None:
+        # Se han de eliminar las recomendaciones y visualizaciones del perfil
+        recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
+        if recomendaciones_perfil.status_code != 200:
+            return jsonify({"message": "Error al eliminar las recomendaciones del perfil"}), 500
+
+        visualizaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/visualizacion")
+        if visualizaciones_perfil.status_code != 200:
+            return jsonify({"message": "Error al eliminar las visualizaciones del perfil"}), 500
+
         db.session.delete(perfil_db)
         db.session.commit()
         return jsonify({"message": "Perfil eliminado con éxito", "status": "success"}), 200
@@ -161,7 +184,7 @@ def crear_perfil(user_id):  # noqa: E501
 
         generos_name_list = preferencias_api.generos
         print(f"\n\nGeneros: {generos_name_list}\n")
-        generos_response = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/listar_generos')
+        generos_response = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_generos')
         if generos_response.status_code == 200:
             generos = generos_response.json()
             for genero in generos:
@@ -170,7 +193,14 @@ def crear_perfil(user_id):  # noqa: E501
                     db.session.add(genero_preferencias_db)
             db.session.commit()
 
+        # Se crean recomendaciones al perfil
+        recomendaciones_perfil = requests.post(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
+
+        if recomendaciones_perfil.status_code != 201:
+            return jsonify({"message": "Error al crear la recomendaciones del perfil"}), 500
+
         return jsonify(perfil_api.serialize()), 201
+
     else:
         return jsonify({"message": "Ha habido un error con su solicitud, inténtelo de nuevo más tarde", "status": "error"}), 404
  
@@ -202,14 +232,14 @@ def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
             lista_peliculas.append(h.contenido)
 
     # Ahora se hace la petición al microservicio de contenidos para obtener los datos de las series y películas
-    response_series = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_series', json=lista_series)
+    response_series = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_lista_series', json=lista_series)
 
     if response_series.status_code == 200:
         series = response_series.json()
     else:
         return jsonify({"message": "No se ha podido obtener la lista de series", "status": "error"}), 404
 
-    response_peliculas = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_peliculas', json=lista_peliculas)
+    response_peliculas = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_lista_peliculas', json=lista_peliculas)
 
     if response_peliculas.status_code == 200:
         peliculas = response_peliculas.json()
@@ -227,32 +257,27 @@ def agregar_contenido_historial(user_id, profile_id):
     if request.is_json:
         contenido_json = request.get_json()
 
-    # Comprueba si el contenido es un capitulo o una película
-    if "pelicula_id" in contenido_json:
-        pelicula_id = contenido_json["pelicula_id"]
-    elif "serie_id" and "temporada_id" and "capitulo_id" in contenido_json:
-        serie_id = contenido_json["serie_id"]
-        temporada_id = contenido_json["temporada_id"]
-        capitulo_id = contenido_json["capitulo_id"]
-    else:
-        return jsonify({"message": "La solicitud debe contener un capítulo o una película"}), 400
-
     # Buscamos el perfil en la base de datos
     perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
     if perfil_db is None:
         return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
 
-    print("ESTAMOS AQUí UNU (Tras perfil)\n\n")
+    # Comprueba si el contenido es un capitulo o una película y hace la petición correspondiente
+    cap = False
+    if "pelicula_id" in contenido_json:
+        pelicula_id = contenido_json["pelicula_id"]
+        response_contenido = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_pelicula/{pelicula_id}')
 
-    # Buscamos el contenido en la base de datos
-    if pelicula_id:
-        print("ESTAMOS AQUí UNU (DENTRO IF PELI)\n\n")
-        response_contenido = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_pelicula/{pelicula_id}')
-        cap = False
-    else:
-        print("ESTAMOS AQUí UNU (DENTRO ELSE)\n\n")
-        response_contenido = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_capitulo_serie/{serie_id}/{temporada_id}/{capitulo_id}')
+    elif "serie_id" and "temporada_id" and "capitulo_id" in contenido_json:
+        serie_id = contenido_json["serie_id"]
+        temporada_id = contenido_json["temporada_id"]
+        capitulo_id = contenido_json["capitulo_id"]
+
+        response_contenido = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_capitulo_serie/{serie_id}/{temporada_id}/{capitulo_id}')
         cap = True
+
+    else:
+        return jsonify({"message": "La solicitud debe contener un capítulo o una película"}), 400
 
     if response_contenido.status_code != 200:
         return jsonify({"message": "No se ha encontrado el contenido", "status": "error"}), 404
@@ -277,13 +302,28 @@ def agregar_contenido_historial(user_id, profile_id):
 
     return jsonify({"message": "Contenido añadido al historial", "status": "success"}), 201
 
-@app.route('/usuario/<user_id>/perfiles/<profile_id>/historial/<contenido_id>', methods=['DELETE'])
-def eliminar_contenido_historial(user_id, profile_id, contenido_id):
+@app.route('/usuario/<user_id>/perfiles/<profile_id>/historial', methods=['DELETE'])
+def eliminar_contenido_historial(user_id, profile_id):
+    if not request.is_json:
+        return jsonify({"message": "La solicitud debe contener un JSON"}), 400
+
+    contenido_json = request.get_json()
+
     perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
     if perfil_db is None:
         return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
 
+    if "pelicula_id" in contenido_json:
+        contenido_id = contenido_json["pelicula_id"]
+
+    elif "serie_id" and "temporada_id" and "capitulo_id" in contenido_json:
+        contenido_id = contenido_json["capitulo_id"]
+
+    else:
+        return jsonify({"message": "La solicitud debe contener un capítulo o una película"}), 400
+
     historial_db = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
+
     if historial_db is None:
         return jsonify({"message": "No se ha encontrado el contenido en el historial", "status": "error"}), 404
 
@@ -320,14 +360,14 @@ def obtener_lista_perfil(user_id, profile_id):  # noqa: E501
             lista_peliculas.append(h.contenido)
 
     # Ahora se hace la petición al microservicio de contenidos para obtener los datos de las series y películas
-    response_series = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_series', json=lista_series)
+    response_series = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_lista_series', json=lista_series)
 
     if response_series.status_code == 200:
         series = response_series.json()
     else:
         return jsonify({"message": "No se ha podido obtener la lista de series", "status": "error"}), 404
 
-    response_peliculas = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_peliculas', json=lista_peliculas)
+    response_peliculas = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_lista_peliculas', json=lista_peliculas)
 
     if response_peliculas.status_code == 200:
         peliculas = response_peliculas.json()
@@ -348,12 +388,12 @@ def agregar_contenido_lista(user_id, profile_id, contenido_id):
 
     # Buscamos el contenido en la base de datos
     ## Hay que ver si es una serie o una película
-    response_serie = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_serie/{contenido_id}')
+    response_serie = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_serie/{contenido_id}')
     if response_serie.status_code == 200:
         contenido_db = response_serie.json()
         es_serie = True
     else:
-        response_pelicula = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_pelicula/{contenido_id}')
+        response_pelicula = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_pelicula/{contenido_id}')
         if response_pelicula.status_code == 200:
             contenido_db = response_pelicula.json()
             es_serie = False

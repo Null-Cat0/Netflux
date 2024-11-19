@@ -10,9 +10,11 @@ class VisualizacionCapituloDB(db.Document):
     fecha_visualizacion = db.DateTimeField()
 
     def to_api_model(self):
-        from openapi_server.models.visualizacion_pelicula import VisualizacionPelicula
-        return VisualizacionPelicula(
-            id_perfil=self.id_perfil,
-            capitulo_id=self.id_pelicula,
+        from openapi_server.models.visualizacion_capitulo import VisualizacionCapitulo
+        return VisualizacionCapitulo(
+            id_perfil=str(self.id_perfil),
+            serie_id=str(self.serie_id),
+            temporada_id=str(self.temporada_id),
+            capitulo_id=str(self.capitulo_id),
             fecha_visualizacion=self.fecha_visualizacion
         )

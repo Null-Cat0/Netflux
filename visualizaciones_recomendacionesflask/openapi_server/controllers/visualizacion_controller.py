@@ -7,6 +7,7 @@ from global_config import ContenidosConfig, UsuariosConfig
 
 import connexion
 from datetime import datetime
+from bson import ObjectId
 from flask import jsonify, request
 from typing import Dict, Tuple, Union
 
@@ -17,37 +18,6 @@ from openapi_server.models.visualizacion_capitulo_db import VisualizacionCapitul
 
 from openapi_server import util
 from openapi_server import app
-
-
-def actualizar_visualizacion_capitulo_perfil(perfil_id, capitulo_id):  # noqa: E501
-    """Actualiza la visualización de un capítulo por un perfil
-
-    Actualiza el progreso de la visualización de un capítulo por un perfil # noqa: E501
-
-    :param perfil_id: ID del perfil especificado
-    :type perfil_id: int
-    :param capitulo_id: ID del capítulo especificado
-    :type capitulo_id: int
-
-    :rtype: Union[Capitulo, Tuple[Capitulo, int], Tuple[Capitulo, int, Dict[str, str]]
-    """
-    return 'do some magic!'
-
-
-def actualizar_visualizacion_pelicula_perfil(perfil_id, pelicula_id):  # noqa: E501
-    """Actualiza la visualización de la película por un perfil
-
-    Actualiza el progreso de la visualización de la película por un perfil # noqa: E501
-
-    :param perfil_id: ID del perfil específicado
-    :type perfil_id: int
-    :param pelicula_id: ID de la película a actualizar
-    :type pelicula_id: int
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
-    return 'do some magic!'
-
 
 @app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion', methods=['POST'])
 def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
@@ -71,6 +41,9 @@ def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
     # Se obtiene el contenido a visualizar
     es_capitulo = False
     visualizacion = request.get_json()
+
+    print(f"Visualización: {visualizacion}\n\n")
+
     if "pelicula_id" in visualizacion:
         visualizacion_db = VisualizacionPeliculaDB(
             id_perfil=perfil_id,
@@ -112,6 +85,77 @@ def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
 
     return jsonify({"message": "Visualización creada"}), 201
 
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion', methods=['DELETE'])
+def borrar_visualizaciones_perfil(user_id, perfil_id):
+    """Borra todas las visualizaciones de un perfil
+
+    Borra todas las visualizaciones de un perfil
+
+    :param perfil_id: ID del perfil especificado
+    :type perfil_id: int
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    """
+    # Se obtienen todas las visualizaciones del perfil
+    visualizaciones_pelicula = VisualizacionPeliculaDB.objects().filter(id_perfil=perfil_id)
+    visualizaciones_capitulo = VisualizacionCapituloDB.objects().filter(id_perfil=perfil_id)
+
+    # Se borran las visualizaciones
+    for visualizacion in visualizaciones_pelicula:
+        visualizacion.delete()
+
+    for visualizacion in visualizaciones_capitulo:
+        visualizacion.delete()
+
+    return jsonify({"message": "Visualizaciones borradas"}), 200
+
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion/<contenido_id>', methods=['DELETE'])
+def borrar_visualizacion_perfil(user_id, perfil_id, contenido_id):  # noqa: E501
+    """Borra la visualización de la película por un perfil
+
+    Borra el progreso de la visualización de la película por un perfil # noqa: E501
+
+    :param perfil_id: ID del perfil específicado
+    :type perfil_id: int
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    """
+    # Se comprueba si el contenido_id corresponde a una película o a un capítulo
+    cap = False
+    visualizacion = VisualizacionPeliculaDB.objects(id_perfil=perfil_id, pelicula_id=contenido_id).first()
+
+    if visualizacion is None:
+        cap = True
+        visualizacion = VisualizacionCapituloDB.objects(id_perfil=perfil_id, capitulo_id=contenido_id).first()
+
+    if visualizacion is None:
+        return jsonify({"message": "Visualización no encontrada"}), 404
+
+    # Se actualiza el historial de visualizaciones del perfil
+    visualizacion_api = visualizacion.to_api_model()
+    payload = {}
+    if cap:
+        payload = {
+            "serie_id": visualizacion_api.serie_id,
+            "temporada_id": visualizacion_api.temporada_id,
+            "capitulo_id": visualizacion_api.capitulo_id
+        }
+    else:
+        payload = {
+            "pelicula_id": visualizacion_api.pelicula_id
+        }
+
+    response_historial = requests.delete(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}/historial", json=payload)
+
+    if response_historial.status_code != 200:
+        return jsonify({"message": "Error al actualizar el historial de visualizaciones"}), 500
+
+    # Se borra la visualización
+    visualizacion.delete()
+
+    return jsonify({"message": "Visualización borrada"}), 200
+
+@app.route('/contenido/<contenido_id>/visualizacion', methods=['GET'])
 def listar_visualizaciones_contenido(contenido_id):  # noqa: E501
     """Lista de perfiles que han visto el contenido especificado
 
@@ -122,10 +166,23 @@ def listar_visualizaciones_contenido(contenido_id):  # noqa: E501
 
     :rtype: Union[List[Perfil], Tuple[List[Perfil], int], Tuple[List[Perfil], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # Contenido_id puede ser una película o un capítulo
+    visualizaciones = VisualizacionPeliculaDB.objects().filter(pelicula_id=ObjectId(contenido_id))
 
+    if len(visualizaciones) == 0:
+        visualizaciones = VisualizacionCapituloDB.objects().filter(capitulo_id=ObjectId(contenido_id))
 
-def listar_visualizaciones_perfil(perfil_id):  # noqa: E501
+    if len(visualizaciones) == 0:
+        return jsonify({"message": "Visualización no encontrada"}), 404
+
+    perfiles = []
+    for visualizacion in visualizaciones:
+        perfiles.append(visualizacion.to_api_model().id_perfil)
+
+    return jsonify(perfiles), 200
+
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion', methods=['GET'])
+def listar_visualizaciones_perfil(user_id, perfil_id):  # noqa: E501
     """Historial de un perfil en específico
 
     Obtiene una lista de todos los capítulos o películas visualizados o en progreso por el perfil especificado. # noqa: E501
@@ -135,7 +192,23 @@ def listar_visualizaciones_perfil(perfil_id):  # noqa: E501
 
     :rtype: Union[List[Visualizacion], Tuple[List[Visualizacion], int], Tuple[List[Visualizacion], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # Se comprueba si existe el perfil
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+
+    if response_perfil.status_code != 200:
+        return jsonify({"message": "Perfil no encontrado"}), 404
+
+    visualizaciones_pelicula = VisualizacionPeliculaDB.objects(id_perfil=perfil_id)
+    visualizaciones_capitulo = VisualizacionCapituloDB.objects(id_perfil=perfil_id)
+
+    visualizaciones = []
+    for visualizacion in visualizaciones_pelicula:
+        visualizaciones.append(visualizacion.to_api_model())
+
+    for visualizacion in visualizaciones_capitulo:
+        visualizaciones.append(visualizacion.to_api_model())
+
+    return jsonify(visualizaciones), 200
 
 
 def obtener_visualizacion_capitulo_perfil(perfil_id, capitulo_id):  # noqa: E501
