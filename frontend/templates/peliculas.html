@@ -96,7 +96,7 @@
                     <img src="{{ pelicula.imagen_url if pelicula.imagen_url else 'static/default-movie.jpg' }}" class="card-img-top" alt="{{ pelicula.titulo }}">
                     <div class="card-body text-white">
                         <h5 class="card-title">{{ pelicula.titulo }}</h5>
-                        <p class="card-text">{{ pelicula.descripcion | truncate(100) }}</p>
+                        <p class="card-text">{{ pelicula.sinopsis | truncate(100) }}</p>
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#movieModal{{ pelicula.id }}">Ver Más</button>
                             <div class="d-flex">
@@ -123,13 +123,19 @@
                         <img src="{{ pelicula.imagen_url if pelicula.imagen_url else 'static/default-movie.jpg' }}" alt="{{ pelicula.titulo }}">
                         <div class="modal-body">
                             <h2>{{ pelicula.titulo }}</h2>
-                            <p><strong>Descripción:</strong> {{ pelicula.descripcion }}</p>
-                            <p><strong>Género:</strong> {{ pelicula.genero }}</p>
+                            <p><strong>Sinopsis:</strong> {{ pelicula.sinopsis }}</p>
+                            <p><strong>Género:</strong> 
+                                {% for genero in pelicula.genero %}
+                                    {{ genero.nombre }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
                             <p><strong>Año de estreno:</strong> {{ pelicula.anio_estreno }}</p>
                             <p><strong>Duración:</strong> {{ pelicula.duracion }} minutos</p>
                             <p><strong>Actores:</strong> 
                                 {% if pelicula.actores %}
-                                    {{ pelicula.actores | join(', ') }}
+                                    {% for actor in pelicula.actores %}
+                                        {{ actor.nombre }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
                                 {% else %}
                                     No disponible
                                 {% endif %}

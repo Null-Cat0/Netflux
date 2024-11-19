@@ -79,7 +79,7 @@
                         <h5 class="card-title">{{ serie.titulo }}</h5>
                         <p class="card-text">
                             {% for genero in serie.genero %}
-                                {{ genero.capitalize() }}
+                                {{ genero.nombre.capitalize() }}
                             {% endfor %} | {{ serie.anio_estreno }}</p>
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <a href="" class="btn btn-outline-light btn-sm">Ver Más</a>

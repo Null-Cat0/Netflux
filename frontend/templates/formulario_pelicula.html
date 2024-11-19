@@ -43,17 +43,16 @@
 
             <div class="mb-4">
                 <label for="genero" class="form-label text-white">Género</label>
-                {% set genres_list = ['comedia', 'drama', 'accion', 'terror', 'ciencia_ficcion', 'romance', 'documental'] %}
-                {% for genre in genres_list %}
+                {% for genre in generos %}
                 <div class="form-check me-3 mb-2">
-                    <input type="checkbox" class="form-check-input" id="genre_{{ genre }}" name="generos"
-                        value="{{ genre }}" 
-                        {% if genre in pelicula.genero %} checked {% endif %}>
-                    <label class="form-check-label text-white" for="genre_{{ genre }}">{{ genre.capitalize() }}</label>
+                    <input type="checkbox" class="form-check-input" id="genre_{{ genre.nombre }}" name="generos"
+                        value="{{ genre.id }}" 
+                        {% if genre in pelicula.genero%} checked {% endif %}>
+                    <label class="form-check-label text-white" for="genre_{{ genre.nombre }}">{{ genre.nombre.capitalize() }}</label>
                 </div>
                 {% endfor %}
             </div>
-
+            
             <div class="mb-4">
                 <label for="sinopsis" class="form-label text-white">Sinopsis</label>
                 <textarea class="form-control bg-dark text-white border-0 rounded px-3" id="sinopsis" name="sinopsis" 

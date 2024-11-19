@@ -21,23 +21,17 @@ def crear_pelicula():
     
     if es_admin:
         if request.method == 'GET':
+            # Obtener todos los generos
+            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_generos")
+            if response.status_code == 200:
+                generos = response.json()
+            
             # Obtener todos los actores
             response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
-            
             if response.status_code == 200:
-                data = response.json()
-                actor_nombre_id = []  # Crear una lista para almacenar los actores como diccionarios
-                for actor in data:
-                    actor_nombre_id.append({
-                        'id': actor.get('id', 'N/A'),  
-                        'nombre': actor.get('nombre', 'N/A')  
-                    })
-                # Imprimir la lista completa de actores con su ID y nombre
-                print(actor_nombre_id)
-                return render_template("formulario_pelicula.html", actores=actor_nombre_id, es_admin=es_admin, pelicula={})
-            else:
-                print("Error al obtener los actores:", response.status_code)
-                return render_template("formulario_pelicula.html", actores=[], es_admin=es_admin)
+                actores = response.json()
+            
+            return render_template("formulario_pelicula.html", generos=generos, actores=actores, es_admin=es_admin, pelicula={})
         
         if request.method == 'POST':
             # Otros datos del formulario
@@ -101,6 +95,7 @@ def obtener_peliculas():
     
     # Se realiza la solicitud GET al microservicio de contenidos para obtener la lista de películas
     response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_peliculas")
+    print("El codigo es:", response.status_code)
     if response.status_code == 200:
         data = response.json()
         return render_template("peliculas.html", es_admin=es_admin, peliculas=data)
@@ -144,6 +139,16 @@ def editar_pelicula(pelicula_id):
             
             if response.status_code == 200:
                 pelicula = response.json()
+                # Obtener todos los generos
+                response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_generos")
+                if response.status_code == 200:
+                    data = response.json()
+                    genero_nombre_id = []  # Crear una lista para almacenar los generos como diccionarios
+                    for genero in data:
+                        genero_nombre_id.append({
+                            'id': genero.get('id', 'N/A'),  
+                            'nombre': genero.get('nombre', 'N/A')  
+                        })
                 # Obtener todos los actores
                 response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
                 if response.status_code == 200:
@@ -155,7 +160,7 @@ def editar_pelicula(pelicula_id):
                             'nombre': actor.get('nombre', 'N/A')  
                         })
 
-                return render_template("formulario_pelicula.html", actores=actor_nombre_id, pelicula=pelicula, es_admin=es_admin)
+                return render_template("formulario_pelicula.html", generos=genero_nombre_id, actores=actor_nombre_id, pelicula=pelicula, es_admin=es_admin)
             else:
                 try:
                     data = response.json()

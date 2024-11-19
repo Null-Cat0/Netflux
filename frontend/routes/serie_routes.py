@@ -13,30 +13,34 @@ def crear_serie():
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     es_admin = session.get('es_admin')
-    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
-
-    # Se llama al bakced de actor_controller para obtener la lista de actores
-    # y se envia al formulario de serie
 
     if es_admin:
         if request.method == 'GET':
+            # Obtener todos los generos
+            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_generos")
+            if response.status_code == 200:
+                generos = response.json()
+            else:
+                generos = []
+                
+            # Obtener todos los actores
             response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
             if response.status_code == 200:
                 actores = response.json()
-                return render_template("formulario_serie.html", actores=actores)
             else:
-                flash("Error al obtener la lista de actores.", 'danger')
-                return render_template("formulario_serie.html")
+                actores = []
+            
+            return render_template("formulario_serie.html", actores=actores, generos=generos, es_admin=es_admin, serie={})
 
         if request.method == 'POST':
             nombre = request.form.get('titulo')
-            descripcion = request.form.get('sinopsis')
+            sinopsis = request.form.get('sinopsis')
             anio = request.form.get('anio_estreno')
-            genero = request.form.getlist('genero')
+            genero = request.form.getlist('generos')
             actores = request.form.getlist('actores')
             data={
                 "titulo": nombre,
-                "sinopsis": descripcion,
+                "sinopsis": sinopsis,
                 "anio_estreno": anio,
                 "actores": actores,
                 "genero": genero
@@ -48,7 +52,7 @@ def crear_serie():
                 return redirect(url_for('serie.obtener_series'))
             else:
                 flash("Error al crear la serie.", 'danger')
-                return render_template("formulario_serie.html")
+                return redirect(url_for('serie.obtener_series'))
 
     return render_template("formulario_serie.html")
 
@@ -90,15 +94,38 @@ def editar_serie(serie_id):
     if es_admin:
         if request.method == 'GET':
             response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/obtener_serie/{serie_id}")
-            response_actores = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
-            if response.status_code == 200 and response_actores.status_code == 200 :
-                return render_template("formulario_serie.html", serie=response.json(), actores=response_actores.json())
-        
+            
+            if response.status_code == 200:
+                serie = response.json()
+                
+                # Obtener todos los generos
+                response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_generos")
+                if response.status_code == 200:
+                    generos = response.json()
+                else:
+                    generos = []
+                    
+                # Obtener todos los actores
+                response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
+                if response.status_code == 200:
+                    actores = response.json()
+                else:
+                    actores = []
+                
+                return render_template("formulario_serie.html", serie=serie, generos=generos, actores=actores, es_admin=es_admin)
+            else:
+                try:
+                    data = response.json()
+                    flash(data.get('message', 'Error al obtener la serie.'), 'danger')
+                except requests.exceptions.JSONDecodeError:
+                    flash("Error al obtener la serie.", 'danger')
+                return redirect(url_for('serie.obtener_series'))
+            
         if request.method == 'POST':
             nombre = request.form.get('titulo')
             descripcion = request.form.get('sinopsis')
             anio = request.form.get('anio_estreno')
-            genero = request.form.getlist('genero')
+            genero = request.form.getlist('generos')
             actores = request.form.getlist('actores')
             data={
                 "titulo": nombre,

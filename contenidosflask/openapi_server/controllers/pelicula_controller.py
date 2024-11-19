@@ -203,6 +203,7 @@ def listar_peliculas():  # noqa: E501
     :rtype: Union[List[Pelicula], Tuple[List[Pelicula], int], Tuple[List[Pelicula], int, Dict[str, str]]
     """
     peliculas_db = PeliculaDB.objects()
+    print(f"peliculas_db: {peliculas_db}")
     list_peliculas = [pelicula.to_api_model() for pelicula in peliculas_db]
     return jsonify(list_peliculas), 200
 
