@@ -69,8 +69,6 @@ def obtener_series():
     else:
         flash("Error al obtener la lista de series.", 'danger')
         return render_template("series.html")
-    
-
 
 @serie_bp.route('/serie/<serie_id>', methods=['GET'])
 def serie(serie_id):
@@ -137,44 +135,93 @@ def eliminar_serie(serie_id):
         flash("No tienes permisos para realizar esta acción.", 'danger')
         return redirect(url_for('serie.obtener_series'))
 
-@serie_bp.route('/crear_temporada', methods=['GET', 'POST'])
-def crear_temporada():
+@serie_bp.route('/crear_temporada/<serie_id>', methods=['GET', 'POST'])
+def crear_temporada(serie_id):
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
+    es_admin = session.get('es_admin')
     
-    if request.method == 'GET':
-        return render_template("formulario_temporada.html")
+    if es_admin:
+        if request.method == 'GET':
+            return render_template("formulario_temporada.html")
+        
+        if request.method == 'POST':
+            n_temporada = request.form.get('n_temporada')
+            anio_estreno = request.form.get('anio_estreno')
+            data = {
+                "numero": n_temporada,
+                "anio_estreno": anio_estreno
+            }
+
+            response = requests.post(f"{contConf.CONTENIDOS_BASE_URL}/asignar_temporada_serie/{serie_id}", json=data)
+            if response.status_code == 201:
+                flash("Temporada creada exitosamente.", 'success')
+                return redirect(url_for('serie.listar_series'))
+            else:
+                flash("Error al crear la temporada.", 'danger')
+                return render_template("formulario_temporada.html")
+    else:
+        flash("No tienes permisos para realizar esta acción.", 'danger')
+        return redirect(url_for('serie.listar_series'))
+    return render_template("formulario_temporada.html")
+
+@serie_bp.route('/editar_temporada/<serie_id>/<temporada_id>', methods=['GET', 'POST'])
+def editar_temporada(serie_id, temporada_id):
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Usuario no autenticado.", 'danger')
+        return redirect(url_for('user.login'))
     
-    if request.method == 'POST':
-        return render_template("formulario_temporada.html")
+    es_admin = session.get('es_admin')
+    if es_admin:
+        if request.method == 'GET':
+            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/obtener_temporada_serie/{serie_id}/{temporada_id}")
+            if response.status_code == 200:
+                return render_template("formulario_temporada.html", temporada=response.json())
+        
+        if request.method == 'POST':
+            n_temporada = request.form.get('n_temporada')
+            anio_estreno = request.form.get('anio_estreno')
+            data = {
+                "n_temporada": n_temporada,
+                "anio_estreno": anio_estreno
+            }
+
+            response = requests.put(f"{contConf.CONTENIDOS_BASE_URL}/actualizar_temporada_serie/{serie_id}/{temporada_id}", json=data)
+            if response.status_code == 200:
+                flash("Temporada editada exitosamente.", 'success')
+                return redirect(url_for('serie.listar_series'))
+            else:
+                flash("Error al editar la temporada.", 'danger')
+                return render_template("formulario_temporada.html")
+    else:
+        flash("No tienes permisos para realizar esta acción.", 'danger')
+        return redirect(url_for('serie.listar_series'))
     
     return render_template("formulario_temporada.html")
 
-@serie_bp.route('/editar_temporada/<temporada_id>', methods=['GET', 'POST'])
-def editar_temporada(temporada_id):
+@serie_bp.route('/eliminar_temporada/<serie_id>/<temporada_id>', methods=['GET'])
+def eliminar_temporada(serie_id, temporada_id):
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    if request.method == 'GET':
-        return render_template("formulario_temporada.html")
-    
-    if request.method == 'POST':
-        return render_template("formulario_temporada.html")
-    
-    return render_template("formulario_temporada.html")
-
-@serie_bp.route('/eliminar_temporada/<temporada_id>', methods=['GET'])
-def eliminar_temporada(temporada_id):
-    usuario_id = session.get('logged_user_id')
-    if not usuario_id:
-        flash("Usuario no autenticado.", 'danger')
-        return redirect(url_for('user.login'))
+    es_admin = session.get('es_admin')
+    if es_admin:
+        response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/eliminar_temporada_serie/{serie_id}/{temporada_id}")
+        if response.status_code == 200:
+            flash("Temporada eliminada exitosamente.", 'success')
+        else:
+            flash("Error al eliminar la temporada.", 'danger')
+        
+        return redirect(url_for('serie.listar_series'))
+    else:
+        flash("No tienes permisos para realizar esta acción.", 'danger')
+        return redirect(url_for('serie.listar_series'))
     
     return redirect(url_for('serie.listar_temporadas'))
 
