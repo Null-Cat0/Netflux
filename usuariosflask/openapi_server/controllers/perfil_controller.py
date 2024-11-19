@@ -221,29 +221,47 @@ def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
 
     return jsonify({"series": series, "peliculas": peliculas}), 200
 
-@app.route('/usuario/<user_id>/perfiles/<profile_id>/historial/<contenido_id>', methods=['POST'])
-def agregar_contenido_historial(user_id, profile_id, contenido_id):
+@app.route('/usuario/<user_id>/perfiles/<profile_id>/historial', methods=['POST'])
+def agregar_contenido_historial(user_id, profile_id):
+    # Verifica si la solicitud contiene JSON
+    if request.is_json:
+        contenido_json = request.get_json()
+
+    # Comprueba si el contenido es un capitulo o una película
+    if "pelicula_id" in contenido_json:
+        pelicula_id = contenido_json["pelicula_id"]
+    elif "serie_id" and "temporada_id" and "capitulo_id" in contenido_json:
+        serie_id = contenido_json["serie_id"]
+        temporada_id = contenido_json["temporada_id"]
+        capitulo_id = contenido_json["capitulo_id"]
+    else:
+        return jsonify({"message": "La solicitud debe contener un capítulo o una película"}), 400
+
     # Buscamos el perfil en la base de datos
     perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
     if perfil_db is None:
         return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
 
+    print("ESTAMOS AQUí UNU (Tras perfil)\n\n")
+
     # Buscamos el contenido en la base de datos
-    ## Hay que ver si es una serie o una película
-    response_serie = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_serie/{contenido_id}')
-    if response_serie.status_code == 200:
-        contenido_db = response_serie.json()
-        es_serie = True
+    if pelicula_id:
+        print("ESTAMOS AQUí UNU (DENTRO IF PELI)\n\n")
+        response_contenido = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_pelicula/{pelicula_id}')
+        cap = False
     else:
-        response_pelicula = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_pelicula/{contenido_id}')
-        if response_pelicula.status_code == 200:
-            contenido_db = response_pelicula.json()
-            es_serie = False
-        else:
-            return jsonify({"message": "No se ha encontrado el contenido", "status": "error"}), 404
+        print("ESTAMOS AQUí UNU (DENTRO ELSE)\n\n")
+        response_contenido = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_capitulo_serie/{serie_id}/{temporada_id}/{capitulo_id}')
+        cap = True
+
+    if response_contenido.status_code != 200:
+        return jsonify({"message": "No se ha encontrado el contenido", "status": "error"}), 404
 
     # Comprobar si el contenido ya está en el historial
-    historial_db = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
+    if not cap:
+        historial_db = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=pelicula_id).first()
+    else:
+        historial_db = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=capitulo_id).first()
 
     if historial_db is not None:
         return jsonify({"message": "El contenido ya está en el historial", "status": "error"}), 409
@@ -251,8 +269,8 @@ def agregar_contenido_historial(user_id, profile_id, contenido_id):
     # Creamos el objeto HistorialPerfilDB
     historial_db = HistorialPerfilDB(
         perfil_id=perfil_db.perfil_id,
-        contenido=contenido_db['id'],
-        es_serie=es_serie
+        contenido=pelicula_id if not cap else capitulo_id,
+        es_capitulo=cap
     )
     db.session.add(historial_db)
     db.session.commit()

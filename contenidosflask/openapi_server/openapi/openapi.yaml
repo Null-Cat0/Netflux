@@ -1218,7 +1218,6 @@ paths:
       tags:
       - Capitulo
       x-openapi-router-controller: openapi_server.controllers.capitulo_controller
-paths:
   /generos:
     get:
       description: Obtiene una lista de todos los géneros registrados en el sistema.

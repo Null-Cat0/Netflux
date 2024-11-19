@@ -200,7 +200,6 @@ def listar_peliculas():  # noqa: E501
 
     Obtiene una lista de todas las películas disponibles en el sistema, incluyendo información básica como el título, género y año de estreno. # noqa: E501
 
-
     :rtype: Union[List[Pelicula], Tuple[List[Pelicula], int], Tuple[List[Pelicula], int, Dict[str, str]]
     """
     peliculas_db = PeliculaDB.objects()
@@ -218,6 +217,7 @@ def obtener_pelicula(pelicula_id):  # noqa: E501
 
     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
     """
+    print(f"pelicula_id: {pelicula_id}")
     pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
     if not pelicula_db:
         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
