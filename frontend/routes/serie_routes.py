@@ -182,17 +182,19 @@ def crear_temporada(serie_id):
                 "numero": numero,
                 "anio_lanzamiento": anio_lanzamiento
             }
+            print("El id de la serie es: ", serie_id)
+            print("Los datos son: ", data)
 
             response = requests.post(f"{contConf.CONTENIDOS_BASE_URL}/asignar_temporada_serie/{serie_id}", json=data)
             if response.status_code == 201:
                 flash("Temporada creada exitosamente.", 'success')
-                return redirect(url_for('serie.listar_series'))
+                return redirect(url_for('serie.obtener_series'))
             else:
                 flash("Error al crear la temporada.", 'danger')
                 return render_template("formulario_temporada.html")
     else:
         flash("No tienes permisos para realizar esta acción.", 'danger')
-        return redirect(url_for('serie.listar_series'))
+        return redirect(url_for('serie.obtener_series'))
     return render_template("formulario_temporada.html")
 
 @serie_bp.route('/editar_temporada/<serie_id>/<temporada_id>', methods=['GET', 'POST'])
@@ -220,13 +222,13 @@ def editar_temporada(serie_id, temporada_id):
             response = requests.put(f"{contConf.CONTENIDOS_BASE_URL}/actualizar_temporada_serie/{serie_id}/{temporada_id}", json=data)
             if response.status_code == 200:
                 flash("Temporada editada exitosamente.", 'success')
-                return redirect(url_for('serie.listar_series'))
+                return redirect(url_for('serie.obtener_series'))
             else:
                 flash("Error al editar la temporada.", 'danger')
                 return render_template("formulario_temporada.html")
     else:
         flash("No tienes permisos para realizar esta acción.", 'danger')
-        return redirect(url_for('serie.listar_series'))
+        return redirect(url_for('serie.obtener_series'))
     
     return render_template("formulario_temporada.html")
 
@@ -245,12 +247,11 @@ def eliminar_temporada(serie_id, temporada_id):
         else:
             flash("Error al eliminar la temporada.", 'danger')
         
-        return redirect(url_for('serie.listar_series'))
+        return redirect(url_for('serie.obtener_series'))
     else:
         flash("No tienes permisos para realizar esta acción.", 'danger')
-        return redirect(url_for('serie.listar_series'))
+        return redirect(url_for('serie.obtener_series'))
     
-    return redirect(url_for('serie.listar_temporadas'))
 
 @serie_bp.route('/crear_capitulo', methods=['GET', 'POST'])
 def crear_capitulo():
