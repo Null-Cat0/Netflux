@@ -161,7 +161,10 @@ def editar_usuario():
             session['logged_user_name'] = nombre
             flash("Usuario actualizado con éxito", 'success')
 
-            session['es_admin'] = esAdmin
+            # Actualizar la sesión con el valor booleano correcto
+            es_admin_bool = esAdmin == '1'
+            session['es_admin'] = es_admin_bool
+
             # Redirigir a la vista de perfiles
             return redirect(url_for('perfil.obtener_perfiles'))
         else:
@@ -169,10 +172,6 @@ def editar_usuario():
             flash(f"Error: {data['message']}", 'danger')
             # Redirigir a la misma página para corregir
             return redirect(url_for('user.editar_usuario'))
-
-    # Si no se maneja el método, retornar a la página de cuenta o un error
-    # Cambia esto según sea necesario
-    return redirect(url_for('some_default_view'))
 
 
 @usuario_bp.route('/actualizar_password', methods=['GET', 'POST'])

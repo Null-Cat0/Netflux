@@ -3,8 +3,75 @@
 {% block title %}Películas - Netflux{% endblock %}
 
 {% block head %}
-    <title>Películas - Netflux</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<title>Películas - Netflux</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<style>
+    .movie-card {
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #1c1c1c;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .movie-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .movie-card img {
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .movie-card .card-body {
+        padding: 15px;
+    }
+
+    .movie-card h5 {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .movie-card .card-text {
+        font-size: 0.9rem;
+        color: #bbb;
+    }
+
+    .movie-card .btn-outline-light {
+        border-radius: 50px;
+        padding: 5px 15px;
+        font-size: 0.85rem;
+    }
+
+    .modal-content {
+        background-color: #141414;
+        border-radius: 12px;
+    }
+
+    .modal-content img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+
+    .modal-body {
+        color: white;
+    }
+
+    .modal-header {
+        border-bottom: none;
+    }
+
+    .modal-footer {
+        border-top: none;
+    }
+
+    .btn-close-white {
+        filter: invert(1);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -12,40 +79,75 @@
     <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Lista de Películas</h1>
 
     <!-- Botón de Añadir Película -->
-
     {% if es_admin %}    
         <div class="d-flex justify-content-end mb-4">
-            <a href="{{url_for('pelicula.crear_pelicula')}}" class="btn btn-danger">
+            <a href="{{ url_for('pelicula.crear_pelicula') }}" class="btn btn-danger">
                 <i class="fas fa-plus me-2"></i> Añadir Película
             </a>
         </div>
-    {%endif%}
+    {% endif %}
+
     <!-- Lista de Películas -->
     {% if peliculas %}
-        <div class="row">   
+        <div class="row g-4">
             {% for pelicula in peliculas %}
-            <div class="col-md-4 col-lg-3 mb-4">
-                <div class="card bg-dark text-white shadow-sm h-100">
-                    <img src="" class="card-img-top" alt="{{ pelicula.titulo }}">
-                    <div class="card-body">
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card movie-card shadow-sm h-100">
+                    <img src="{{ pelicula.imagen_url if pelicula.imagen_url else 'static/default-movie.jpg' }}" class="card-img-top" alt="{{ pelicula.titulo }}">
+                    <div class="card-body text-white">
                         <h5 class="card-title">{{ pelicula.titulo }}</h5>
-                        <p class="card-text">{{ pelicula.descripcion | truncate(100) }}</p>
+                        <p class="card-text">{{ pelicula.sinopsis | truncate(100) }}</p>
                         <div class="d-flex justify-content-between align-items-center mt-3">
-                            <a href="" class="btn btn-outline-light btn-sm">Ver Más</a>
+                            <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#movieModal{{ pelicula.id }}">Ver Más</button>
                             <div class="d-flex">
+                                {% if es_admin %}
                                 <!-- Botón de Editar -->
                                 <a href="{{ url_for('pelicula.editar_pelicula', pelicula_id=pelicula.id) }}" class="text-warning mx-2" title="Editar">
                                     <i class="fas fa-pencil-alt fa-lg"></i>
                                 </a>
-                                <!-- Botón de Eliminar con el data-bs-toggle y href adecuados -->
+                                <!-- Botón de Eliminar -->
                                 <a href="#confirmDeleteModal{{ pelicula.id }}" class="text-danger mx-2" title="Eliminar" data-bs-toggle="modal">
                                     <i class="fas fa-trash-alt fa-lg"></i>
                                 </a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Modal de detalles de la película -->
+            <div class="modal fade" id="movieModal{{ pelicula.id }}" tabindex="-1" aria-labelledby="movieModalLabel{{ pelicula.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <img src="{{ pelicula.imagen_url if pelicula.imagen_url else 'static/default-movie.jpg' }}" alt="{{ pelicula.titulo }}">
+                        <div class="modal-body">
+                            <h2>{{ pelicula.titulo }}</h2>
+                            <p><strong>Sinopsis:</strong> {{ pelicula.sinopsis }}</p>
+                            <p><strong>Género:</strong> 
+                                {% for genero in pelicula.genero %}
+                                    {{ genero.nombre }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            <p><strong>Año de estreno:</strong> {{ pelicula.anio_estreno }}</p>
+                            <p><strong>Duración:</strong> {{ pelicula.duracion }} minutos</p>
+                            <p><strong>Actores:</strong> 
+                                {% if pelicula.actores %}
+                                    {% for actor in pelicula.actores %}
+                                        {{ actor.nombre }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    No disponible
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Modal de confirmación para eliminar película -->
             <div class="modal fade" id="confirmDeleteModal{{ pelicula.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ pelicula.id }}" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -64,7 +166,7 @@
                     </div>
                 </div>
             </div>
-        {% endfor %}
+            {% endfor %}
         </div>
     {% else %}
         <p class="text-center text-white">No hay películas disponibles.</p>
