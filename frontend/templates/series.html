@@ -43,14 +43,59 @@
         font-size: 0.85rem;
     }
 
-    .series-card .actions a {
-        font-size: 1rem;
-        text-decoration: none;
-        color: inherit;
+    .modal-fullscreen {
+        width: 100%;
+        height: 100%;
     }
 
-    .series-card .actions a:hover {
-        color: #e50914;
+    .modal-content {
+        background-color: #141414;
+        color: white;
+    }
+
+    .modal-header {
+        border-bottom: none;
+    }
+
+    .modal-header .btn-close {
+        background: white;
+        border: none;
+    }
+
+    .modal-body {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+    }
+
+    .series-info {
+        flex: 3;
+    }
+
+    .season-selector {
+        flex: 1;
+        max-width: 250px;
+    }
+
+    .episode-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .episode-list li {
+        border-bottom: 1px solid #444;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .episode-list li:last-child {
+        border-bottom: none;
+    }
+
+    .episode-list li span {
+        color: #bbb;
     }
 </style>
 {% endblock %}
@@ -82,7 +127,7 @@
                                 {{ genero.nombre.capitalize() }}
                             {% endfor %} | {{ serie.anio_estreno }}</p>
                         <div class="d-flex justify-content-between align-items-center mt-3">
-                            <a href="" class="btn btn-outline-light btn-sm">Ver Más</a>
+                            <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#serieModal{{ serie.id }}">Ver Más</button>
                             <div class="d-flex">
                                 {% if es_admin %}
                                 <!-- Botón de Editar -->
@@ -99,6 +144,77 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Modal de información de la serie -->
+<div class="modal fade" id="serieModal{{ serie.id }}" tabindex="-1" aria-labelledby="serieModalLabel{{ serie.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white rounded">
+            <!-- Encabezado del modal -->
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="serieModalLabel{{ serie.id }}">{{ serie.titulo }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Cuerpo del modal -->
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Información de la serie -->
+                    <div class="col-md-4">
+                        <img src="{{ serie.imagen_url if serie.imagen_url else 'static/default-series.jpg' }}" alt="{{ serie.titulo }}" class="img-fluid rounded mb-3">
+                        <p><strong>Género:</strong> 
+                            {% for genero in serie.genero %}
+                                {{ genero.nombre }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                        <p><strong>Año de Estreno:</strong>{{ serie.anio_estreno }}</p>
+                        <p><strong>Sinopsis:</strong> {{ serie.sinopsis }}</p>
+                        <p><strong>Actores:</strong></p>
+                        <ul>
+                            {% for actor in serie.actores %}
+                                    {{ actor.nombre }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- Lista de temporadas y capítulos -->
+                    <div class="col-md-8">
+                        <h6>Temporadas</h6>
+                        <div class="accordion" id="accordionTemporadas{{ serie.id }}">
+                            {% for temporada in serie.temporadas %}
+                                <div class="accordion-item bg-dark text-white">
+                                    <h2 class="accordion-header" id="headingTemporada{{ temporada.numero }}">
+                                        <button class="accordion-button collapsed text-white bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTemporada{{ temporada.numero }}" aria-expanded="false" aria-controls="collapseTemporada{{ temporada.numero }}">
+                                            Temporada {{ temporada.numero }} ({{ temporada.anio_lanzamiento }})
+                                        </button>
+                                    </h2>
+                                    <div id="collapseTemporada{{ temporada.numero }}" class="accordion-collapse collapse" aria-labelledby="headingTemporada{{ temporada.numero }}" data-bs-parent="#accordionTemporadas{{ serie.id }}">
+                                        <div class="accordion-body">
+                                            <ul class="list-unstyled">
+                                                {% for capitulo in temporada.capitulos %}
+                                                    <li>
+                                                        <strong>{{ capitulo.numero }}. {{ capitulo.titulo }}</strong> 
+                                                        ({{ capitulo.duracion }} min)
+                                                        <p class="mb-2">{{ capitulo.sinopsis }}</p>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie del modal -->
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
             <!-- Modal de confirmación para eliminar serie -->
             <div class="modal fade" id="confirmDeleteModal{{ serie.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ serie.id }}" aria-hidden="true">

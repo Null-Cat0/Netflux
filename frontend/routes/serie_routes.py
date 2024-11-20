@@ -176,11 +176,11 @@ def crear_temporada(serie_id):
             return render_template("formulario_temporada.html")
         
         if request.method == 'POST':
-            n_temporada = request.form.get('n_temporada')
-            anio_estreno = request.form.get('anio_estreno')
+            numero = request.form.get('numero')
+            anio_lanzamiento = request.form.get('anio_lanzamiento')
             data = {
-                "numero": n_temporada,
-                "anio_estreno": anio_estreno
+                "numero": numero,
+                "anio_lanzamiento": anio_lanzamiento
             }
 
             response = requests.post(f"{contConf.CONTENIDOS_BASE_URL}/asignar_temporada_serie/{serie_id}", json=data)
@@ -210,11 +210,11 @@ def editar_temporada(serie_id, temporada_id):
                 return render_template("formulario_temporada.html", temporada=response.json())
         
         if request.method == 'POST':
-            n_temporada = request.form.get('n_temporada')
-            anio_estreno = request.form.get('anio_estreno')
+            numero = request.form.get('numero')
+            anio_lanzamiento = request.form.get('anio_lanzamiento')
             data = {
-                "n_temporada": n_temporada,
-                "anio_estreno": anio_estreno
+                "numero": numero,
+                "anio_lanzamiento": anio_lanzamiento
             }
 
             response = requests.put(f"{contConf.CONTENIDOS_BASE_URL}/actualizar_temporada_serie/{serie_id}/{temporada_id}", json=data)
