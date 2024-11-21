@@ -1,19 +1,8 @@
-import connexion
-from typing import Dict, Tuple, Union
+from openapi_server import app
 
-from openapi_server.models.serie import Serie
 from openapi_server.models.serie_db import SerieDB
-
 from openapi_server.models.serie import TemporadaEmbedded  # noqa: E501
-from openapi_server.models.serie_db import TemporadaEmbeddedDB
 
-from openapi_server.models.serie import CapituloEmbedded  # noqa: E501
-from openapi_server.models.serie_db import CapituloEmbeddedDB
-
-# from openapi_server.models.temporada import Temporada  # noqa: E501
-# from openapi_server.models.temporada_update import TemporadaUpdate  # noqa: E501
-
-from openapi_server import app, db, util
 from flask import jsonify, request
 from bson import ObjectId
 

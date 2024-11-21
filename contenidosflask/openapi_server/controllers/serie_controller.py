@@ -1,4 +1,5 @@
-from openapi_server.models.actor import Actor  # noqa: E501
+from openapi_server import app
+
 from openapi_server.models.actor_db import ActorDB  # noqa: E501
 from openapi_server.models.genero_db import GeneroDB 
 from openapi_server.models.asignar_actor_request import AsignarActorRequest  # noqa: E501
@@ -7,7 +8,6 @@ from openapi_server.models.serie import Serie  # noqa: E501
 from openapi_server.models.serie_db import SerieDB
 from openapi_server.models.serie_update import SerieUpdate  # noqa: E501
 
-from openapi_server import app, db, util
 from flask import jsonify, request
 from bson import ObjectId
 

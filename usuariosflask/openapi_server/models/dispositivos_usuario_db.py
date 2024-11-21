@@ -1,4 +1,3 @@
-from openapi_server import util
 from openapi_server import db
 
 class DispositivosUsuarioDB(db.Model):

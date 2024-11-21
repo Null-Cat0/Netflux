@@ -1,9 +1,9 @@
 from openapi_server.models.dispositivo_db import DispositivoDB
 from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
-from openapi_server import app,db
+from openapi_server import app, db
 
-from openapi_server.models.actualizar_dispositivos_request import ActualizarDispositivosRequest  # noqa: E501
+from openapi_server.models.actualizar_dispositivos_request import ActualizarDispositivosRequest
 from flask import request, jsonify
 
 @app.route('/usuario/<int:user_id>/dispositivo/<string:nombre_dispositivo>/<int:dispositivo_id>', methods=['PUT'])
@@ -57,6 +57,10 @@ def eliminar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
     dispositivo_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id, dispositivo_id=dispositivo_id, nombre_dispositivo=nombre_dispositivo).first()
 
     if dispositivo_usuario_db is not None:
+        numero_dispositivos = DispositivosUsuarioDB.query.filter_by(user_id=user_id).count()
+        if numero_dispositivos == 1:
+            return jsonify({"message": "No se puede eliminar el único dispositivo registrado", "status": "error"}), 400
+
         db.session.delete(dispositivo_usuario_db)
         db.session.commit()
         return jsonify({"message": "Dispositivo eliminado con éxito", "status": "success"}), 200

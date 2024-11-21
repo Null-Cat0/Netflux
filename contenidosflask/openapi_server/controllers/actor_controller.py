@@ -1,12 +1,13 @@
-from openapi_server.models.actor_update import ActorUpdate  # noqa: E501
+from openapi_server import app
+
 from openapi_server.models.actor import Actor  # noqa: E501
 from openapi_server.models.actor_db import ActorDB
+from openapi_server.models.actor_update import ActorUpdate  # noqa: E501
+
 from openapi_server.models.pelicula_db import PeliculaDB
 from openapi_server.models.serie_db import SerieDB
-from openapi_server import db
-from flask import request
-from openapi_server import app
-from flask import jsonify
+
+from flask import jsonify, request
 from bson import ObjectId
 
 @app.route('/actualizar_actor/<actor_id>', methods=['PUT'])

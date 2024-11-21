@@ -1,8 +1,10 @@
-from flask import request, jsonify
-from bson import ObjectId
+from openapi_server import app
+
 from openapi_server.models.genero import Genero
 from openapi_server.models.genero_db import GeneroDB
-from openapi_server import app
+
+from flask import jsonify, request
+from bson import ObjectId
 
 @app.route('/crear_genero', methods=['POST'])
 def crear_genero():  # noqa: E501

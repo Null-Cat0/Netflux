@@ -1,4 +1,5 @@
 from openapi_server import db
+
 from openapi_server.models.actor_db import ActorDB
 from openapi_server.models.genero_db import GeneroDB
 

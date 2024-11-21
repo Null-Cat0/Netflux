@@ -1,11 +1,10 @@
-from datetime import date, datetime  # noqa: F401
-
-from typing import List  # noqa: F401
+from openapi_server import util
 
 from openapi_server.models.base_model import Model
-from openapi_server.models.actor import Actor  # noqa: E501
+from openapi_server.models.actor import Actor
 from openapi_server.models.genero import Genero 
-from openapi_server import util
+
+from typing import List
 from bson import ObjectId
 
 class CapituloEmbedded(Model):

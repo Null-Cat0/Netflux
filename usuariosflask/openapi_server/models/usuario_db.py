@@ -1,8 +1,9 @@
-from openapi_server import util
 from openapi_server import db
+
+from openapi_server.models.dispositivo_db import DispositivoDB
+
 from openapi_server.models.perfil_db import PerfilDB # No sobra este import 
 from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
-from openapi_server.models.dispositivo_db import DispositivoDB
 
 class UsuarioDB(db.Model):
 

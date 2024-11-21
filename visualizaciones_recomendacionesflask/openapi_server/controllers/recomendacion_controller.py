@@ -5,18 +5,11 @@ sys.path.append(app_path)
 
 from global_config import ContenidosConfig, UsuariosConfig
 
-import connexion
-from flask import jsonify, request
-from typing import Dict, Tuple, Union
+from openapi_server import app
+from flask import jsonify
 
-from openapi_server.models.recomendacion_pelicula import RecomendacionPelicula
-from openapi_server.models.recomendacion_serie import RecomendacionSerie  #
 from openapi_server.models.recomendacion_pelicula_db import RecomendacionPeliculaDB
 from openapi_server.models.recomendacion_serie_db import RecomendacionSerieDB
-
-from openapi_server import util
-
-from openapi_server import app
 
 @app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['POST'])
 def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
@@ -123,11 +116,11 @@ def obtener_recomendaciones_perfil(user_id, perfil_id):  # noqa: E501
 
     :rtype: Union[List[Recomendacion], Tuple[List[Recomendacion], int], Tuple[List[Recomendacion], int, Dict[str, str]]
     """
-    recomendaciones_pelicula = RecomendacionPeliculaDB.objects.get(id_perfil=perfil_id) 
-    recomendaciones_serie = RecomendacionSerieDB.objects.get(id_perfil=perfil_id)
+    recomendaciones_pelicula = RecomendacionPeliculaDB.objects(id_perfil=perfil_id).first()
+    recomendaciones_serie = RecomendacionSerieDB.objects(id_perfil=perfil_id).first()
 
-    rpl = [rp.to_api_model() for rp in recomendaciones_pelicula]
-    rsl = [rs.to_api_model() for rs in recomendaciones_serie]
+    rpl = recomendaciones_pelicula.to_api_model()
+    rsl = recomendaciones_serie.to_api_model()
 
     # Se junta la información de las recomendaciones de películas y series
     recomendaciones = {

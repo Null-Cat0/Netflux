@@ -5,19 +5,15 @@ sys.path.append(app_path)
 
 from global_config import ContenidosConfig, UsuariosConfig
 
-import connexion
-from datetime import datetime
-from bson import ObjectId
+from openapi_server import app
 from flask import jsonify, request
-from typing import Dict, Tuple, Union
+from datetime import datetime
 
-from openapi_server.models.visualizacion_pelicula import VisualizacionPelicula  # noqa: E501
-from openapi_server.models.visualizacion_capitulo import VisualizacionCapitulo  # noqa: E501
 from openapi_server.models.visualizacion_pelicula_db import VisualizacionPeliculaDB
 from openapi_server.models.visualizacion_capitulo_db import VisualizacionCapituloDB
 
-from openapi_server import util
-from openapi_server import app
+from bson import ObjectId
+
 
 @app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion/<contenido_id>', methods=['PATCH'])
 def actualizar_visualizacion_contenido_perfil(user_id, perfil_id, contenido_id):  # noqa: E501

@@ -1,7 +1,7 @@
-from openapi_server import util
 from openapi_server import db
 
 from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
+
 from openapi_server.models.lista_perfil_db import ListaPerfilDB
 from openapi_server.models.historial_perfil_db import HistorialPerfilDB
 

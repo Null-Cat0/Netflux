@@ -5,28 +5,16 @@ sys.path.append(app_path)
 
 from global_config import ContenidosConfig, VisualizacionesConfig
 
-from openapi_server import db
-from bson import ObjectId
+from openapi_server import app, db
 from flask import request, jsonify
 
 from openapi_server.models.perfil import Perfil
 from openapi_server.models.perfil_db import PerfilDB
 
-from openapi_server.models.preferencias_contenido import PreferenciasContenido
 from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
-
 from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
-
-# from openapi_server.models.historial_perfil import HistorialPerfil
 from openapi_server.models.historial_perfil_db import HistorialPerfilDB
-
-# from openapi_server.models.lista_perfil import ListaPerfil
 from openapi_server.models.lista_perfil_db import ListaPerfilDB
-
-from openapi_server.models.preferencias_contenido import PreferenciasContenido
-from openapi_server.models.preferencias_contenido_db import PreferenciasContenidoDB
-
-from openapi_server import app
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['PUT'])
 def actualizar_perfil_usuario(user_id, profile_id):  
@@ -115,6 +103,33 @@ def actualizar_perfil_usuario(user_id, profile_id):
     # Respuesta en caso de que no se envíe JSON en la solicitud
     return jsonify({"message": "La solicitud debe contener datos JSON"}), 400
 
+@app.route('/usuario/<user_id>/perfiles', methods=['DELETE'])
+def borrar_perfiles_usuario(user_id):  # noqa: E501
+    """Borra todos los perfiles de un usuario
+
+    Borra todos los perfiles de un usuario # noqa: E501
+
+    :param user_id: ID del usuario a eliminar
+    :type user_id: int
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    """
+    perfiles_db = PerfilDB.query.filter_by(user_id=user_id).all()
+    if perfiles_db is not None:
+        for perfil_db in perfiles_db:
+            # Se han de eliminar las recomendaciones y visualizaciones del perfil
+            recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
+            if recomendaciones_perfil.status_code != 200:
+                return jsonify({"message": "Error al eliminar las recomendaciones del perfil"}), 500
+
+            visualizaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/visualizacion")
+            if visualizaciones_perfil.status_code != 200:
+                return jsonify({"message": "Error al eliminar las visualizaciones del perfil"}), 500
+
+        return jsonify({"message": "Datos de los perfiles eliminados con éxito", "status": "success"}), 200
+    else:
+        return jsonify({"message": "No se ha podido eliminar los perfiles", "status": "error"}), 404
+
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['DELETE'])
 def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
     """Borra el perfil especificado
@@ -145,7 +160,6 @@ def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
     else:
         return jsonify({"message": "No se ha podido eliminar el perfil", "status": "error"}), 404
 
-
 @app.route('/usuario/<user_id>/perfiles', methods=['POST'])
 def crear_perfil(user_id):  # noqa: E501
     """Añade un nuevo perfil al usuario especificado
@@ -159,7 +173,6 @@ def crear_perfil(user_id):  # noqa: E501
 
     :rtype: Union[Perfil, Tuple[Perfil, int], Tuple[Perfil, int, Dict[str, str]]
     """
-
     if request.is_json:
         print(request.get_json())
         perfil_api = Perfil.from_dict(request.get_json())  # noqa: E501
@@ -184,8 +197,7 @@ def crear_perfil(user_id):  # noqa: E501
         db.session.add(preferencias_db)
         db.session.commit()
 
-        generos_name_list = preferencias_api.generos
-        print(f"\n\nGeneros: {generos_name_list}\n")
+        generos_name_list = preferencias_api.generos or []
         generos_response = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_generos')
         if generos_response.status_code == 200:
             generos = generos_response.json()

@@ -1,13 +1,14 @@
-from openapi_server.models.actor import Actor  # noqa: E501
+from openapi_server import app
+
 from openapi_server.models.actor_db import ActorDB  # noqa: E501
 from openapi_server.models.genero_db import GeneroDB 
+
 from openapi_server.models.asignar_actor_request import AsignarActorRequest  # noqa: E501
 
 from openapi_server.models.pelicula import Pelicula  # noqa: E501
 from openapi_server.models.pelicula_db import PeliculaDB
 from openapi_server.models.pelicula_update import PeliculaUpdate  # noqa: E501
 
-from openapi_server import app, db, util
 from flask import jsonify, request
 from bson import ObjectId
 
