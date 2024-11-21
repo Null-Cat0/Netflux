@@ -115,26 +115,28 @@ def eliminar_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     return jsonify({"message": "Recomendaciones eliminadas correctamente"}), 200
 
 @app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['GET'])
-def obtener_recomendaciones_perfil(user_id, perfil_id):  # noqa: E501
-    """Obtiene una lista de las recomendaciones para el perfil
+def obtener_recomendaciones_perfil(user_id, perfil_id):
+    """Obtiene una lista de las recomendaciones para el perfil"""
+    
+   
+    recomendaciones_peliculas = RecomendacionPeliculaDB.objects(id_perfil=perfil_id)
+    recomendaciones_series = RecomendacionSerieDB.objects(id_perfil=perfil_id)
 
-    Obtiene una lista de las recomendaciones para el perfil # noqa: E501
+    peliculas_recomendadas = []
+    series_recomendadas = []
 
-    :param perfil_id: ID del perfil especificado
-    :type perfil_id: int
+    for pelicula in recomendaciones_peliculas:
+        if pelicula.id_perfil == int(perfil_id):  # Verificar perfil
+            peliculas_recomendadas.extend(pelicula.peliculas_recomendadas)
 
-    :rtype: Union[List[Recomendacion], Tuple[List[Recomendacion], int], Tuple[List[Recomendacion], int, Dict[str, str]]
-    """
-    recomendaciones_pelicula = RecomendacionPeliculaDB.objects.get(id_perfil=perfil_id) 
-    recomendaciones_serie = RecomendacionSerieDB.objects.get(id_perfil=perfil_id)
+    for serie in recomendaciones_series:
+        if serie.id_perfil == int(perfil_id):  # Verificar perfil
+            series_recomendadas.extend(serie.series_recomendadas)
 
-    rpl = [rp.to_api_model() for rp in recomendaciones_pelicula]
-    rsl = [rs.to_api_model() for rs in recomendaciones_serie]
-
-    # Se junta la información de las recomendaciones de películas y series
     recomendaciones = {
-        "peliculas": rpl.peliculas_recomendadas or [],
-        "series": rsl.series_recomendadas or []
+        "peliculas": peliculas_recomendadas,
+        "series": series_recomendadas
     }
 
     return jsonify(recomendaciones), 200
+
