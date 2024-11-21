@@ -182,17 +182,19 @@ def crear_temporada(serie_id):
                 "numero": numero,
                 "anio_lanzamiento": anio_lanzamiento
             }
+            print("El id de la serie es: ", serie_id)
+            print("Los datos son: ", data)
 
             response = requests.post(f"{contConf.CONTENIDOS_BASE_URL}/asignar_temporada_serie/{serie_id}", json=data)
             if response.status_code == 201:
                 flash("Temporada creada exitosamente.", 'success')
-                return redirect(url_for('serie.listar_series'))
+                return redirect(url_for('serie.obtener_series'))
             else:
                 flash("Error al crear la temporada.", 'danger')
                 return render_template("formulario_temporada.html")
     else:
         flash("No tienes permisos para realizar esta acción.", 'danger')
-        return redirect(url_for('serie.listar_series'))
+        return redirect(url_for('serie.obtener_series'))
     return render_template("formulario_temporada.html")
 
 @serie_bp.route('/editar_temporada/<serie_id>/<temporada_id>', methods=['GET', 'POST'])
@@ -220,13 +222,13 @@ def editar_temporada(serie_id, temporada_id):
             response = requests.put(f"{contConf.CONTENIDOS_BASE_URL}/actualizar_temporada_serie/{serie_id}/{temporada_id}", json=data)
             if response.status_code == 200:
                 flash("Temporada editada exitosamente.", 'success')
-                return redirect(url_for('serie.listar_series'))
+                return redirect(url_for('serie.obtener_series'))
             else:
                 flash("Error al editar la temporada.", 'danger')
                 return render_template("formulario_temporada.html")
     else:
         flash("No tienes permisos para realizar esta acción.", 'danger')
-        return redirect(url_for('serie.listar_series'))
+        return redirect(url_for('serie.obtener_series'))
     
     return render_template("formulario_temporada.html")
 
@@ -245,50 +247,113 @@ def eliminar_temporada(serie_id, temporada_id):
         else:
             flash("Error al eliminar la temporada.", 'danger')
         
-        return redirect(url_for('serie.listar_series'))
+        return redirect(url_for('serie.obtener_series'))
     else:
         flash("No tienes permisos para realizar esta acción.", 'danger')
-        return redirect(url_for('serie.listar_series'))
+        return redirect(url_for('serie.obtener_series'))
     
-    return redirect(url_for('serie.listar_temporadas'))
 
-@serie_bp.route('/crear_capitulo', methods=['GET', 'POST'])
-def crear_capitulo():
+@serie_bp.route('/crear_capitulo/<serie_id>/<temporada_id>', methods=['GET', 'POST'])
+def crear_capitulo(serie_id, temporada_id):
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    # Se obtiene el usuario correspondiente al ID y se comprueba si es admin
+    es_admin = session.get('es_admin')
     
-    if request.method == 'GET':
-        return render_template("formulario_capitulo.html")
-    
-    if request.method == 'POST':
-        return render_template("formulario_capitulo.html")
-    
+    if es_admin:
+        if request.method == 'GET':
+            return render_template("formulario_capitulo.html")
+        
+        if request.method == 'POST':
+            numero = request.form.get('numero')
+            titulo = request.form.get('titulo')
+            duracion = request.form.get('duracion')
+            sinopsis = request.form.get('sinopsis')
+            data = {
+                "numero": numero,
+                "titulo": titulo,
+                "duracion": duracion,
+                "sinopsis": sinopsis
+            }
+            print("El id de la serie es: ", serie_id)
+            print("El id de la temporada es: ", temporada_id)
+            print("Los datos son: ", data)
+
+            response = requests.post(f"{contConf.CONTENIDOS_BASE_URL}/asignar_capitulo_serie/{serie_id}/{temporada_id}", json=data)
+            if response.status_code == 201:
+                flash("Capítulo creado exitosamente.", 'success')
+                return redirect(url_for('serie.obtener_series'))
+            else:
+                flash("Error al crear el capítulo.", 'danger')
+                return render_template("formulario_capitulo.html")
+    else:
+        flash("No tienes permisos para realizar esta acción.", 'danger')
+        return redirect(url_for('serie.obtener_series'))
     return render_template("formulario_capitulo.html")
 
-@serie_bp.route('/editar_capitulo/<capitulo_id>', methods=['GET', 'POST'])
-def editar_capitulo(capitulo_id):
+@serie_bp.route('/editar_capitulo/<serie_id>/<temporada_id>/<capitulo_id>', methods=['GET', 'POST'])
+def editar_capitulo(serie_id, temporada_id, capitulo_id):
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    if request.method == 'GET':
-        return render_template("formulario_capitulo.html")
+    es_admin = session.get('es_admin')
     
-    if request.method == 'POST':
-        return render_template("formulario_capitulo.html")
-    
+    if es_admin:
+        if request.method == 'GET':
+            
+            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/obtener_capitulo_serie/{serie_id}/{temporada_id}/{capitulo_id}")
+            if response.status_code == 200:
+                return render_template("formulario_capitulo.html", capitulo=response.json())
+            else:
+                flash("Error al obtener el capítulo.", 'danger')
+        
+        if request.method == 'POST':
+            numero = request.form.get('numero')
+            titulo = request.form.get('titulo')
+            duracion = request.form.get('duracion')
+            sinopsis = request.form.get('sinopsis')
+            data = {
+                "numero": numero,
+                "titulo": titulo,
+                "duracion": duracion,
+                "sinopsis": sinopsis
+            }
+            print("El id de la serie es: ", serie_id)
+            print("El id de la temporada es: ", temporada_id)
+            print("El id del capitulo es: ", capitulo_id)
+            
+            response = requests.put(f"{contConf.CONTENIDOS_BASE_URL}/actualizar_capitulo_serie/{serie_id}/{temporada_id}/{capitulo_id}", json=data)
+            if response.status_code == 200:
+                flash("Capítulo editado exitosamente.", 'success')
+                return redirect(url_for('serie.obtener_series'))
+            else:
+                flash("Error al editar el capítulo.", 'danger')
+                return render_template("formulario_capitulo.html")
+    else:
+        flash("No tienes permisos para realizar esta acción.", 'danger')
+        return redirect(url_for('serie.obtener_series'))    
     return render_template("formulario_capitulo.html")
 
-@serie_bp.route('/eliminar_capitulo/<capitulo_id>', methods=['GET'])
-def eliminar_capitulo(capitulo_id):
+@serie_bp.route('/eliminar_capitulo/<serie_id>/<temporada_id>/<capitulo_id>', methods=['GET'])
+def eliminar_capitulo(serie_id, temporada_id, capitulo_id):
     usuario_id = session.get('logged_user_id')
     if not usuario_id:
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-    return redirect(url_for('serie.listar_capitulos'))
+    es_admin = session.get('es_admin')
+    if es_admin:
+        response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/eliminar_capitulo_serie/{serie_id}/{temporada_id}/{capitulo_id}")
+        if response.status_code == 200:
+            flash("Capítulo eliminado exitosamente.", 'success')
+        else:
+            flash("Error al eliminar el capítulo.", 'danger')
+        
+        return redirect(url_for('serie.obtener_series'))
+    else:
+        flash("No tienes permisos para realizar esta acción.", 'danger')
+        return redirect(url_for('serie.obtener_series'))

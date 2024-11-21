@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+b{% extends 'base.html' %}
 
 {% block title %}Añadir Capítulo - Netflux{% endblock %}
 
@@ -17,28 +17,28 @@
 
             <div class="mb-4">
                 <label for="numero" class="form-label text-white">Número del Capítulo</label>
-                <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="numero" name="numero" min="0" required>
+                <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="numero" name="numero" min="0" required value="{{ capitulo.numero if capitulo else '' }}">
             </div>
 
             <div class="mb-4">
                 <label for="titulo" class="form-label text-white">Título del capítulo</label>
                 <input type="text" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="titulo" name="titulo" 
-                       placeholder="Ingrese el título de la película" required>
+                       placeholder="Ingrese el título de la película" required value="{{ capitulo.titulo if capitulo else '' }}">
             </div>
 
             <div class="mb-4">
                 <label for="duracion" class="form-label text-white">Duración</label>
-                <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="duracion" name="duracion" min="0" required>
+                <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="duracion" name="duracion" min="0" required value="{{ capitulo.duracion if capitulo else '' }}">
             </div>
 
             <div class="mb-4">
                 <label for="sinopsis" class="form-label text-white">Sinopsis</label>
                 <textarea class="form-control bg-dark text-white border-0 rounded px-3" id="sinopsis" name="sinopsis" 
-                          rows="4" placeholder="Escriba una breve sinopsis de la película" required></textarea>
+                          rows="4" placeholder="Escriba una breve sinopsis de la película" required>{{ capitulo.sinopsis if capitulo else '' }}</textarea>
             </div>
 
             <button type="submit" class="btn btn-danger w-100 rounded-pill">
-                Crear película
+                {{ 'Guardar cambios' if capitulo else 'Añadir Capítulo' }}
             </button>
         </form>
     </div>

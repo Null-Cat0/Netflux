@@ -37,65 +37,24 @@
         color: #bbb;
     }
 
-    .series-card .btn-outline-light {
-        border-radius: 50px;
-        padding: 5px 15px;
+    .btn-small {
+        padding: 5px 10px;
         font-size: 0.85rem;
     }
 
-    .modal-fullscreen {
-        width: 100%;
-        height: 100%;
-    }
-
-    .modal-content {
-        background-color: #141414;
+    .accordion-button {
+        background-color: #1c1c1c;
         color: white;
-    }
-
-    .modal-header {
-        border-bottom: none;
-    }
-
-    .modal-header .btn-close {
-        background: white;
         border: none;
     }
 
-    .modal-body {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
+    .accordion-button:hover {
+        background-color: #444;
     }
 
-    .series-info {
-        flex: 3;
-    }
-
-    .season-selector {
-        flex: 1;
-        max-width: 250px;
-    }
-
-    .episode-list {
-        list-style: none;
-        padding: 0;
-    }
-
-    .episode-list li {
-        border-bottom: 1px solid #444;
-        padding: 10px 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .episode-list li:last-child {
-        border-bottom: none;
-    }
-
-    .episode-list li span {
-        color: #bbb;
+    .accordion-body {
+        background-color: #1c1c1c;
+        color: white;
     }
 </style>
 {% endblock %}
@@ -126,118 +85,165 @@
                             {% for genero in serie.genero %}
                                 {{ genero.nombre.capitalize() }}
                             {% endfor %} | {{ serie.anio_estreno }}</p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#serieModal{{ serie.id }}">Ver Más</button>
-                            <div class="d-flex">
-                                {% if es_admin %}
-                                <!-- Botón de Editar -->
-                                <a href="{{ url_for('serie.editar_serie', serie_id=serie.id) }}" class="text-warning mx-2" title="Editar">
-                                    <i class="fas fa-pencil-alt fa-lg"></i>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#serieModal{{ serie.id }}">Ver Más</button>
+                                <div class="d-flex">
+                                    {% if es_admin %}
+                                    <!-- Botón de Editar -->
+                                    <a href="{{ url_for('serie.editar_serie', serie_id=serie.id) }}" class="text-warning mx-2" title="Editar">
+                                        <i class="fas fa-pencil-alt fa-lg"></i>
+                                    </a>
+                                    <!-- Botón de Eliminar -->
+                                    <a href="#confirmDeleteModal{{ serie.id }}" class="text-danger mx-2" title="Eliminar" data-bs-toggle="modal">
+                                        <i class="fas fa-trash-alt fa-lg"></i>
+                                    </a>
+                                    {% endif %}
+                                    <!-- Botón de Añadir/Quitar de la lista -->
+                                    <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}"
+                                    class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
+                                    id="addToListBtn{{ serie.id }}" 
+                                    onclick="toggleAddToList(this)">
+                                    <i class="fas fa-plus"></i>
                                 </a>
-                                <!-- Botón de Eliminar -->
-                                <a href="#confirmDeleteModal{{ serie.id }}" class="text-danger mx-2" title="Eliminar" data-bs-toggle="modal">
-                                    <i class="fas fa-trash-alt fa-lg"></i>
-                                </a>
-                                {% endif %}
+                                    <input type="hidden" name="es_serie" value="True">
+                                </div>
                             </div>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
 
             <!-- Modal de información de la serie -->
-<div class="modal fade" id="serieModal{{ serie.id }}" tabindex="-1" aria-labelledby="serieModalLabel{{ serie.id }}" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content bg-dark text-white rounded">
-            <!-- Encabezado del modal -->
-            <div class="modal-header border-0">
-                <h5 class="modal-title" id="serieModalLabel{{ serie.id }}">{{ serie.titulo }}</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <!-- Cuerpo del modal -->
-            <div class="modal-body">
-                <div class="row">
-                    <!-- Información de la serie -->
-                    <div class="col-md-4">
-                        <img src="{{ serie.imagen_url if serie.imagen_url else 'static/default-series.jpg' }}" alt="{{ serie.titulo }}" class="img-fluid rounded mb-3">
-                        <p><strong>Género:</strong> 
-                            {% for genero in serie.genero %}
-                                {{ genero.nombre }}{% if not loop.last %}, {% endif %}
-                            {% endfor %}
-                        </p>
-                        <p><strong>Año de Estreno:</strong>{{ serie.anio_estreno }}</p>
-                        <p><strong>Sinopsis:</strong> {{ serie.sinopsis }}</p>
-                        <p><strong>Actores:</strong></p>
-                        <ul>
-                            {% for actor in serie.actores %}
-                                    {{ actor.nombre }}{% if not loop.last %}, {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    <!-- Lista de temporadas y capítulos -->
-                    <div class="col-md-8">
-                        <h6>Temporadas</h6>
-                        <div class="accordion" id="accordionTemporadas{{ serie.id }}">
-                            {% for temporada in serie.temporadas %}
-                                <div class="accordion-item bg-dark text-white">
-                                    <h2 class="accordion-header" id="headingTemporada{{ temporada.numero }}">
-                                        <button class="accordion-button collapsed text-white bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTemporada{{ temporada.numero }}" aria-expanded="false" aria-controls="collapseTemporada{{ temporada.numero }}">
-                                            Temporada {{ temporada.numero }} ({{ temporada.anio_lanzamiento }})
-                                        </button>
-                                    </h2>
-                                    <div id="collapseTemporada{{ temporada.numero }}" class="accordion-collapse collapse" aria-labelledby="headingTemporada{{ temporada.numero }}" data-bs-parent="#accordionTemporadas{{ serie.id }}">
-                                        <div class="accordion-body">
-                                            <ul class="list-unstyled">
-                                                {% for capitulo in temporada.capitulos %}
-                                                    <li>
-                                                        <strong>{{ capitulo.numero }}. {{ capitulo.titulo }}</strong> 
-                                                        ({{ capitulo.duracion }} min)
-                                                        <p class="mb-2">{{ capitulo.sinopsis }}</p>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
+            <div class="modal fade" id="serieModal{{ serie.id }}" tabindex="-1" aria-labelledby="serieModalLabel{{ serie.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content bg-dark text-white rounded">
+                        <!-- Encabezado del modal -->
+                        <div class="modal-header border-0">
+                            <h5 class="modal-title" id="serieModalLabel{{ serie.id }}">{{ serie.titulo }}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+            
+                        <!-- Cuerpo del modal -->
+                        <div class="modal-body">
+                            <!-- Fila 1: Información general -->
+                            <div class="row mb-4">
+                                <div class="col-md-8">
+                                    <p><strong>Género:</strong> 
+                                        {% for genero in serie.genero %}
+                                            {{ genero.nombre }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                    <p><strong>Año de Estreno:</strong> {{ serie.anio_estreno }}</p>
+                                    <p><strong>Sinopsis:</strong></p>
+                                    <p>{{ serie.sinopsis }}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong>Actores:</strong> 
+                                        {% if serie.actores %}
+                                            {% for actor in serie.actores %}
+                                                {{ actor.nombre }}{% if not loop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            No disponible
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+            
+                            <!-- Fila 2: Temporadas -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6>Temporadas</h6>
+                                        {% if es_admin %}
+                                        <a href="{{ url_for('serie.crear_temporada', serie_id=serie.id) }}" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-plus me-2"></i>Añadir Temporada
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="accordion" id="accordionTemporadas{{ serie.id }}">
+                                        {% for temporada in serie.temporadas %}
+                                        <div class="accordion-item bg-dark text-white">
+                                            <h2 class="accordion-header" id="headingTemporada{{ temporada.numero }}">
+                                                <button class="accordion-button collapsed text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTemporada{{ temporada.numero }}" aria-expanded="false" aria-controls="collapseTemporada{{ temporada.numero }}">
+                                                    Temporada {{ temporada.numero }} ({{ temporada.anio_lanzamiento }})
+                                                </button>
+                                            </h2>
+                                            <div id="collapseTemporada{{ temporada.numero }}" class="accordion-collapse collapse" aria-labelledby="headingTemporada{{ temporada.numero }}" data-bs-parent="#accordionTemporadas{{ serie.id }}">
+                                                <div class="accordion-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <h6>Capítulos</h6>
+                                                        {% if es_admin %}
+                                                        <div>
+                                                            <a href="{{url_for('serie.editar_temporada', serie_id=serie.id, temporada_id=temporada.temporada_id)}}" class="btn btn-warning btn-sm me-2">Editar</a>
+                                                            <a href="{{url_for('serie.eliminar_temporada', serie_id=serie.id, temporada_id=temporada.temporada_id)}}" class="btn btn-danger btn-sm me-2">Borrar</a>
+                                                            <a href="{{url_for('serie.crear_capitulo', serie_id=serie.id, temporada_id=temporada.temporada_id)}}" class="btn btn-success btn-sm">Añadir Episodio</a>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <ul class="list-unstyled">
+                                                        {% for capitulo in temporada.capitulos %}
+                                                        <li class="mb-3 d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <strong>{{ capitulo.numero }}. {{ capitulo.titulo }}</strong> ({{ capitulo.duracion }} min)
+                                                                <p class="mb-0">{{ capitulo.sinopsis }}</p>
+                                                            </div>
+                                                            {% if es_admin %}
+                                                            <div>
+                                                                <a href="{{url_for('serie.editar_capitulo', serie_id=serie.id, temporada_id=temporada.temporada_id, capitulo_id=capitulo.capitulo_id)}}" class="btn btn-warning btn-sm me-2">Editar</a>
+                                                                <a href="{{url_for('serie.eliminar_capitulo', serie_id=serie.id, temporada_id=temporada.temporada_id, capitulo_id=capitulo.capitulo_id)}}" class="btn btn-danger btn-sm">Borrar</a>
+                                                            </div>
+                                                            {% endif %}
+                                                        </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
-                            {% endfor %}
+                            </div>
+                        </div>
+            
+                        <!-- Pie del modal -->
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Pie del modal -->
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-            <!-- Modal de confirmación para eliminar serie -->
+            <!-- Modal para confirmar eliminación de serie -->
             <div class="modal fade" id="confirmDeleteModal{{ serie.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ serie.id }}" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content bg-dark text-white rounded">
+                        <!-- Encabezado del modal -->
                         <div class="modal-header border-0">
-                            <h5 class="modal-title" id="confirmDeleteModalLabel{{ serie.id }}">Confirmar eliminación</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <h5 class="modal-title" id="confirmDeleteModalLabel{{ serie.id }}">Eliminar Serie</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
+
+                        <!-- Cuerpo del modal -->
                         <div class="modal-body">
-                            ¿Estás seguro de que quieres eliminar la serie <strong>{{ serie.titulo }}</strong>?
+                            <p>¿Estás seguro de que deseas eliminar la serie <strong>{{ serie.titulo }}</strong>? Esta acción no se puede deshacer.</p>
                         </div>
+
+                        <!-- Pie del modal -->
                         <div class="modal-footer border-0">
-                            <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
-                            <a href="{{ url_for('serie.eliminar_serie', serie_id=serie.id) }}" class="btn btn-danger rounded-pill">Eliminar serie</a>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a href="{{ url_for('serie.eliminar_serie', serie_id=serie.id) }}" class="btn btn-danger">Eliminar</a>
                         </div>
                     </div>
                 </div>
             </div>
+
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-center text-white">No hay series disponibles.</p>
+        <div class="text-center">
+            <h6>No hay series disponibles.</h6>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

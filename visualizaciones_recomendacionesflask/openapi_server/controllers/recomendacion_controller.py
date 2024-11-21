@@ -129,3 +129,4 @@ def obtener_recomendaciones_perfil(user_id, perfil_id):  # noqa: E501
     }
 
     return jsonify(recomendaciones), 200
+

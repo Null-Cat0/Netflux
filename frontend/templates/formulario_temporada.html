@@ -17,16 +17,16 @@
 
             <div class="mb-4">
                 <label for="numero" class="form-label text-white">Número de la Temporada</label>
-                <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="numero" name="numero" min="0" required>
+                <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="numero" name="numero" min="0" required value="{{ temporada.numero if temporada else '' }}">
             </div>
 
             <div class="mb-4">
                 <label for="anio_lanzamiento" class="form-label text-white">Año de estreno</label>
-                <input type="date" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="anio_lanzamiento" name="anio_lanzamiento" required>
+                <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="anio_lanzamiento" name="anio_lanzamiento" min="0" required value="{{ temporada.anio_lanzamiento if temporada else '' }}">
             </div>
 
             <button type="submit" class="btn btn-danger w-100 rounded-pill">
-                Crear película
+                {{ 'Guardar cambios' if temporada else 'Añadir Temporada' }}
             </button>
         </form>
     </div>
