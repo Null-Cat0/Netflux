@@ -3,17 +3,14 @@
 {% block title %}Mi lista - Netflux{% endblock %}
 
 {% block content %}
-
 <div class="container-fluid">
 
     <!-- Sección Mi Lista -->
-    <!-- Sección de Tendencias -->
     <div class="row">
         <div class="col-12">
             <h1 class="text-white">Mi lista</h1>
         </div>
     </div>
-
 
     <!-- Sección de Películas -->
     <div class="row">
@@ -22,36 +19,40 @@
         </div>
     </div>
     <div class="row">
-        {% for i in range(1,5) %}
-            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-                <div class="card bg-dark text-white">
-                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Recomendación {{ i }}">
-                    <div class="card-body">
-                        <h5 class="card-title">Movie title</h5>
-                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
-                    </div>
+        {% for pelicula in peliculas %}
+        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+            <div class="card bg-dark text-white mb-4">
+                <img src="{{ pelicula.imagen else 'static/default-movie.jpg'}}" class="card-img-top" alt="{{ pelicula.titulo }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ pelicula.titulo }}</h5>
+                    <p class="card-text">{{ pelicula.sinopsis }}</p>
+                    <button class="btn btn-primary btn-sm">Marcar como visto</button>
                 </div>
             </div>
+        </div>
         {% endfor %}
     </div>
-        <!-- Sección de Series -->
-        <div class="row">
-            <div class="col-12">
-                <h2 class="text-white">Series</h2>
+
+    <!-- Sección de Series -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-white">Series</h2>
+        </div>
+    </div>
+    <div class="row">
+        {% for serie in series %}
+        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+            <div class="card bg-dark text-white mb-4">
+                <img src="{{ serie.imagen else 'static/default-movie.jpg'}}" class="card-img-top" alt="{{ serie.titulo }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ serie.titulo }}</h5>
+                    <p class="card-text">{{ serie.sinopsis }}</p>
+                    <button class="btn btn-primary btn-sm">Marcar como visto</button>
+                </div>
             </div>
         </div>
-        <div class="row">
-            {% for i in range(1,5) %}
-                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-                    <div class="card bg-dark text-white">
-                        <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Recomendación {{ i }}">
-                        <div class="card-body">
-                            <h5 class="card-title">Serie title</h5>
-                            <a href="#" class="btn btn-danger btn-sm">Ver</a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+        {% endfor %}
+    </div>
 
+</div>
 {% endblock %}

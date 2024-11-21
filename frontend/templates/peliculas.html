@@ -110,6 +110,13 @@
                                     <i class="fas fa-trash-alt fa-lg"></i>
                                 </a>
                                 {% endif %}
+                                <!-- Botón de Añadir/Quitar de la lista -->
+                                <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}"
+                                    class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
+                                    id="addToListBtn{{ pelicula.id }}" 
+                                    onclick="toggleAddToList(this)">
+                                    <i class="fas fa-plus"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -140,6 +147,12 @@
                                     No disponible
                                 {% endif %}
                             </p>
+                            <!-- Botón Marcar como vista -->
+                            <div class="mt-4 col-3">
+                                <a href="{{url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id)}}" id="markAsViewedBtn{{ pelicula.id }}" class="btn btn-outline-light w-100" onclick="toggleViewedStatus(this)">
+                                    Marcar como vista
+                                </a>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -172,4 +185,34 @@
         <p class="text-center text-white">No hay películas disponibles.</p>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Función para alternar el estado del botón entre "Marcar como vista" y "Vista"
+    function toggleViewedStatus(button) {
+        if (button.innerText === "Marcar como vista") {
+            button.innerText = "Vista";
+            button.classList.remove("btn-outline-light");
+            button.classList.add("btn-light");
+            button.classList.add("text-dark");
+        }
+    }
+
+    // Función para alternar entre el "+" y el "✔" del botón de añadir a la lista
+    function toggleAddToList(button) {
+        const icon = button.querySelector('i');
+        if (icon.classList.contains('fa-plus')) {
+            icon.classList.remove('fa-plus');
+            icon.classList.add('fa-check');
+            button.classList.remove('btn-outline-light');
+            button.classList.add('btn-success');
+        } else {
+            icon.classList.remove('fa-check');
+            icon.classList.add('fa-plus');
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-light');
+        }
+    }
+</script>
 {% endblock %}
