@@ -169,7 +169,7 @@
                                                         <div>
                                                             <a href="{{url_for('serie.editar_temporada', serie_id=serie.id, temporada_id=temporada.temporada_id)}}" class="btn btn-warning btn-sm me-2">Editar</a>
                                                             <a href="{{url_for('serie.eliminar_temporada', serie_id=serie.id, temporada_id=temporada.temporada_id)}}" class="btn btn-danger btn-sm me-2">Borrar</a>
-                                                            <a href="" class="btn btn-success btn-sm">Añadir Episodio</a>
+                                                            <a href="{{url_for('serie.crear_capitulo', serie_id=serie.id, temporada_id=temporada.temporada_id)}}" class="btn btn-success btn-sm">Añadir Episodio</a>
                                                         </div>
                                                         {% endif %}
                                                     </div>
@@ -182,8 +182,8 @@
                                                             </div>
                                                             {% if es_admin %}
                                                             <div>
-                                                                <a href="" class="btn btn-warning btn-sm me-2">Editar</a>
-                                                                <a href="" class="btn btn-danger btn-sm">Borrar</a>
+                                                                <a href="{{url_for('serie.editar_capitulo', serie_id=serie.id, temporada_id=temporada.temporada_id, capitulo_id=capitulo.capitulo_id)}}" class="btn btn-warning btn-sm me-2">Editar</a>
+                                                                <a href="{{url_for('serie.eliminar_capitulo', serie_id=serie.id, temporada_id=temporada.temporada_id, capitulo_id=capitulo.capitulo_id)}}" class="btn btn-danger btn-sm">Borrar</a>
                                                             </div>
                                                             {% endif %}
                                                         </li>
