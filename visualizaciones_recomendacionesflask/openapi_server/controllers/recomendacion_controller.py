@@ -100,17 +100,15 @@ def eliminar_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     if response_perfil.status_code != 200:
         return jsonify({"message": "Perfil no encontrado"}), 404
 
-    try:
-        recomendaciones_pelicula = RecomendacionPeliculaDB.objects.get(id_perfil=perfil_id)
-        recomendaciones_serie = RecomendacionSerieDB.objects.get(id_perfil=perfil_id)
+    recomendaciones_pelicula = RecomendacionPeliculaDB.objects(id_perfil=perfil_id).first()
+    recomendaciones_serie = RecomendacionSerieDB.objects(id_perfil=perfil_id).first()
 
-        if recomendaciones_pelicula:
-            recomendaciones_pelicula.delete()
-        if recomendaciones_serie:
-            recomendaciones_serie.delete()
+    print(f"Recomendaciones Pelicula: {recomendaciones_pelicula}\n")
 
-    except RecomendacionPeliculaDB.DoesNotExist:
-        raise RecomendacionPelicula.DoesNotExist
+    if recomendaciones_pelicula:
+        recomendaciones_pelicula.delete()
+    if recomendaciones_serie:
+        recomendaciones_serie.delete()
 
     return jsonify({"message": "Recomendaciones eliminadas correctamente"}), 200
 

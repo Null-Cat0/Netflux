@@ -91,6 +91,8 @@ def actualizar_perfil_usuario(user_id, profile_id):
                             genero_preferencias_db = GeneroPreferenciasDB(preferencias_id=preferencias_db.preferencias_id, genero_id=genero['id'])
                             db.session.add(genero_preferencias_db)
                     db.session.commit()
+                else:
+                    return jsonify({"message": "Error al obtener los géneros"}), 500
 
             # Se actualizan las recomendaciones al perfil
             ## Primero se borrán las recomendaciones anteriores
@@ -192,6 +194,8 @@ def crear_perfil(user_id):  # noqa: E501
                     genero_preferencias_db = GeneroPreferenciasDB(preferencias_id=preferencias_db.preferencias_id, genero_id=genero['id'])
                     db.session.add(genero_preferencias_db)
             db.session.commit()
+        else:
+            return jsonify({"message": "Error al obtener los géneros"}), 500
 
         # Se crean recomendaciones al perfil
         recomendaciones_perfil = requests.post(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")

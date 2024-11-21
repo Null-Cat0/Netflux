@@ -19,6 +19,40 @@ from openapi_server.models.visualizacion_capitulo_db import VisualizacionCapitul
 from openapi_server import util
 from openapi_server import app
 
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion/<contenido_id>', methods=['PATCH'])
+def actualizar_visualizacion_contenido_perfil(user_id, perfil_id, contenido_id):  # noqa: E501
+    """Actualiza la visualización de un capítulo o película por un perfil
+
+    Actualiza la visualización de un capítulo o película por un perfil
+
+    :param perfil_id: ID del perfil especificado
+    :type perfil_id: int
+    :param visualizacion: ID del contenido a visualizar
+    :type visualizacion: dict | bytes
+
+    :rtype: Union[Visualizacion, Tuple[Visualizacion, int], Tuple[Visualizacion, int, Dict[str, str]]
+    """
+    # Se obtiene el perfil con una petición al microservicio de usuario
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+
+    if response_perfil.status_code != 200:
+        return jsonify({"message": "Perfil no encontrado"}), 404
+
+    # Se obtiene el objecto visualización a actualizar
+    visualizacion = VisualizacionPeliculaDB.objects(id_perfil=perfil_id, pelicula_id=contenido_id).first()
+    if visualizacion is None:
+        visualizacion = VisualizacionCapituloDB.objects(id_perfil=perfil_id, capitulo_id=contenido_id).first()
+
+    if visualizacion is None:
+        return jsonify({"message": "Visualización no encontrada"}), 404
+
+    # Se actualiza la fecha de visualización
+    visualizacion.fecha_visualizacion = datetime.now()
+    visualizacion.save()
+
+    return jsonify({"message": "Visualización actualizada"}), 200
+
+
 @app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion', methods=['POST'])
 def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
     """Inicia la visualización de un capítulo o película por un perfil
