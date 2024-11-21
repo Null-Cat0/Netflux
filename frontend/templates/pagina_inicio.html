@@ -1,7 +1,60 @@
 {% extends 'base.html' %}
 
 {% block title %}Inicio - Netflux{% endblock %}
+{%block head%}
+<style>
+    .series-card {
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #1c1c1c;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
+    .series-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .series-card img {
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .series-card .card-body {
+        padding: 15px;
+    }
+
+    .series-card h5 {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .series-card .card-text {
+        font-size: 0.9rem;
+        color: #bbb;
+    }
+
+    .btn-small {
+        padding: 5px 10px;
+        font-size: 0.85rem;
+    }
+
+    .accordion-button {
+        background-color: #1c1c1c;
+        color: white;
+        border: none;
+    }
+
+    .accordion-button:hover {
+        background-color: #444;
+    }
+
+    .accordion-body {
+        background-color: #1c1c1c;
+        color: white;
+    }
+</style>
+{% endblock %}
 {% block content %}
 <div class="container-fluid">
 
@@ -24,7 +77,6 @@
                     <a href="#" class="btn btn-danger">Ver ahora</a>
                 </div>
             </div>
-            <!-- Puedes añadir más carousel-items según desees -->
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -35,84 +87,278 @@
             <span class="visually-hidden">Siguiente</span>
         </button>
     </div>
-
-    <!-- Sección de Tendencias -->
-    <h3 class="text-white mb-3">Tendencias</h3>
-    <div class="row mb-5">
-        {% for i in range(2) %}
-            <div class="col-md-2">
-                <div class="card bg-dark text-white">
-                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Tendencia {{ i }}">
-                    <div class="card-body">
-                        <h5 class="card-title">Título {{ i + 1 }}</h5>
-                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-
-    <!-- Sección Mi Lista -->
-    <h3 class="text-white mb-3">Mi Lista</h3>
-    <div class="row mb-5">
-        {% for i in range(2) %}
-            <div class="col-md-2">
-                <div class="card bg-dark text-white">
-                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Mi Lista {{ i }}">
-                    <div class="card-body">
-                        <h5 class="card-title">Mi Película {{ i + 1 }}</h5>
-                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-
-    <!-- Secciones de Categorías -->
-    <h3 class="text-white mb-3">Películas</h3>
-    <div class="row mb-5">
-        {% for i in range(2) %}
-            <div class="col-md-2">
-                <div class="card bg-dark text-white">
-                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Película {{ i }}">
-                    <div class="card-body">
-                        <h5 class="card-title">Película {{ i + 1 }}</h5>
-                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-
+    <!-- Sección de Series -->
     <h3 class="text-white mb-3">Series</h3>
     <div class="row mb-5">
-        {% for i in range(2) %}
-            <div class="col-md-2">
-                <div class="card bg-dark text-white">
-                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Serie {{ i }}">
-                    <div class="card-body">
-                        <h5 class="card-title">Serie {{ i + 1 }}</h5>
-                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
+        {% if series %}
+            {% for serie in series %}
+                <div class="col-md-2">
+                    <div class="card bg-dark text-white h-100">
+                        <!-- Imagen de la serie -->
+                        <img src="{{ serie['poster_url'] or 'https://via.placeholder.com/200x300' }}" class="card-img-top" alt="{{ serie['titulo'] }}">
+                        <div class="card-body d-flex flex-column">
+                            <!-- Título de la serie -->
+                            <h5 class="card-title text-truncate mb-3" title="{{ serie['titulo'] }}">{{ serie['titulo'] }}</h5>
+                            <!-- Contenedor de botones en una fila -->
+                            <div class="d-flex justify-content-between mt-auto">
+                                <!-- Botón para abrir el modal -->
+                                <button class="btn btn-danger btn-sm me-2 w-50" data-bs-toggle="modal" data-bs-target="#recomSerieModal{{ serie.id }}">Ver Más</button>
+                                <!-- Botón de marcar como vista -->
+                                <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}" 
+                                id="markAsViewedBtn{{ serie.id }}" 
+                                class="btn btn-outline-light btn-sm w-50"
+                                onclick="toggleViewedStatus(this)">
+                                    Marcar como vista
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+            
+
+            {% endfor %}
+        {% else %}
+            <p class="text-white">No hay películas disponibles.</p>
+        {% endif %}
+    </div>
+    <!-- Sección de Películas -->
+    <h3 class="text-white mb-3">Películas</h3>
+    <div class="row mb-5">
+        {% if peliculas %}
+            {% for pelicula in peliculas %}
+                <div class="col-md-2">
+                    <div class="card bg-dark text-white h-100">
+                        <!-- Imagen de la película -->
+                        <img src="{{ pelicula['poster_url'] or 'https://via.placeholder.com/200x300' }}" class="card-img-top" alt="{{ pelicula['titulo'] }}">
+                        <div class="card-body d-flex flex-column">
+                            <!-- Título de la película -->
+                            <h5 class="card-title text-truncate mb-3" title="{{ pelicula['titulo'] }}">{{ pelicula['titulo'] }}</h5>
+                            <!-- Contenedor de botones en una fila -->
+                            <div class="d-flex justify-content-between mt-auto">
+                                <!-- Botón para abrir el modal -->
+                                <button class="btn btn-danger btn-sm me-2 w-50" data-bs-toggle="modal" data-bs-target="#recomMovieModal{{ pelicula.id }}">Ver Más</button>
+                                <!-- Botón de marcar como vista -->
+                                <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}" 
+                                id="markAsViewedBtn{{ pelicula.id }}" 
+                                class="btn btn-outline-light btn-sm w-50"
+                                onclick="toggleViewedStatus(this)">
+                                    Marcar como vista
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de detalles de la película -->
+                <div class="modal fade" id="movieModal{{ pelicula.id }}" tabindex="-1" aria-labelledby="movieModalLabel{{ pelicula.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white rounded">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title" id="movieModalLabel{{ pelicula.id }}">{{ pelicula.titulo }}</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Sinopsis:</strong> {{ pelicula.sinopsis }}</p>
+                                <p><strong>Género:</strong> 
+                                    {% for genero in pelicula.genero %}
+                                        {{ genero.nombre }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                                <p><strong>Año de estreno:</strong> {{ pelicula.anio_estreno }}</p>
+                                <p><strong>Duración:</strong> {{ pelicula.duracion }} minutos</p>
+                                <p><strong>Actores:</strong> 
+                                    {% if pelicula.actores %}
+                                        {% for actor in pelicula.actores %}
+                                            {{ actor.nombre }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        No disponible
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-white">No hay películas disponibles.</p>
+        {% endif %}
     </div>
 
-    <!-- Sección de Contenido Recomendado -->
-    <h3 class="text-white mb-3">Recomendado para ti</h3>
+    <!-- Sección de Recomendaciones de Películas -->
+    <h3 class="text-white mb-3">Recomendaciones de Películas</h3>
     <div class="row mb-5">
-        {% for i in range(2) %}
+        {% if recomendaciones_pelicula %}
+            {% for pelicula in recomendaciones_pelicula %}
+                <div class="col-md-2">
+                    <div class="card bg-dark text-white h-100">
+                        <!-- Imagen de la película -->
+                        <img src="{{ pelicula['poster_url'] or 'https://via.placeholder.com/200x300' }}" class="card-img-top" alt="{{ pelicula['titulo'] }}">
+                        <div class="card-body d-flex flex-column">
+                            <!-- Título de la película -->
+                            <h5 class="card-title text-truncate mb-3" title="{{ pelicula['titulo'] }}">{{ pelicula['titulo'] }}</h5>
+                            <!-- Contenedor de botones en una fila -->
+                            <div class="d-flex justify-content-between mt-auto">
+                                <!-- Botón para abrir el modal -->
+                                <button class="btn btn-danger btn-sm me-2 w-50" data-bs-toggle="modal" data-bs-target="#recomMovieModal{{ pelicula.id }}">Ver Más</button>
+                                <!-- Botón de marcar como vista -->
+                                <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}" 
+                                id="markAsViewedBtn{{ pelicula.id }}" 
+                                class="btn btn-outline-light btn-sm w-50"
+                                onclick="toggleViewedStatus(this)">
+                                    Marcar como vista
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de Recomendación de Película -->
+                <div class="modal fade" id="recomMovieModal{{ pelicula.id }}" tabindex="-1" aria-labelledby="recomMovieModalLabel{{ pelicula.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white rounded">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title" id="recomMovieModalLabel{{ pelicula.id }}">{{ pelicula.titulo }}</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Sinopsis:</strong> {{ pelicula.sinopsis }}</p>
+                                <p><strong>Género:</strong>
+                                    {% for genero in pelicula.genero %}
+                                        {{ genero.nombre }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                                <p><strong>Año de estreno:</strong> {{ pelicula.anio_estreno }}</p>
+                                <p><strong>Duración:</strong> {{ pelicula.duracion }} minutos</p>
+                                <p><strong>Actores:</strong> 
+                                    {% if pelicula.actores %}
+                                        {% for actor in pelicula.actores %}
+                                            {{ actor.nombre }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        No disponible
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-white">No hay recomendaciones de películas disponibles.</p>
+        {% endif %}
+    </div>
+
+    <!-- Sección de Recomendaciones de Series -->
+    <h3 class="text-white mb-3">Recomendaciones de Series</h3>
+    <div class="row mb-5">
+        {% if recomendaciones_serie %}
+        {% for serie in recomendaciones_serie %}
             <div class="col-md-2">
-                <div class="card bg-dark text-white">
-                    <img src="https://via.placeholder.com/200x300" class="card-img-top" alt="Recomendación {{ i }}">
-                    <div class="card-body">
-                        <h5 class="card-title">Recomendado {{ i + 1 }}</h5>
-                        <a href="#" class="btn btn-danger btn-sm">Ver</a>
+                <div class="card bg-dark text-white h-100">
+                    <!-- Imagen de la serie -->
+                    <img src="{{ serie['poster_url'] or 'https://via.placeholder.com/200x300' }}" class="card-img-top" alt="{{ serie['titulo'] }}">
+                    <div class="card-body d-flex flex-column">
+                        <!-- Título de la serie -->
+                        <h5 class="card-title text-truncate mb-3" title="{{ serie['titulo'] }}">{{ serie['titulo'] }}</h5>
+                        <!-- Contenedor de botones en una fila -->
+                        <div class="d-flex justify-content-between mt-auto">
+                            <!-- Botón para abrir el modal -->
+                            <button class="btn btn-danger btn-sm me-2 w-50" data-bs-toggle="modal" data-bs-target="#recomSerieModal{{ serie.id }}">Ver Más</button>
+                            <!-- Botón de marcar como vista -->
+                            <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}" 
+                            id="markAsViewedBtn{{ serie.id }}" 
+                            class="btn btn-outline-light btn-sm w-50"
+                            onclick="toggleViewedStatus(this)">
+                                Marcar como vista
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+    
+            <!-- Modal de Recomendación de Serie -->
+            <div class="modal fade" id="recomSerieModal{{ serie.id }}" tabindex="-1" aria-labelledby="recomSerieModalLabel{{ serie.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content bg-dark text-white rounded">
+                        <!-- Encabezado del modal -->
+                        <div class="modal-header border-0">
+                            <h5 class="modal-title" id="recomSerieModalLabel{{ serie.id }}">{{ serie.titulo }}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+    
+                        <!-- Cuerpo del modal -->
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <p><strong>Género:</strong> 
+                                        {% for genero in serie.genero %}
+                                            {{ genero.nombre }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                    <p><strong>Sinopsis:</strong></p>
+                                    <p>{{ serie.sinopsis }}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong>Actores:</strong> 
+                                        {% if serie.actores %}
+                                            {% for actor in serie.actores %}
+                                                {{ actor.nombre }}{% if not loop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            No disponible
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+    
+                            <!-- Temporadas -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h6>Temporadas</h6>
+                                    <div class="accordion" id="accordionTemporadas{{ serie.id }}">
+                                        {% for temporada in serie.temporadas %}
+                                            <div class="accordion-item bg-dark text-white">
+                                                <h2 class="accordion-header" id="headingTemporada{{ temporada.numero }}">
+                                                    <button class="accordion-button collapsed text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTemporada{{ temporada.numero }}" aria-expanded="false" aria-controls="collapseTemporada{{ temporada.numero }}">
+                                                        Temporada {{ temporada.numero }} ({{ temporada.anio_lanzamiento }})
+                                                    </button>
+                                                </h2>
+                                                <div id="collapseTemporada{{ temporada.numero }}" class="accordion-collapse collapse" aria-labelledby="headingTemporada{{ temporada.numero }}" data-bs-parent="#accordionTemporadas{{ serie.id }}">
+                                                    <div class="accordion-body">
+                                                        <ul class="list-unstyled">
+                                                            {% for capitulo in temporada.capitulos %}
+                                                                <li class="mb-3">
+                                                                    <strong>{{ capitulo.numero }}. {{ capitulo.titulo }}</strong> ({{ capitulo.duracion }} min)
+                                                                    <p class="mb-0">{{ capitulo.sinopsis }}</p>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pie del modal -->
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
                     </div>
                 </div>
             </div>
         {% endfor %}
+    {% else %}
+        <p class="text-white">No hay recomendaciones de series disponibles.</p>
+    {% endif %}
+    
     </div>
 
 </div>

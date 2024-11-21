@@ -17,21 +17,62 @@ def pagina_inicio():
     if session.get('perfil_id') is None:
         perfil_id = request.args.get('perfil_id')
         session['perfil_id'] = perfil_id
-    else: 
+    else:
         perfil_id = session.get('perfil_id')
     usuario_id = session.get('logged_user_id')
-    
+
     response = requests.get(
         f"{Config.USUARIOS.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles/{perfil_id}")
 
+    peliculas, series = [], []
     if response.status_code == 200:
         data = response.json()
-        return render_template("pagina_inicio.html", perfil=data)
+
+        response_peliculas = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/listar_peliculas")
+        if response_peliculas.status_code == 200:
+            peliculas = response_peliculas.json()
+
+        response_series = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/listar_series")
+        if response_series.status_code == 200:
+            series = response_series.json()
+
+        response_recomendaciones = requests.get(
+            f"{Config.VISUALIZACIONES.VISUALIZACIONES_BASE_URL}/usuario/{str(usuario_id)}/perfil/{perfil_id}/recomendacion")
+
+        recomendaciones_pelicula = []
+        recomendaciones_serie = []
+        if response_recomendaciones.status_code == 200:
+            recomendaciones = response_recomendaciones.json()
+            recomendaciones_pelicula = recomendaciones.get('peliculas', [])
+            recomendaciones_serie = recomendaciones.get('series', [])
+
+            rs,rp = [],[]
+            for recomendacion in recomendaciones_pelicula:
+                response = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}//obtener_pelicula/{recomendacion}")
+                if response.status_code == 200:
+                    rp.append(response.json())
+            
+            for recomendacion in recomendaciones_serie:
+                response = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/obtener_serie/{recomendacion}")
+                if response.status_code == 200:
+                    rs.append(response.json())
+
+        else:
+            flash(f"Error al obtener las recomendaciones", 'danger')
+
+        return render_template(
+            "pagina_inicio.html",
+            perfil=data,
+            peliculas=peliculas,
+            series=series,
+            recomendaciones_pelicula=peliculas,
+            recomendaciones_serie=series
+        )
     else:
         data = response.json()
         flash(f"Error: {data['message']}", 'danger')
+        return render_template("pagina_inicio.html")
 
-    return render_template("pagina_inicio.html")
 
 
 @app.route('/')
