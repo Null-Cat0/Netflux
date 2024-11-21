@@ -404,7 +404,7 @@ def agregar_contenido_lista(user_id, profile_id, contenido_id):
     lista_perfil_db = ListaPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
 
     if lista_perfil_db is not None:
-        return jsonify({"message": "El contenido ya está en la lista", "status": "error"}), 409
+        return jsonify({"message": "El contenido ya está en la lista", "status": "warning"}), 409
 
     # Creamos el objeto ListaPerfilDB
     lista_perfil_db = ListaPerfilDB(

@@ -98,6 +98,14 @@
                                         <i class="fas fa-trash-alt fa-lg"></i>
                                     </a>
                                     {% endif %}
+                                    <!-- Botón de Añadir/Quitar de la lista -->
+                                    <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}"
+                                    class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
+                                    id="addToListBtn{{ serie.id }}" 
+                                    onclick="toggleAddToList(this)">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                                    <input type="hidden" name="es_serie" value="True">
                                 </div>
                             </div>
                         

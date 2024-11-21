@@ -2,57 +2,154 @@
 
 {% block title %}Mi lista - Netflux{% endblock %}
 
-{% block content %}
-<div class="container-fluid">
+{% block head %}
+<title>Mi lista - Netflux</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<style>
+    .media-card {
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #1c1c1c;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-    <!-- Sección Mi Lista -->
-    <div class="row">
-        <div class="col-12">
-            <h1 class="text-white">Mi lista</h1>
-        </div>
-    </div>
+    .media-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .media-card img {
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .media-card .card-body {
+        padding: 15px;
+    }
+
+    .media-card h5 {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .media-card .card-text {
+        font-size: 0.9rem;
+        color: #bbb;
+    }
+
+    .media-card .btn-outline-light {
+        border-radius: 50px;
+        padding: 5px 15px;
+        font-size: 0.85rem;
+    }
+
+    .modal-content {
+        background-color: #141414;
+        border-radius: 12px;
+    }
+
+    .modal-content img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+
+    .modal-body {
+        color: white;
+    }
+
+    .modal-header {
+        border-bottom: none;
+    }
+
+    .modal-footer {
+        border-top: none;
+    }
+
+    .btn-close-white {
+        filter: invert(1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Mi lista</h1>
 
     <!-- Sección de Películas -->
-    <div class="row">
-        <div class="col-12">
-            <h2 class="text-white">Películas</h2>
-        </div>
-    </div>
-    <div class="row">
-        {% for pelicula in peliculas %}
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-            <div class="card bg-dark text-white mb-4">
-                <img src="{{ pelicula.imagen else 'static/default-movie.jpg'}}" class="card-img-top" alt="{{ pelicula.titulo }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ pelicula.titulo }}</h5>
-                    <p class="card-text">{{ pelicula.sinopsis }}</p>
-                    <button class="btn btn-primary btn-sm">Marcar como visto</button>
+    <div class="mb-5">
+        <h2 class="text-white">Películas</h2>
+        {% if peliculas %}
+        <div class="row g-4">
+            {% for pelicula in peliculas %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card media-card shadow-sm h-100">
+                    <img src="{{ pelicula.imagen if pelicula.imagen else 'static/default-movie.jpg' }}" class="card-img-top" alt="{{ pelicula.titulo }}">
+                    <div class="card-body text-white">
+                        <h5 class="card-title">{{ pelicula.titulo }}</h5>
+                        <p class="card-text">{{ pelicula.sinopsis | truncate(100) }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#movieModal{{ pelicula.id }}">Ver Más</button>
+                            <a href="{{ url_for('perfil.eliminar_de_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}"
+                                class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center mx-2"
+                                style="width: 36px; height: 36px; text-align: center;">
+                                <i class="fas fa-times"></i>
+                            </a>
+
+                        </div>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        {% else %}
+        <p class="text-center text-white">No hay películas en tu lista.</p>
+        {% endif %}
     </div>
 
     <!-- Sección de Series -->
-    <div class="row">
-        <div class="col-12">
-            <h2 class="text-white">Series</h2>
-        </div>
-    </div>
-    <div class="row">
-        {% for serie in series %}
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-            <div class="card bg-dark text-white mb-4">
-                <img src="{{ serie.imagen else 'static/default-movie.jpg'}}" class="card-img-top" alt="{{ serie.titulo }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ serie.titulo }}</h5>
-                    <p class="card-text">{{ serie.sinopsis }}</p>
-                    <button class="btn btn-primary btn-sm">Marcar como visto</button>
+    <div>
+        <h2 class="text-white">Series</h2>
+        {% if series %}
+        <div class="row g-4">
+            {% for serie in series %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card media-card shadow-sm h-100">
+                    <img src="{{ serie.imagen if serie.imagen else 'static/default-series.jpg' }}" class="card-img-top" alt="{{ serie.titulo }}">
+                    <div class="card-body text-white">
+                        <h5 class="card-title">{{ serie.titulo }}</h5>
+                        <p class="card-text">{{ serie.sinopsis | truncate(100) }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#seriesModal{{ serie.id }}">Ver Más</button>
+                            <a href="{{ url_for('perfil.eliminar_de_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}"
+                                class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center mx-2"
+                                style="width: 36px; height: 36px; text-align: center;">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        {% else %}
+        <p class="text-center text-white">No hay series en tu lista.</p>
+        {% endif %}
     </div>
-
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleViewedStatus(button) {
+        if (button.innerText === "Marcar como visto") {
+            button.innerText = "Vista";
+            button.classList.remove("btn-outline-light");
+            button.classList.add("btn-light");
+            button.classList.add("text-dark");
+        }
+    }
+</script>
 {% endblock %}
