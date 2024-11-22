@@ -238,8 +238,8 @@ def listar_visualizaciones_perfil(user_id, perfil_id):  # noqa: E501
 
     return jsonify(visualizaciones), 200
 
-
-def obtener_visualizacion_capitulo_perfil(perfil_id, capitulo_id):  # noqa: E501
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion/<contenido_id>', methods=['GET'])
+def obtener_visualizacion_capitulo_perfil(user_id, perfil_id, contenido_id):  # noqa: E501
     """Obtiene el capítulo en visualización del perfil especificado
 
     Obtiene el capítulo en visualización por el perfil especificado. # noqa: E501
@@ -251,10 +251,22 @@ def obtener_visualizacion_capitulo_perfil(perfil_id, capitulo_id):  # noqa: E501
 
     :rtype: Union[List[Capitulo], Tuple[List[Capitulo], int], Tuple[List[Capitulo], int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # Se comprueba si existe el perfil
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
 
+    if response_perfil.status_code != 200:
+        return jsonify({"message": "Perfil no encontrado"}), 404
 
-def obtener_visualizacion_pelicula_perfil(perfil_id, pelicula_id):  # noqa: E501
+    # Se intenta obtener la visualización del capítulo o película
+    visualizacion = VisualizacionCapituloDB.objects(id_perfil=perfil_id, capitulo_id=contenido_id).first()
+
+    if visualizacion is None:
+        return jsonify({"message": "Visualización del capítulo no encontrada"}), 404
+
+    return jsonify(visualizacion.to_api_model()), 200
+
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/pelicula/<pelicula_id>', methods=['GET'])
+def obtener_visualizacion_pelicula_perfil(user_id, perfil_id, pelicula_id):  # noqa: E501
     """Obtiene la película visualizada por el perfil especificado
 
     Obtiene la película en visualización por el perfil especificado. # noqa: E501
@@ -266,4 +278,16 @@ def obtener_visualizacion_pelicula_perfil(perfil_id, pelicula_id):  # noqa: E501
 
     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
     """
-    return 'do some magic!'
+    # Se comprueba si existe el perfil
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+
+    if response_perfil.status_code != 200:
+        return jsonify({"message": "Perfil no encontrado"}), 404
+
+    # Se intenta obtener la visualización de la película
+    visualizacion = VisualizacionPeliculaDB.objects(id_perfil=perfil_id, pelicula_id=pelicula_id).first()
+
+    if visualizacion is None:
+        return jsonify({"message": "Visualización de la película no encontrada"}), 404
+
+    return jsonify(visualizacion.to_api_model()), 200
