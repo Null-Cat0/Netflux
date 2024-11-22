@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 
 from global_config import UsuariosConfig as userConf
 from global_config import ContenidosConfig as contConf
+from global_config import VisualizacionesConfig as visConf
 
 perfil_bp = Blueprint('perfil', __name__)
 
@@ -301,17 +302,18 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
             'capitulo_id': contenido_id
         }
         print("Los datos son: ", data)
-        response = requests.post(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/historial", json=data)
+        response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
         if response.status_code == 201:
             flash("Contenido agregado al historial", 'success')
         else:
             data = response.json()
             flash(f"{data['message']}", 'danger')
     else:
+        print("He entrado en el else")
         data = {
             'pelicula_id': contenido_id
         }
-        response = requests.post(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/historial", json=data)
+        response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
         if response.status_code == 201:
             flash("Contenido agregado al historial", 'success')
         else:

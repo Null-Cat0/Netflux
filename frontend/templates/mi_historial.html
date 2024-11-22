@@ -1,114 +1,96 @@
 {% extends 'base.html' %}
 
-{% block title %}Mi Historial - Netflux{% endblock %}
+{% block title %}Mi historial - Netflux{% endblock %}
 
 {% block head %}
-<title>Mi Historial - Netflux</title>
+<title>Mi historial - Netflux</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <style>
-    .history-section {
-        border-radius: 12px;
-        background-color: #1c1c1c;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    .history-section h2 {
-        font-size: 1.5rem;
-        color: #fff;
-        margin-bottom: 15px;
-    }
-
-    .history-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
     .history-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid #444;
+        padding: 10px 15px;
+        background-color: #1c1c1c;
+        margin-bottom: 5px;
+        border-radius: 8px;
+        color: white;
+        transition: background-color 0.3s;
     }
 
-    .history-item:last-child {
-        border-bottom: none;
+    .history-item:hover {
+        background-color: #444;
     }
 
-    .history-item span {
-        font-size: 1rem;
+    .history-item .info {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .history-item .info span {
+        font-size: 0.9rem;
         color: #bbb;
     }
 
-    .history-item button {
-        background-color: #dc3545;
+    .history-item .delete-btn {
+        background-color: transparent;
         border: none;
-        color: white;
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        color: #e50914;
+        font-size: 1.2rem;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: color 0.3s;
     }
 
-    .history-item button:hover {
-        background-color: #a71d2a;
+    .history-item .delete-btn:hover {
+        color: #ff3d3d;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container my-5">
-    <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Mi Historial</h1>
+    <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Mi historial</h1>
 
-    <div class="row">
-        <!-- Columna para las películas -->
-        <div class="col-md-6">
-            <div class="history-section">
-                <h2>Películas Vistas</h2>
-                <ul class="history-list">
-                    {% if peliculas %}
-                        {% for pelicula in peliculas %}
-                        <li class="history-item">
-                            <span>{{ pelicula.titulo }}</span>
-                            <button onclick="location.href='{{ url_for('perfil.eliminar_de_historial', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}'">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </li>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-white">No has visto ninguna película.</p>
-                    {% endif %}
-                </ul>
+    <!-- Lista de contenido del historial -->
+    <div>
+        {% if historial %}
+        <div>
+            {% for contenido in historial %}
+            <div class="history-item">
+                <!-- Películas -->
+                {% if not contenido.nombre_capitulo %}
+                <div class="info">
+                    <span>{{ contenido.fecha }}</span>
+                    <span>{{ contenido.titulo }}</span>
+                </div>
+                {% else %}
+                <!-- Capítulos -->
+                <div class="info">
+                    <span>{{ contenido.fecha }}</span>
+                    <span>{{ contenido.nombre_serie }}: Temporada {{ contenido.numero_temporada }}: "{{ contenido.nombre_capitulo }}"</span>
+                </div>
+                {% endif %}
+                <button class="delete-btn" onclick="eliminarHistorial('{{ contenido.id }}')">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
+            {% endfor %}
         </div>
-
-        <!-- Columna para los capítulos -->
-        <div class="col-md-6">
-            <div class="history-section">
-                <h2>Capítulos Vistos</h2>
-                <ul class="history-list">
-                    {% if capitulos %}
-                        {% for capitulo in capitulos %}
-                        <li class="history-item">
-                            <span>Temporada {{ capitulo.temporada }} - Capítulo {{ capitulo.numero }}: {{ capitulo.titulo }}</span>
-                            <button onclick="location.href='{{ url_for('perfil.eliminar_de_historial', perfil_id=session['perfil_id'], contenido_id=capitulo.id) }}'">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </li>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-white">No has visto ningún capítulo.</p>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
+        {% else %}
+        <p class="text-center text-white">No hay contenido en tu historial.</p>
+        {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function eliminarHistorial(id) {
+        if (confirm("¿Estás seguro de que deseas eliminar este contenido del historial?")) {
+            // Lógica para enviar la solicitud de eliminación al servidor
+            window.location.href = `/eliminar_historial/${id}`;
+        }
+    }
+</script>
 {% endblock %}
