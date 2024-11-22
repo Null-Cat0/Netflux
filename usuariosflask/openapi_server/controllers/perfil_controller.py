@@ -70,7 +70,6 @@ def actualizar_perfil_usuario(user_id, profile_id):
                     db.session.delete(gpdb)
 
                 generos_name_list = perfil_api.preferencias_contenido.generos
-                print(f"\n\nGeneros: {generos_name_list}\n")
                 generos_response = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_generos')
                 if generos_response.status_code == 200:
                     generos = generos_response.json()
@@ -238,20 +237,22 @@ def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
         return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
     
     historial_db = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id).all()
-    lista_series = []
+    lista_capitulos = []
     lista_peliculas = []
 
     for h in historial_db:
-        if (h.es_serie):
-            lista_series.append(h.contenido)
+        if (h.es_capitulo):
+            lista_capitulos.append(h.contenido)
         else:
             lista_peliculas.append(h.contenido)
 
     # Ahora se hace la petición al microservicio de contenidos para obtener los datos de las series y películas
-    response_series = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_lista_series', json=lista_series)
+    response_capitulos = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_lista_capitulos', json=lista_capitulos)
 
-    if response_series.status_code == 200:
-        series = response_series.json()
+    if response_capitulos.status_code == 200:
+        capitulos = response_capitulos.json()
+        for c in capitulos:
+            c['fecha_visualizacion'] = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=c['capitulo_id']).first().fecha_visualizacion
     else:
         return jsonify({"message": "No se ha podido obtener la lista de series", "status": "error"}), 404
 
@@ -259,13 +260,12 @@ def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
 
     if response_peliculas.status_code == 200:
         peliculas = response_peliculas.json()
+        for p in peliculas:
+            p['fecha_visualizacion'] = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=p['id']).first().fecha_visualizacion
     else:
         return jsonify({"message": "No se ha podido obtener la lista de películas", "status": "error"}), 404
-    
-    print(f"\n\nSeries: {series}\n")
-    print(f"\nPeliculas: {peliculas}\n")
 
-    return jsonify({"series": series, "peliculas": peliculas}), 200
+    return jsonify({"capitulos": capitulos, "peliculas": peliculas}), 200
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>/historial', methods=['POST'])
 def agregar_contenido_historial(user_id, profile_id):
@@ -390,9 +390,6 @@ def obtener_lista_perfil(user_id, profile_id):  # noqa: E501
     else:
         return jsonify({"message": "No se ha podido obtener la lista de películas", "status": "error"}), 404
     
-    print(f"\n\nSeries: {series}\n")
-    print(f"\nPeliculas: {peliculas}\n")
-
     return jsonify({"series": series, "peliculas": peliculas}), 200
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>/lista/<contenido_id>', methods=['POST'])

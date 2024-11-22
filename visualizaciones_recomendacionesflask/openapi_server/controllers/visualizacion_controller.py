@@ -72,8 +72,6 @@ def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
     es_capitulo = False
     visualizacion = request.get_json()
 
-    print(f"Visualización: {visualizacion}\n\n")
-
     if "pelicula_id" in visualizacion:
         visualizacion_db = VisualizacionPeliculaDB(
             id_perfil=perfil_id,

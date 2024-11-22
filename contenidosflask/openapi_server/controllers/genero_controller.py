@@ -6,29 +6,6 @@ from openapi_server.models.genero_db import GeneroDB
 from flask import jsonify, request
 from bson import ObjectId
 
-@app.route('/crear_genero', methods=['POST'])
-def crear_genero():  # noqa: E501
-    """Crear un nuevo género
-
-    Crea un nuevo género con la información proporcionada. # noqa: E501
-
-    :rtype: dict
-    """
-    if request.is_json:
-        genero_api = Genero.from_dict(request.get_json())
-        if genero_api and genero_api.nombre:
-            if GeneroDB.objects(nombre=genero_api.nombre).first():
-                return jsonify({"message": "El género ya existe", "status": "error"}), 400
-
-            genero_db = genero_api.to_db_model()
-            genero_db.save()
-            return jsonify({"message": "Género creado con éxito", "status": "success"}), 201
-        else:
-            return jsonify({"message": "El nombre del género es obligatorio", "status": "error"}), 400
-    else:
-        return jsonify({"message": "Datos inválidos o malformados", "status": "error"}), 400
-
-
 @app.route('/actualizar_genero/<genero_id>', methods=['PUT'])
 def actualizar_genero(genero_id):  # noqa: E501
     """Actualizar un género existente
