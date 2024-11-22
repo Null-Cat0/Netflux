@@ -466,7 +466,6 @@ def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
             return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
         else:
             return jsonify(perfil.serialize()), 200
-    
 
 @app.route('/usuario/<user_id>/perfiles', methods=['GET'])
 def obtener_perfiles(user_id):  # noqa: E501
