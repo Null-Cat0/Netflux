@@ -1237,26 +1237,6 @@ paths:
       tags:
       - Genero
       x-openapi-router-controller: openapi_server.controllers.genero_controller
-    post:
-      description: Crea un nuevo género con la información proporcionada.
-      operationId: crear_genero
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Genero'
-      responses:
-        "201":
-          description: Género creado con éxito
-        "400":
-          description: Solicitud inválida
-        "500":
-          description: Error interno del servidor
-      summary: Crear un nuevo género
-      tags:
-      - Genero
-      x-openapi-router-controller: openapi_server.controllers.genero_controller
 
   /generos/{generoId}:
     get:
