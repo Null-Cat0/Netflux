@@ -31,6 +31,7 @@ def actualizar_visualizacion_contenido_perfil(user_id, perfil_id, contenido_id):
     # Se obtiene el perfil con una petición al microservicio de usuario
     response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
 
+    print("He entrado")
     if response_perfil.status_code != 200:
         return jsonify({"message": "Perfil no encontrado"}), 404
 
@@ -238,8 +239,8 @@ def listar_visualizaciones_perfil(user_id, perfil_id):  # noqa: E501
 
     return jsonify(visualizaciones), 200
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion/<contenido_id>', methods=['GET'])
-def obtener_visualizacion_capitulo_perfil(user_id, perfil_id, contenido_id):  # noqa: E501
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/historial/capitulo/<capitulo_id>', methods=['GET'])
+def obtener_visualizacion_capitulo_perfil(user_id, perfil_id, capitulo_id):  # noqa: E501
     """Obtiene el capítulo en visualización del perfil especificado
 
     Obtiene el capítulo en visualización por el perfil especificado. # noqa: E501
@@ -251,6 +252,7 @@ def obtener_visualizacion_capitulo_perfil(user_id, perfil_id, contenido_id):  # 
 
     :rtype: Union[List[Capitulo], Tuple[List[Capitulo], int], Tuple[List[Capitulo], int, Dict[str, str]]
     """
+    print("He entrado en el existe")
     # Se comprueba si existe el perfil
     response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
 
@@ -258,14 +260,14 @@ def obtener_visualizacion_capitulo_perfil(user_id, perfil_id, contenido_id):  # 
         return jsonify({"message": "Perfil no encontrado"}), 404
 
     # Se intenta obtener la visualización del capítulo o película
-    visualizacion = VisualizacionCapituloDB.objects(id_perfil=perfil_id, capitulo_id=contenido_id).first()
+    visualizacion = VisualizacionCapituloDB.objects(id_perfil=perfil_id, capitulo_id=capitulo_id).first()
 
     if visualizacion is None:
         return jsonify({"message": "Visualización del capítulo no encontrada"}), 404
 
     return jsonify(visualizacion.to_api_model()), 200
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/pelicula/<pelicula_id>', methods=['GET'])
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/historial/pelicula/<pelicula_id>', methods=['GET'])
 def obtener_visualizacion_pelicula_perfil(user_id, perfil_id, pelicula_id):  # noqa: E501
     """Obtiene la película visualizada por el perfil especificado
 

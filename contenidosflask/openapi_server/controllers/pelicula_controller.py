@@ -237,40 +237,40 @@ def obtener_lista_peliculas():
     list_peliculas_api = [pelicula.to_api_model() for pelicula in lista_peliculas]
     return jsonify(list_peliculas_api), 200
 
-# @app.route('/obtener_precuela_pelicula/<pelicula_id>', methods=['GET'])
-# def obtener_precuela_pelicula(pelicula_id):  # noqa: E501
-#     """Obtiene la precuela de una película específica
+@app.route('/obtener_precuela_pelicula/<pelicula_id>', methods=['GET'])
+def obtener_precuela_pelicula(pelicula_id):  # noqa: E501
+    """Obtiene la precuela de una película específica
 
-#     Obtiene la precuela de una película específica # noqa: E501
+    Obtiene la precuela de una película específica # noqa: E501
 
-#     :param pelicula_id: ID de la película
-#     :type pelicula_id: int
+    :param pelicula_id: ID de la película
+    :type pelicula_id: int
 
-#     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
-#     """
+    :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
+    """
 
-#     pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
-#     if not pelicula_db:
-#         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
+    pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
+    if not pelicula_db:
+        return jsonify({"message": "Película no encontrada", "status": "error"}), 404
 
-#     pelicula_api = pelicula_db.to_api_model()
-#     return jsonify(pelicula_api.precuela), 200
+    pelicula_api = pelicula_db.to_api_model()
+    return jsonify(pelicula_api.precuela), 200
 
-# @app.route('/obtener_secuela_pelicula/<pelicula_id>', methods=['GET'])
-# def obtener_secuela_pelicula(pelicula_id):  # noqa: E501
-#     """Obtiene la secuela de una película específica
+@app.route('/obtener_secuela_pelicula/<pelicula_id>', methods=['GET'])
+def obtener_secuela_pelicula(pelicula_id):  # noqa: E501
+    """Obtiene la secuela de una película específica
 
-#     Obtiene la secuela de una película específica # noqa: E501
+    Obtiene la secuela de una película específica # noqa: E501
 
-#     :param pelicula_id: ID de la película
-#     :type pelicula_id: int
+    :param pelicula_id: ID de la película
+    :type pelicula_id: int
 
-#     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
-#     """
+    :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
+    """
 
-#     pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
-#     if not pelicula_db:
-#         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
+    pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
+    if not pelicula_db:
+        return jsonify({"message": "Película no encontrada", "status": "error"}), 404
 
-#     pelicula_api = pelicula_db.to_api_model()
-#     return jsonify(pelicula_api.secuela), 200
+    pelicula_api = pelicula_db.to_api_model()
+    return jsonify(pelicula_api.secuela), 200

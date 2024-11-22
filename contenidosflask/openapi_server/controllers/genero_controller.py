@@ -61,13 +61,13 @@ def obtener_genero(genero_id):  # noqa: E501
 
     return jsonify(genero_db.to_api_model().serialize()), 200
 
-# @app.route('/obtener_lista_generos', methods=['GET'])
-# def obtener_lista_generos():
-#     if request.is_json:
-#         lista_ids = request.get_json()
-#     else:
-#         return jsonify({"message": "Error al obtener la lista de géneros", "status": "error"}), 400
-#     lista_generos = GeneroDB.objects(id__in=lista_ids)
-#     lista_generos_api = [genero.to_api_model() for genero in lista_generos]
-#     return jsonify(lista_generos_api), 200
+@app.route('/obtener_lista_generos', methods=['GET'])
+def obtener_lista_generos():
+    if request.is_json:
+        lista_ids = request.get_json()
+    else:
+        return jsonify({"message": "Error al obtener la lista de géneros", "status": "error"}), 400
+    lista_generos = GeneroDB.objects(id__in=lista_ids)
+    lista_generos_api = [genero.to_api_model() for genero in lista_generos]
+    return jsonify(lista_generos_api), 200
 

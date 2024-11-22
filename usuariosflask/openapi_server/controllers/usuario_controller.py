@@ -187,46 +187,46 @@ def eliminar_usuario(user_id):  # noqa: E501
         db.session.commit()
         return jsonify({"message": "Usuario eliminado con éxito", "status": "success"}), 200
     
-# @app.route('/listar_usuarios', methods=['GET'])
-# def listar_usuarios():  # noqa: E501
-#     """Listar todos los usuarios
+@app.route('/listar_usuarios', methods=['GET'])
+def listar_usuarios():  # noqa: E501
+    """Listar todos los usuarios
 
-#     Obtiene una lista de todos los usuarios disponibles en el sistema. # noqa: E501
+    Obtiene una lista de todos los usuarios disponibles en el sistema. # noqa: E501
 
 
-#     :rtype: Union[List[Usuario], Tuple[List[Usuario], int], Tuple[List[Usuario], int, Dict[str, str]]
-#     """
-#     list_usuarios_db = UsuarioDB.query.all()
-#     list_usuarios_api = [usuario.to_api_model() for usuario in list_usuarios_db]
-#     return jsonify([usuario.serialize() for usuario in list_usuarios_api]), 200
+    :rtype: Union[List[Usuario], Tuple[List[Usuario], int], Tuple[List[Usuario], int, Dict[str, str]]
+    """
+    list_usuarios_db = UsuarioDB.query.all()
+    list_usuarios_api = [usuario.to_api_model() for usuario in list_usuarios_db]
+    return jsonify([usuario.serialize() for usuario in list_usuarios_api]), 200
 
-# @app.route('/usuario/<user_id>', methods=['GET'])
-# def obtener_usuario(user_id):  # noqa: E501
-#     """Obtener un usuario específico
+@app.route('/usuario/<user_id>', methods=['GET'])
+def obtener_usuario(user_id):  # noqa: E501
+    """Obtener un usuario específico
 
-#     Obtiene la información detallada de un usuario específico por su ID. # noqa: E501
+    Obtiene la información detallada de un usuario específico por su ID. # noqa: E501
 
-#     :param user_id: ID del usuario a obtener
-#     :type user_id: int
+    :param user_id: ID del usuario a obtener
+    :type user_id: int
 
-#     :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
-#     """
-#     usuario_db = UsuarioDB.query.filter_by(user_id=user_id).first()
-#     if usuario_db is None:
-#         return jsonify({"message": "El usuario no existe", "status": "error"}), 404
-#     else:
-#         dispositivos_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
-#         dispositivos = []
-#         for dispositivo_usuario_db in dispositivos_usuario_db:
-#             dispositivo = DispositivoDB.query.filter_by(dispositivo_id=dispositivo_usuario_db.dispositivo_id).first()
-#             if dispositivo:  # Solo agrega si el dispositivo existe
-#                 dispositivos.append(dispositivo.tipo_dispositivo)
+    :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
+    """
+    usuario_db = UsuarioDB.query.filter_by(user_id=user_id).first()
+    if usuario_db is None:
+        return jsonify({"message": "El usuario no existe", "status": "error"}), 404
+    else:
+        dispositivos_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
+        dispositivos = []
+        for dispositivo_usuario_db in dispositivos_usuario_db:
+            dispositivo = DispositivoDB.query.filter_by(dispositivo_id=dispositivo_usuario_db.dispositivo_id).first()
+            if dispositivo:  # Solo agrega si el dispositivo existe
+                dispositivos.append(dispositivo.tipo_dispositivo)
 
-#     print(dispositivos)  # Verificamos que la lista de dispositivos sea correcta
+    print(dispositivos)  # Verificamos que la lista de dispositivos sea correcta
 
-#     if usuario_db is None:
-#         return jsonify({"message": "El usuario no existe", "status": "error"}), 405
+    if usuario_db is None:
+        return jsonify({"message": "El usuario no existe", "status": "error"}), 405
 
-#     usuario_api = usuario_db.to_api_model()
+    usuario_api = usuario_db.to_api_model()
 
-#     return jsonify(usuario_api.serialize()), 200
+    return jsonify(usuario_api.serialize()), 200

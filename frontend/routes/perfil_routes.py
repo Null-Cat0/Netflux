@@ -314,29 +314,49 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
     
     # Se obtiene el contenido correspondiente al contenido_id
     if serie_id and temporada_id:
-        data = {
-            'serie_id': serie_id,
-            'temporada_id': temporada_id,
-            'capitulo_id': contenido_id
-        }
-        print("Los datos son: ", data)
-        response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
-        if response.status_code == 201:
-            flash("Contenido agregado al historial", 'success')
+        response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/historial/capitulo/{contenido_id}")
+        if response.status_code == 200:
+            print("Se va a proceder a actualizar el contenido")
+            response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion/{contenido_id}")
+            if response.status_code == 200:
+                flash("Contenido actualizado en el historial", 'success')
+            else:
+                data = response.json()
+                flash(f"{data['message']}", 'danger')
         else:
-            data = response.json()
-            flash(f"{data['message']}", 'danger')
+            data = {
+                'serie_id': serie_id,
+                'temporada_id': temporada_id,
+                'capitulo_id': contenido_id
+            }
+            print("Los datos son: ", data)
+            print("Se va a proceder a agregar el contenido")
+            response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
+            if response.status_code == 201:
+                flash("Contenido agregado al historial", 'success')
+            else:
+                data = response.json()
+                flash(f"{data['message']}", 'danger')
     else:
-        print("He entrado en el else")
         data = {
             'pelicula_id': contenido_id
         }
-        response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
-        if response.status_code == 201:
-            flash("Contenido agregado al historial", 'success')
-        else:
-            data = response.json()
-            flash(f"{data['message']}", 'danger')
+        # Se busca si el contenido ya está en el historial
+        response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/historial/pelicula/{contenido_id}")
+        if response.status_code == 200:
+            response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion/{contenido_id}")
+            if response.status_code == 200:
+                flash("Contenido actualizado en el historial", 'success')
+            else:
+                data = response.json()
+                flash(f"{data['message']}", 'danger')
+        else:    
+            response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
+            if response.status_code == 201:
+                flash("Contenido agregado al historial", 'success')
+            else:
+                data = response.json()
+                flash(f"{data['message']}", 'danger')
         
     if serie_id and temporada_id:
         return redirect(url_for('serie.obtener_series'))
