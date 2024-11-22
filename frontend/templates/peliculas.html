@@ -110,7 +110,6 @@
                                     <i class="fas fa-trash-alt fa-lg"></i>
                                 </a>
                                 {% endif %}
-                                <form action="" method="POST">
                                     <!-- Botón de Añadir/Quitar de la lista -->
                                     <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}"
                                         class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
@@ -118,8 +117,6 @@
                                         onclick="toggleAddToList(this)">
                                         <i class="fas fa-plus"></i>
                                     </a>
-                                    <input type="hidden" name="es_serie" value="False">
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -153,7 +150,7 @@
                             <!-- Botón Marcar como vista -->
                             <div class="mt-4 col-3">
                                 <a href="{{url_for('perfil.agregar_a_historial_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id)}}" 
-                                    id="markAsViewedBtn{{ pelicula.id }}" class="btn btn-outline-light w-100" onclick="toggleViewedStatus(this)">
+                                    id="markAsViewedBtn{{ pelicula.id }}" class="btn btn-outline-light w-100">
                                     Marcar como vista
                                 </a>
                             </div>
@@ -189,18 +186,4 @@
         <p class="text-center text-white">No hay películas disponibles.</p>
     {% endif %}
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    // Función para alternar el estado del botón entre "Marcar como vista" y "Vista"
-    function toggleViewedStatus(button) {
-        if (button.innerText === "Marcar como vista") {
-            button.innerText = "Vista";
-            button.classList.remove("btn-outline-light");
-            button.classList.add("btn-light");
-            button.classList.add("text-dark");
-        }
-    }
-</script>
 {% endblock %}

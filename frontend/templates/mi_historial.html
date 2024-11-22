@@ -61,19 +61,27 @@
                 <!-- Películas -->
                 {% if not contenido.nombre_capitulo %}
                 <div class="info">
-                    <span>{{ contenido.fecha }}</span>
+                    {% set es_pelicula="true"%}
+                    <span>{{ contenido.fecha_visualizacion }}</span>
                     <span>{{ contenido.titulo }}</span>
                 </div>
                 {% else %}
                 <!-- Capítulos -->
                 <div class="info">
-                    <span>{{ contenido.fecha }}</span>
-                    <span>{{ contenido.nombre_serie }}: Temporada {{ contenido.numero_temporada }}: "{{ contenido.nombre_capitulo }}"</span>
+                    {% set es_pelicula="false"%}
+                    <span>{{ contenido.fecha_visualizacion }}</span>
+                    <span>{{ contenido.nombre_serie }}: Temporada {{ contenido.num_temporada }}: Episodio {{ contenido.numero_capitulo }}: "{{ contenido.nombre_capitulo }}"</span>
                 </div>
                 {% endif %}
-                <button class="delete-btn" onclick="eliminarHistorial('{{ contenido.id }}')">
+                {% if es_pelicula == "true" %}
+                <a class="delete-btn" href="{{ url_for('perfil.eliminar_de_historial_perfil', perfil_id=session['perfil_id'], contenido_id=contenido.id) }}">
                     <i class="fas fa-times"></i>
-                </button>
+                </a>
+                {% else %}
+                <a class="delete-btn" href="{{ url_for('perfil.eliminar_de_historial_perfil', perfil_id=session['perfil_id'], contenido_id=contenido.capitulo_id) }}">
+                    <i class="fas fa-times"></i>
+                </a>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
@@ -82,15 +90,4 @@
         {% endif %}
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    function eliminarHistorial(id) {
-        if (confirm("¿Estás seguro de que deseas eliminar este contenido del historial?")) {
-            // Lógica para enviar la solicitud de eliminación al servidor
-            window.location.href = `/eliminar_historial/${id}`;
-        }
-    }
-</script>
 {% endblock %}

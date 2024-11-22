@@ -98,14 +98,13 @@
                                         <i class="fas fa-trash-alt fa-lg"></i>
                                     </a>
                                     {% endif %}
-                                    <form action="" method="POST">
+                                    <form action="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}" method="POST">
                                     <!-- Botón de Añadir/Quitar de la lista -->
-                                    <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}"
+                                    <button type="submit"
                                         class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
-                                        id="addToListBtn{{ serie.id }}" 
-                                        onclick="toggleAddToList(this)">
+                                        id="{{serie.id}}">
                                     <i class="fas fa-plus"></i>
-                                    </a>
+                                    </button>
                                     <input type="hidden" name="es_serie" value="True">
                                     </form>
                                 </div>

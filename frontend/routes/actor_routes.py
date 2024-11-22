@@ -130,14 +130,14 @@ def eliminar_actor(actor_id):
         
         if response.status_code == 200:
             flash("Actor eliminado correctamente.", 'success')
-            return redirect(url_for('pelicula.obtener_peliculas'))
+            return redirect(url_for('actor.obtener_actores'))
         else:
             try:
                 data = response.json()
                 flash(data['message'], 'danger')
             except requests.exceptions.JSONDecodeError:
                 flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
-            return redirect(url_for('pelicula.obtener_peliculas'))
+            return redirect(url_for('actor.obtener_actores'))
 
 @actor_bp.route('/lista_actores', methods=['GET'])
 def obtener_actores():
