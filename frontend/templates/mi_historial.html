@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Historial - Netflux{% endblock %}
+
+{% block head %}
+<title>Mi Historial - Netflux</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<style>
+    .history-section {
+        border-radius: 12px;
+        background-color: #1c1c1c;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .history-section h2 {
+        font-size: 1.5rem;
+        color: #fff;
+        margin-bottom: 15px;
+    }
+
+    .history-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .history-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #444;
+    }
+
+    .history-item:last-child {
+        border-bottom: none;
+    }
+
+    .history-item span {
+        font-size: 1rem;
+        color: #bbb;
+    }
+
+    .history-item button {
+        background-color: #dc3545;
+        border: none;
+        color: white;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .history-item button:hover {
+        background-color: #a71d2a;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Mi Historial</h1>
+
+    <div class="row">
+        <!-- Columna para las películas -->
+        <div class="col-md-6">
+            <div class="history-section">
+                <h2>Películas Vistas</h2>
+                <ul class="history-list">
+                    {% if peliculas %}
+                        {% for pelicula in peliculas %}
+                        <li class="history-item">
+                            <span>{{ pelicula.titulo }}</span>
+                            <button onclick="location.href='{{ url_for('perfil.eliminar_de_historial', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}'">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-white">No has visto ninguna película.</p>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Columna para los capítulos -->
+        <div class="col-md-6">
+            <div class="history-section">
+                <h2>Capítulos Vistos</h2>
+                <ul class="history-list">
+                    {% if capitulos %}
+                        {% for capitulo in capitulos %}
+                        <li class="history-item">
+                            <span>Temporada {{ capitulo.temporada }} - Capítulo {{ capitulo.numero }}: {{ capitulo.titulo }}</span>
+                            <button onclick="location.href='{{ url_for('perfil.eliminar_de_historial', perfil_id=session['perfil_id'], contenido_id=capitulo.id) }}'">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-white">No has visto ningún capítulo.</p>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

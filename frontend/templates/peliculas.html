@@ -110,6 +110,7 @@
                                     <i class="fas fa-trash-alt fa-lg"></i>
                                 </a>
                                 {% endif %}
+                                <form action="" method="POST">
                                     <!-- Botón de Añadir/Quitar de la lista -->
                                     <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}"
                                         class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
@@ -118,6 +119,7 @@
                                         <i class="fas fa-plus"></i>
                                     </a>
                                     <input type="hidden" name="es_serie" value="False">
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -150,7 +152,8 @@
                             </p>
                             <!-- Botón Marcar como vista -->
                             <div class="mt-4 col-3">
-                                <a href="{{url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id)}}" id="markAsViewedBtn{{ pelicula.id }}" class="btn btn-outline-light w-100" onclick="toggleViewedStatus(this)">
+                                <a href="{{url_for('perfil.agregar_a_historial_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id)}}" 
+                                    id="markAsViewedBtn{{ pelicula.id }}" class="btn btn-outline-light w-100" onclick="toggleViewedStatus(this)">
                                     Marcar como vista
                                 </a>
                             </div>

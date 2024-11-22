@@ -52,6 +52,8 @@
                 <ul class="dropdown-menu dropdown-menu-end bg-dark" aria-labelledby="dropdownMenuLink">
                     <li><a class="dropdown-item text-white" href="{{url_for('user.editar_usuario')}}">Cuenta</a></li>
                     <li><a class="dropdown-item text-white" href="{{url_for('perfil.obtener_perfiles')}}">Perfiles</a>
+                    <li><a class="dropdown-item text-white" 
+                        href="{{url_for('perfil.obtener_mi_historial', perfil_id=session['perfil_id'])}}">Historial</a>
                     </li>
                     <li><a class="dropdown-item text-white"
                             href="{{url_for('dispositivos.dispositivos')}}">Dispositivos</a></li>

@@ -261,4 +261,64 @@ def eliminar_de_lista_perfil(perfil_id, contenido_id):
     else:
         data = response.json()
         flash(f"Error: {data['message']}", 'danger')
-    return redirect(url_for('perfil.obtener_mi_lista', perfil_id=perfil_id))    
+    return redirect(url_for('perfil.obtener_mi_lista', perfil_id=perfil_id))  
+
+@perfil_bp.route('/mi_historial/<perfil_id>', methods=['GET'])
+def obtener_mi_historial(perfil_id):
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Debes iniciar sesión para acceder a esta página", 'danger')
+        return redirect(url_for('user.login'))
+    
+    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/historial")
+    # Manejar la respuesta del microservicio
+    if response.status_code == 200:
+        data = response.json()
+        print(data)
+        return render_template("mi_historial.html", historial=data)
+    else:
+        data = response.json()
+        flash(f"Error: {data['message']}", 'danger')
+        
+    return render_template("mi_historial.html")  
+
+@perfil_bp.route('/agregar_a_historial_perfil/<perfil_id>/<contenido_id>', methods=['GET','POST'])
+def agregar_a_historial_perfil(perfil_id, contenido_id):
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Debes iniciar sesión para acceder a esta página", 'danger')
+        return redirect(url_for('user.login'))
+    
+    serie_id = request.form.get('serie_id')
+    temporada_id = request.form.get('temporada_id')
+    print(f"serie_id: {serie_id}, temporada_id: {temporada_id}")
+    
+    # Se obtiene el contenido correspondiente al contenido_id
+    if serie_id and temporada_id:
+        data = {
+            'serie_id': serie_id,
+            'temporada_id': temporada_id,
+            'capitulo_id': contenido_id
+        }
+        print("Los datos son: ", data)
+        response = requests.post(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/historial", json=data)
+        if response.status_code == 201:
+            flash("Contenido agregado al historial", 'success')
+        else:
+            data = response.json()
+            flash(f"{data['message']}", 'danger')
+    else:
+        data = {
+            'pelicula_id': contenido_id
+        }
+        response = requests.post(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/historial", json=data)
+        if response.status_code == 201:
+            flash("Contenido agregado al historial", 'success')
+        else:
+            data = response.json()
+            flash(f"{data['message']}", 'danger')
+        
+    if serie_id and temporada_id:
+        return redirect(url_for('serie.obtener_series'))
+    else:
+        return redirect(url_for('pelicula.obtener_peliculas'))
