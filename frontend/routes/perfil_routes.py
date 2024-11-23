@@ -310,6 +310,7 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
     
     serie_id = request.form.get('serie_id')
     temporada_id = request.form.get('temporada_id')
+    mi_lista = request.form.get('mi_lista')
     print(f"serie_id: {serie_id}, temporada_id: {temporada_id}")
     
     # Se obtiene el contenido correspondiente al contenido_id
@@ -357,11 +358,13 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
             else:
                 data = response.json()
                 flash(f"{data['message']}", 'danger')
-        
-    if serie_id and temporada_id:
-        return redirect(url_for('serie.obtener_series'))
+    if mi_lista:
+        return redirect(url_for('perfil.obtener_mi_lista', perfil_id=perfil_id))    
     else:
-        return redirect(url_for('pelicula.obtener_peliculas'))
+        if serie_id and temporada_id:
+            return redirect(url_for('serie.obtener_series'))
+        else:
+            return redirect(url_for('pelicula.obtener_peliculas'))
     
 @perfil_bp.route('/eliminar_de_historial_perfil/<perfil_id>/<contenido_id>', methods=['GET','POST'])
 def eliminar_de_historial_perfil(perfil_id, contenido_id):

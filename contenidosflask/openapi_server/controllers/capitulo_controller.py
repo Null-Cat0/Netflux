@@ -175,30 +175,30 @@ def obtener_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
 
     return jsonify(capitulo.to_api_model()), 200
 
-# @app.route('/obtener_lista_capitulos', methods=['GET'])
-# def obtener_lista_capitulos():
-#     if request.is_json:
-#         lista_ids = request.get_json()
-#     else: 
-#         return jsonify({"message": "Error al obtener la lista de capítulos", "status": "error"}), 400
+@app.route('/obtener_lista_capitulos', methods=['GET'])
+def obtener_lista_capitulos():
+    if request.is_json:
+        lista_ids = request.get_json()
+    else: 
+        return jsonify({"message": "Error al obtener la lista de capítulos", "status": "error"}), 400
 
-#     lista_capitulos = []
-#     for capitulo_id in lista_ids:
-#         serie = SerieDB.objects(temporadas__capitulos__capitulo_id=ObjectId(capitulo_id)).first()
-#         if not serie:
-#             return jsonify({"message": "Capítulo no encontrado", "status": "error"}), 404
+    lista_capitulos = []
+    for capitulo_id in lista_ids:
+        serie = SerieDB.objects(temporadas__capitulos__capitulo_id=ObjectId(capitulo_id)).first()
+        if not serie:
+            return jsonify({"message": "Capítulo no encontrado", "status": "error"}), 404
 
-#         for temporada in serie.temporadas:
-#             capitulo = next((capitulo for capitulo in temporada.capitulos if capitulo.capitulo_id == ObjectId(capitulo_id)), None)
-#             if capitulo:
-#                 custom_data = {
-#                     "nombre_serie": serie.titulo,
-#                     "num_temporada": temporada.numero,
-#                     "capitulo_id": str(capitulo.capitulo_id),
-#                     "nombre_capitulo": capitulo.titulo,
-#                     "numero_capitulo": capitulo.numero
-#                 }
-#                 lista_capitulos.append(custom_data)
-#                 break
+        for temporada in serie.temporadas:
+            capitulo = next((capitulo for capitulo in temporada.capitulos if capitulo.capitulo_id == ObjectId(capitulo_id)), None)
+            if capitulo:
+                custom_data = {
+                    "nombre_serie": serie.titulo,
+                    "num_temporada": temporada.numero,
+                    "capitulo_id": str(capitulo.capitulo_id),
+                    "nombre_capitulo": capitulo.titulo,
+                    "numero_capitulo": capitulo.numero
+                }
+                lista_capitulos.append(custom_data)
+                break
     
-#     return jsonify(lista_capitulos), 200
+    return jsonify(lista_capitulos), 200

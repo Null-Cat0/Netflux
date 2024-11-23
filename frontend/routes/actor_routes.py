@@ -1,5 +1,6 @@
 import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from datetime import datetime
 
 from global_config import ContenidosConfig as contConf
 from global_config import UsuariosConfig as userConf
@@ -152,6 +153,8 @@ def obtener_actores():
     response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
     if response.status_code == 200:
         actores = response.json()
+        for actor in actores:
+            actor['fecha_nacimiento'] = datetime.strptime(actor["fecha_nacimiento"], '%a, %d %b %Y %H:%M:%S %Z').strftime('%d/%m/%Y')
         return render_template("actores.html", actores=actores, es_admin=es_admin)
     else:
         try:
