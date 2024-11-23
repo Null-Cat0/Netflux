@@ -14,7 +14,6 @@ from openapi_server.models.visualizacion_capitulo_db import VisualizacionCapitul
 
 from bson import ObjectId
 
-
 @app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion/<contenido_id>', methods=['PATCH'])
 def actualizar_visualizacion_contenido_perfil(user_id, perfil_id, contenido_id):  # noqa: E501
     """Actualiza la visualización de un capítulo o película por un perfil

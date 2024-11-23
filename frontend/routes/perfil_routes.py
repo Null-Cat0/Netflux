@@ -8,6 +8,23 @@ from global_config import VisualizacionesConfig as visConf
 
 perfil_bp = Blueprint('perfil', __name__)
 
+def actualizar_datos_historial(usuario_id, perfil_id, contenido_id):    
+    print("Se va a proceder a actualizar el contenido")
+
+    response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion/{contenido_id}")
+
+    if response.status_code != 200:
+        data = response.json()
+        flash(f"{data['message']}", 'danger')
+
+    # Se actualiza el contenido en el historial del perfil
+    response = requests.patch(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/historial/{contenido_id}")
+    if response.status_code != 200:
+        data = response.json()
+        flash(f"{data['message']}", 'danger')
+
+    flash("Contenido actualizado en el historial", 'success')
+
 @perfil_bp.route('/perfiles')
 def obtener_perfiles():
     # Se obtiene el usuario_id del usuario que se encuentra en la sesión
@@ -317,13 +334,7 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
     if serie_id and temporada_id:
         response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/historial/capitulo/{contenido_id}")
         if response.status_code == 200:
-            print("Se va a proceder a actualizar el contenido")
-            response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion/{contenido_id}")
-            if response.status_code == 200:
-                flash("Contenido actualizado en el historial", 'success')
-            else:
-                data = response.json()
-                flash(f"{data['message']}", 'danger')
+            actualizar_datos_historial(usuario_id, perfil_id, contenido_id)
         else:
             data = {
                 'serie_id': serie_id,
@@ -345,12 +356,8 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
         # Se busca si el contenido ya está en el historial
         response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/historial/pelicula/{contenido_id}")
         if response.status_code == 200:
-            response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion/{contenido_id}")
-            if response.status_code == 200:
-                flash("Contenido actualizado en el historial", 'success')
-            else:
-                data = response.json()
-                flash(f"{data['message']}", 'danger')
+            actualizar_datos_historial(usuario_id, perfil_id, contenido_id)
+
         else:    
             response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
             if response.status_code == 201:

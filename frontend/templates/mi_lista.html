@@ -120,11 +120,11 @@
                         <p class="card-text">{{ pelicula.sinopsis | truncate(100) }}</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#movieModal{{ pelicula.id }}">Ver Más</button>
-                            <button class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center mx-2"
-                                style="width: 36px; height: 36px; text-align: center;"
-                                data-bs-toggle="modal" data-bs-target="#confirmDeleteMovieModal{{ pelicula.id }}">
+                            <a class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center mx-2"
+                                href="{{ url_for('perfil.eliminar_de_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}"
+                                style="width: 36px; height: 36px; text-align: center;">
                                 <i class="fas fa-times"></i>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -189,11 +189,11 @@
                         <p class="card-text">{{ serie.sinopsis | truncate(100) }}</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#serieModal{{ serie.id }}">Ver Más</button>
-                            <button class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center mx-2"
-                                style="width: 36px; height: 36px; text-align: center;"
-                                data-bs-toggle="modal" data-bs-target="#confirmDeleteSeriesModal{{ serie.id }}">
+                            <a class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center mx-2"
+                                href="{{ url_for('perfil.eliminar_de_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}"
+                                style="width: 36px; height: 36px; text-align: center;">
                                 <i class="fas fa-times"></i>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>

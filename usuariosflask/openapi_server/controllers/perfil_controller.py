@@ -7,6 +7,7 @@ from global_config import ContenidosConfig, VisualizacionesConfig
 
 from openapi_server import app, db
 from flask import request, jsonify
+from datetime import datetime
 
 from openapi_server.models.perfil import Perfil
 from openapi_server.models.perfil_db import PerfilDB
@@ -27,7 +28,7 @@ def eliminar_datos_perfil(user_id, perfil_id):
         return jsonify({"message": "Error al eliminar las visualizaciones del perfil"}), 500
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['PUT'])
-def new_actualizar_perfil_usuario(user_id, profile_id):
+def actualizar_perfil_usuario(user_id, profile_id):
     """Actualiza el perfil especificado
 
     Actualiza el perfil especificado de un usuario # noqa: E501
@@ -98,91 +99,6 @@ def new_actualizar_perfil_usuario(user_id, profile_id):
         return jsonify({"message": "Error al crear las recomendaciones del perfil"}), 500
 
     return jsonify(perfil_api.serialize()), 200
-
-# @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['PUT'])
-def actualizar_perfil_usuario(user_id, profile_id):  
-    """Actualiza el perfil especificado
-
-    Actualiza el perfil especificado de un usuario # noqa: E501
-
-    :param user_id: ID del usuario especificado
-    :type user_id: int
-    :param profile_id: ID del perfil a obtener
-    :type profile_id: int
-
-    :rtype: Union[Perfil, Tuple[Perfil, int], Tuple[Perfil, int, Dict[str, str]]
-    """
-    # Verifica si la solicitud contiene JSON
-    if request.is_json:
-        # Carga los datos JSON enviados en la solicitud
-        perfil_data = request.get_json()
-        
-        # Convierte el JSON en un objeto `Perfil`
-        perfil_api = Perfil.from_dict(perfil_data)
-        
-        # Busca el perfil en la base de datos
-        perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
-        
-        if perfil_db is not None:
-            # Actualiza los campos del perfil
-            perfil_db.nombre = perfil_api.nombre
-            perfil_db.foto_perfil = perfil_api.foto_perfil
-            # Guarda los cambios en la base de datos
-            db.session.commit()
-
-            # Ahora hay que gestionar las preferencias de contenido
-            preferencias_db = PreferenciasContenidoDB.query.filter_by(perfil_id=perfil_db.perfil_id).first()
-
-            # Si no hay preferencias de contenido, se crean
-            if preferencias_db is None:
-                preferencias_db = PreferenciasContenidoDB(perfil_id=perfil_db.perfil_id)
-                db.session.add(preferencias_db)
-            else:
-                # Actualiza las preferencias de contenido
-                preferencias_db.subtitulos = perfil_api.preferencias_contenido.subtitulos
-                preferencias_db.idioma_audio = perfil_api.preferencias_contenido.idioma_audio
-
-                # Elimina los géneros anteriores
-                GeneroPreferenciasDB.query.filter_by(preferencias_id=preferencias_db.preferencias_id).delete()
-
-                # Añade los nuevos géneros
-                ## Primero hay que obtener los géneros de la base de datos
-                genero_preferencias_db = GeneroPreferenciasDB.query.filter_by(preferencias_id=preferencias_db.preferencias_id).all()
-                for gpdb in genero_preferencias_db:
-                    db.session.delete(gpdb)
-
-                generos_name_list = perfil_api.preferencias_contenido.generos
-                generos_response = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_generos')
-                if generos_response.status_code == 200:
-                    generos = generos_response.json()
-                    for genero in generos:
-                        if genero['nombre'] in generos_name_list:
-                            genero_preferencias_db = GeneroPreferenciasDB(preferencias_id=preferencias_db.preferencias_id, genero_id=genero['id'])
-                            db.session.add(genero_preferencias_db)
-                    db.session.commit()
-                else:
-                    return jsonify({"message": "Error al obtener los géneros"}), 500
-
-            # Se actualizan las recomendaciones al perfil
-            ## Primero se borrán las recomendaciones anteriores
-            recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
-
-            if recomendaciones_perfil.status_code != 200:
-                return jsonify({"message": "Error al eliminar las recomendaciones del perfil"}), 500
-
-            ## Se crean recomendaciones al perfil
-            recomendaciones_perfil = requests.post(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
-
-            if recomendaciones_perfil.status_code != 201:
-                return jsonify({"message": "Error al crear las recomendaciones del perfil"}), 500
-
-            # Devuelve el perfil actualizado
-            return jsonify(perfil_api.serialize()), 200
-        else:
-            return jsonify({"message": "No se ha podido actualizar el perfil", "status": "error"}), 404
-    
-    # Respuesta en caso de que no se envíe JSON en la solicitud
-    return jsonify({"message": "La solicitud debe contener datos JSON"}), 400
 
 @app.route('/usuario/<user_id>/perfiles', methods=['DELETE'])
 def borrar_perfiles_usuario(user_id):  # noqa: E501
@@ -389,6 +305,22 @@ def agregar_contenido_historial(user_id, profile_id):
     db.session.commit()
 
     return jsonify({"message": "Contenido añadido al historial", "status": "success"}), 201
+
+@app.route('/usuario/<user_id>/perfiles/<perfil_id>/historial/<contenido_id>', methods=['PATCH'])
+def actualizar_contenido_historial(user_id, perfil_id, contenido_id):
+    perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=perfil_id).first()
+    if perfil_db is None:
+        return jsonify({"message": "No se ha encontrado el perfil", "status": "error"}), 404
+
+    historial_db = HistorialPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
+
+    if historial_db is None:
+        return jsonify({"message": "No se ha encontrado el contenido en el historial", "status": "error"}), 404
+
+    historial_db.fecha_visualizacion = datetime.now()
+    db.session.commit()
+
+    return jsonify({"message": "Fecha de visualización actualizada", "status": "success"}), 200
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>/historial', methods=['DELETE'])
 def eliminar_contenido_historial(user_id, profile_id):
