@@ -3,8 +3,40 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 
 from global_config import ContenidosConfig as contConf
 from global_config import UsuariosConfig as userConf
+from global_config import VisualizacionesConfig as visConf
 
 serie_bp = Blueprint('serie', __name__)
+
+def actualizar_visualizaciones_eliminar_capitulos(lista_capitulos):
+    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/listar_usuarios")
+    if response.status_code != 200:
+        flash("Error al obtener la lista de usuarios.", 'danger')
+        return redirect(url_for('serie.obtener_series'))
+    usuarios = response.json()
+
+    perfiles = []
+    for usuario in usuarios:
+        response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario['user_id']}/perfiles")
+        if response.status_code != 200:
+            flash("Error al obtener la lista de perfiles.", 'danger')
+            return redirect(url_for('serie.obtener_series'))
+        perfiles += response.json()
+
+    for perfil in perfiles:
+        user_id = perfil['user_id']
+        perfil_id = perfil['perfil_id']
+
+        for capitulo in lista_capitulos:
+            capitulo_id = capitulo['capitulo_id']
+
+            response = requests.delete(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/visualizacion/{capitulo_id}")
+
+            if response.status_code not in [200, 404]:
+                flash(f"Error al eliminar las visualizaciones del perfil {perfil.id}.", 'danger')
+                return redirect(url_for('serie.obtener_series'))
+
+    # Si se llega a este punto, se eliminaron todas las visualizaciones de los capítulos
+    return True
 
 @serie_bp.route('/crear_serie', methods=['GET', 'POST'])
 def crear_serie():
@@ -151,6 +183,69 @@ def eliminar_serie(serie_id):
     
     es_admin = session.get('es_admin')
     if es_admin:
+        # Antes de eliminar la serie, se deben eliminar todas las visualizaciones y recomendaciones asociadas
+        # Se obtienen los capítulos de la serie
+        response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/obtener_serie/{serie_id}")
+        if response.status_code != 200:
+            flash("Error al obtener la serie.", 'danger')
+            return redirect(url_for('serie.obtener_series'))
+
+        serie = response.json()
+        temporadas = serie['temporadas']
+        capitulos = []
+        for temporada in temporadas:
+            capitulos += temporada['capitulos']
+
+        response = requests.get(f"{userConf.USUARIOS_BASE_URL}/listar_usuarios")
+        if response.status_code != 200:
+            flash("Error al obtener la lista de usuarios.", 'danger')
+            return redirect(url_for('serie.obtener_series'))
+        usuarios = response.json()
+
+        perfiles = []
+        for usuario in usuarios:
+            response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario['user_id']}/perfiles")
+            if response.status_code != 200:
+                flash("Error al obtener la lista de perfiles.", 'danger')
+                return redirect(url_for('serie.obtener_series'))
+            perfiles += response.json()
+
+        # Se eliminan las visualizaciones asociadas a los capítulos
+        for perfil in perfiles:
+            user_id = perfil['user_id']
+            perfil_id = perfil['perfil_id']
+
+            for capitulo in capitulos:
+                capitulo_id = capitulo['capitulo_id']
+
+                response = requests.delete(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/visualizacion/{capitulo_id}")
+
+                if response.status_code not in [200, 404]:
+                    flash(f"Error al eliminar las visualizaciones del perfil {perfil.id}.", 'danger')
+                    return redirect(url_for('serie.obtener_series'))
+
+            # Se eliminan las referencias a la serie en las recomendaciones
+            response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/recomendacion")
+            if response.status_code != 200:
+                flash("Error al obtener las recomendaciones.", 'danger')
+                return redirect(url_for('serie.obtener_series'))
+            recomendaciones = response.json()
+
+            lista_series = recomendaciones['series']
+            if serie_id in lista_series:
+                lista_series.remove(serie_id) 
+                response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/recomendacion", json={"series_recomendadas": lista_series})
+                if response.status_code != 200:
+                    flash("Error al actualizar las recomendaciones.", 'danger')
+                    return redirect(url_for('serie.obtener_series'))
+
+            # Se borra el contenido de la lista del perfil
+            response = requests.delete(f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}/lista/{serie_id}")
+            if response.status_code not in [200, 404]: # 404 si no existe la lista
+                flash("Error al eliminar la serie de la lista del perfil.", 'danger')
+                return redirect(url_for('serie.obtener_series'))
+
+        # Se elimina la serie
         response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/eliminar_serie/{serie_id}")
         if response.status_code == 200:
             flash("Serie eliminada exitosamente.", 'success')
@@ -241,7 +336,22 @@ def eliminar_temporada(serie_id, temporada_id):
     
     es_admin = session.get('es_admin')
     if es_admin:
+        # Se obtienen los capítulos de la temporada
+        response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/obtener_temporada_serie/{serie_id}/{temporada_id}")
+        if response.status_code != 200:
+            flash("Error al obtener la temporada.", 'danger')
+            return redirect(url_for('serie.obtener_series'))
+
+        temporada = response.json()
+        capitulos = temporada['capitulos']
+
+        state = actualizar_visualizaciones_eliminar_capitulos(capitulos)
+        if not state:
+            flash("Error al eliminar las visualizaciones de los capítulos.", 'danger')
+            return redirect(url_for('serie.obtener_series'))
+
         response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/eliminar_temporada_serie/{serie_id}/{temporada_id}")
+
         if response.status_code == 200:
             flash("Temporada eliminada exitosamente.", 'success')
         else:
@@ -347,6 +457,13 @@ def eliminar_capitulo(serie_id, temporada_id, capitulo_id):
     
     es_admin = session.get('es_admin')
     if es_admin:
+        state = actualizar_visualizaciones_eliminar_capitulos([
+            { "capitulo_id": capitulo_id }
+        ])
+        if not state:
+            flash("Error al eliminar las visualizaciones del capítulo.", 'danger')
+            return redirect(url_for('serie.obtener_series'))
+
         response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/eliminar_capitulo_serie/{serie_id}/{temporada_id}/{capitulo_id}")
         if response.status_code == 200:
             flash("Capítulo eliminado exitosamente.", 'success')

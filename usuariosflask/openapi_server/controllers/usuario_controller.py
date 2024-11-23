@@ -65,8 +65,6 @@ def actualizar_usuario(user_id):  # noqa: E501
 
     return jsonify({"message": "Usuario actualizado con éxito", "status": "success"}), 200
 
-
-
 @app.route('/actualizar_password/<user_id>', methods=['PATCH'])
 def actualizar_password(user_id):  # noqa: E501
     """Actualizar la contraseña de un usuario
@@ -183,18 +181,18 @@ def eliminar_usuario(user_id):  # noqa: E501
         db.session.commit()
         return jsonify({"message": "Usuario eliminado con éxito", "status": "success"}), 200
     
-# @app.route('/listar_usuarios', methods=['GET'])
-# def listar_usuarios():  # noqa: E501
-#     """Listar todos los usuarios
+@app.route('/listar_usuarios', methods=['GET'])
+def listar_usuarios():  # noqa: E501
+    """Listar todos los usuarios
 
-#     Obtiene una lista de todos los usuarios disponibles en el sistema. # noqa: E501
+    Obtiene una lista de todos los usuarios disponibles en el sistema. # noqa: E501
 
 
-#     :rtype: Union[List[Usuario], Tuple[List[Usuario], int], Tuple[List[Usuario], int, Dict[str, str]]
-#     """
-#     list_usuarios_db = UsuarioDB.query.all()
-#     list_usuarios_api = [usuario.to_api_model() for usuario in list_usuarios_db]
-#     return jsonify([usuario.serialize() for usuario in list_usuarios_api]), 200
+    :rtype: Union[List[Usuario], Tuple[List[Usuario], int], Tuple[List[Usuario], int, Dict[str, str]]
+    """
+    list_usuarios_db = UsuarioDB.query.all()
+    list_usuarios_api = [usuario.to_api_model() for usuario in list_usuarios_db]
+    return jsonify([usuario.serialize() for usuario in list_usuarios_api]), 200
 
 @app.route('/usuario/<user_id>', methods=['GET'])
 def obtener_usuario(user_id):  # noqa: E501

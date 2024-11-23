@@ -438,12 +438,12 @@ def eliminar_contenido_lista(user_id, profile_id, contenido_id):
 
     lista_db = ListaPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
     if lista_db is None:
-        return jsonify({"message": "No se ha encontrado el contenido en el historial", "status": "error"}), 404
+        return jsonify({"message": "No se ha encontrado el contenido en la lista", "status": "error"}), 404
 
     db.session.delete(lista_db)
     db.session.commit()
 
-    return jsonify({"message": "Contenido eliminado del historial", "status": "success"}), 200
+    return jsonify({"message": "Contenido eliminado de la lista", "status": "success"}), 200
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['GET'])
 def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501

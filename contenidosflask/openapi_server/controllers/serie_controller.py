@@ -31,8 +31,6 @@ def actualizar_serie(serie_id):  # noqa: E501
     if not serie_to_update:
         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
     
-
-
     serie_db = serie_update.to_db_model()
 
     if serie_db.genero == []:

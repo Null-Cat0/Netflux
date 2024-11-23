@@ -48,7 +48,6 @@ def actualizar_visualizacion_contenido_perfil(user_id, perfil_id, contenido_id):
 
     return jsonify({"message": "Visualización actualizada"}), 200
 
-
 @app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion', methods=['POST'])
 def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
     """Inicia la visualización de un capítulo o película por un perfil
@@ -139,9 +138,9 @@ def borrar_visualizaciones_perfil(user_id, perfil_id):
 
 @app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion/<contenido_id>', methods=['DELETE'])
 def borrar_visualizacion_perfil(user_id, perfil_id, contenido_id):  # noqa: E501
-    """Borra la visualización de la película por un perfil
+    """Borra una visualización dado el id de un contenido
 
-    Borra el progreso de la visualización de la película por un perfil # noqa: E501
+    Borra una visualización dado el id de un contenido # noqa: E501
 
     :param perfil_id: ID del perfil específicado
     :type perfil_id: int

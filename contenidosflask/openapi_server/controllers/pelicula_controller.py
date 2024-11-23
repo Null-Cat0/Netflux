@@ -167,12 +167,12 @@ def eliminar_pelicula(pelicula_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-
     pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
     if not pelicula_db:
         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
 
     pelicula_db.delete()
+
     return jsonify({"message": "Película eliminada con éxito", "status": "success"}), 200
 
 @app.route('/listar_actores_pelicula/<pelicula_id>', methods=['GET'])
@@ -236,41 +236,3 @@ def obtener_lista_peliculas():
     lista_peliculas = PeliculaDB.objects(id__in=lista_ids)
     list_peliculas_api = [pelicula.to_api_model() for pelicula in lista_peliculas]
     return jsonify(list_peliculas_api), 200
-
-# @app.route('/obtener_precuela_pelicula/<pelicula_id>', methods=['GET'])
-# def obtener_precuela_pelicula(pelicula_id):  # noqa: E501
-#     """Obtiene la precuela de una película específica
-
-#     Obtiene la precuela de una película específica # noqa: E501
-
-#     :param pelicula_id: ID de la película
-#     :type pelicula_id: int
-
-#     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
-#     """
-
-#     pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
-#     if not pelicula_db:
-#         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
-
-#     pelicula_api = pelicula_db.to_api_model()
-#     return jsonify(pelicula_api.precuela), 200
-
-# @app.route('/obtener_secuela_pelicula/<pelicula_id>', methods=['GET'])
-# def obtener_secuela_pelicula(pelicula_id):  # noqa: E501
-#     """Obtiene la secuela de una película específica
-
-#     Obtiene la secuela de una película específica # noqa: E501
-
-#     :param pelicula_id: ID de la película
-#     :type pelicula_id: int
-
-#     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
-#     """
-
-#     pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
-#     if not pelicula_db:
-#         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
-
-#     pelicula_api = pelicula_db.to_api_model()
-#     return jsonify(pelicula_api.secuela), 200

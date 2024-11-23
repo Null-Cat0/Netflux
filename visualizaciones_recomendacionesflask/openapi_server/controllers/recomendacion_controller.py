@@ -6,10 +6,48 @@ sys.path.append(app_path)
 from global_config import ContenidosConfig, UsuariosConfig
 
 from openapi_server import app
-from flask import jsonify
+from flask import jsonify, request
 
 from openapi_server.models.recomendacion_pelicula_db import RecomendacionPeliculaDB
 from openapi_server.models.recomendacion_serie_db import RecomendacionSerieDB
+
+@app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['PATCH'])
+def actualizar_lista_recomendacion_perfil(user_id, perfil_id):
+    """Actualiza una recomendación para un perfil
+
+    Actualiza la lista de contenido de una recomendación para un perfil en específico
+
+    :param user_id: ID del usuario especificado
+    :type user_id: int
+    :param perfil_id: ID del perfil especificado
+    :type perfil_id: int
+
+    :rtype: Union[Recomendacion, Tuple[Recomendacion, int], Tuple[Recomendacion, int, Dict[str, str]]
+    """
+    # Obtener el perfil con una petición al microservicio de usuario
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+
+    if response_perfil.status_code != 200:
+        return jsonify({"message": "Perfil no encontrado"}), 404
+
+    if request.is_json:
+        recomendacion_update = request.get_json()
+
+    if not recomendacion_update:
+        return jsonify({"message": "Datos no válidos"}), 400
+
+    # Recomendacion update tiene una lista actualizada de peliculas / series
+    if 'peliculas_recomendadas' in recomendacion_update:
+        recomendacion_pelicula = RecomendacionPeliculaDB.objects(id_perfil=perfil_id).first()
+        recomendacion_pelicula.peliculas_recomendadas = recomendacion_update['peliculas_recomendadas']
+        recomendacion_pelicula.save()
+
+    if 'series_recomendadas' in recomendacion_update:
+        recomendacion_serie = RecomendacionSerieDB.objects(id_perfil=perfil_id).first()
+        recomendacion_serie.series_recomendadas = recomendacion_update['series_recomendadas']
+        recomendacion_serie.save()
+
+    return jsonify({"message": "Recomendaciones actualizadas correctamente"}), 200
 
 @app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['POST'])
 def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
@@ -116,6 +154,11 @@ def obtener_recomendaciones_perfil(user_id, perfil_id):  # noqa: E501
 
     :rtype: Union[List[Recomendacion], Tuple[List[Recomendacion], int], Tuple[List[Recomendacion], int, Dict[str, str]]
     """
+    # Se comprueba si existe el perfil
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+    if response_perfil.status_code != 200:
+        return jsonify({"message": "Perfil no encontrado"}), 404
+
     recomendaciones_pelicula = RecomendacionPeliculaDB.objects(id_perfil=perfil_id).first()
     recomendaciones_serie = RecomendacionSerieDB.objects(id_perfil=perfil_id).first()
 
