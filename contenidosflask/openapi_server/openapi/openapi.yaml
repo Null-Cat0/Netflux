@@ -165,72 +165,6 @@ paths:
       tags:
       - Actor
       x-openapi-router-controller: openapi_server.controllers.actor_controller
-  /actores/{actorId}/peliculas:
-    get:
-      description: Obtiene una lista de todas las películas en las que ha participado
-        un actor.
-      operationId: listar_peliculas_de_actor
-      parameters:
-      - description: ID del actor
-        explode: false
-        in: path
-        name: actorId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/Pelicula'
-                type: array
-          description: Lista de películas obtenida exitosamente
-        "404":
-          description: Actor no encontrado
-        "500":
-          description: Error interno del servidor
-      summary: Listar películas en las que ha participado un actor en específico.
-      tags:
-      - Actor
-      x-openapi-router-controller: openapi_server.controllers.actor_controller
-  /actores/{actorId}/series:
-    get:
-      description: Obtiene una lista de todas las series en las que ha participado
-        un actor.
-      operationId: listar_series_de_actor
-      parameters:
-      - description: ID del actor
-        explode: false
-        in: path
-        name: actorId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/Serie'
-                type: array
-          description: Lista de series obtenida exitosamente
-        "404":
-          description: Actor no encontrado
-        "500":
-          description: Error interno del servidor
-      summary: Listar series en las que ha participado un actor en específico.
-      tags:
-      - Actor
-      x-openapi-router-controller: openapi_server.controllers.actor_controller
   /pelicula:
     get:
       description: "Obtiene una lista de todas las películas disponibles en el sistema,\
@@ -470,66 +404,6 @@ paths:
         "500":
           description: Error interno del servidor
       summary: Elimnar un actor de una película
-      tags:
-      - Pelicula
-      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
-  /pelicula/{peliculaId}/precuela:
-    get:
-      description: Obtiene la precuela de una película específica
-      operationId: obtener_precuela_pelicula
-      parameters:
-      - description: ID de la película
-        explode: false
-        in: path
-        name: peliculaId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Pelicula'
-          description: precuela obtenida exitosamente
-        "404":
-          description: precuela no encontrada
-        "500":
-          description: Error interno del servidor
-      summary: Obtiene la precuela de una película específica
-      tags:
-      - Pelicula
-      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
-  /pelicula/{peliculaId}/secuela:
-    get:
-      description: Obtiene la secuela de una película específica
-      operationId: obtener_secuela_pelicula
-      parameters:
-      - description: ID de la película
-        explode: false
-        in: path
-        name: peliculaId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Pelicula'
-          description: secuela obtenida exitosamente
-        "404":
-          description: secuela no encontrada
-        "500":
-          description: Error interno del servidor
-      summary: Obtiene la secuela de una película específica
       tags:
       - Pelicula
       x-openapi-router-controller: openapi_server.controllers.pelicula_controller
@@ -1290,36 +1164,6 @@ paths:
         "500":
           description: Error interno del servidor
       summary: Actualizar un género existente
-      tags:
-      - Genero
-      x-openapi-router-controller: openapi_server.controllers.genero_controller
-
-  /obtener_lista_generos:
-    get:
-      description: Obtiene una lista de géneros por sus IDs.
-      operationId: obtener_lista_generos
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Genero'
-          description: Lista de géneros obtenida con éxito
-        "400":
-          description: Solicitud inválida
-        "500":
-          description: Error interno del servidor
-      summary: Obtener una lista de géneros por sus IDs
       tags:
       - Genero
       x-openapi-router-controller: openapi_server.controllers.genero_controller

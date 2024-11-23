@@ -65,8 +65,6 @@ def actualizar_usuario(user_id):  # noqa: E501
 
     return jsonify({"message": "Usuario actualizado con éxito", "status": "success"}), 200
 
-
-
 @app.route('/actualizar_password/<user_id>', methods=['PATCH'])
 def actualizar_password(user_id):  # noqa: E501
     """Actualizar la contraseña de un usuario
@@ -139,10 +137,6 @@ def crear_usuario():  # noqa: E501
                     nombre_dispositivo=disp_enc.tipo_dispositivo + " de " + usuario_db.nombre
                 )
                 db.session.add(dispositivos_usuario_db)
-
-        # Añadimos un perfil por defecto al usuario
-        # perfiles_db = PerfilDB(nombre=usuario_db.nombre, user_id=usuario_db.user_id)
-        # print(f"Datos del perfil_db:{perfiles_db.nombre}, {perfiles_db.user_id}")
 
         # Se crear un perfil por defecto para el usuario
         payload = {

@@ -99,46 +99,6 @@ def listar_actores():  # noqa: E501
     list_actores_api = [actor.to_api_model() for actor in actores_db]
     return jsonify(list_actores_api), 200
 
-@app.route('/listar_peliculas_actor/<actor_id>', methods=['GET'])
-def listar_peliculas_de_actor(actor_id):  # noqa: E501
-    """Listar películas en las que ha participado un actor en específico.
-
-    Obtiene una lista de todas las películas en las que ha participado un actor. # noqa: E501
-
-    :param actor_id: ID del actor
-    :type actor_id: int
-
-    :rtype: Union[List[Pelicula], Tuple[List[Pelicula], int], Tuple[List[Pelicula], int, Dict[str, str]]
-    """
-
-    actor_db = ActorDB.objects.get(id=ObjectId(actor_id))
-    if not actor_db:
-        return jsonify({"message": "Actor no encontrado", "status": "error"}), 404
-
-    peliculas = PeliculaDB.objects(actores=actor_db)
-    peliculas_api = [pelicula.to_api_model() for pelicula in peliculas]
-    return jsonify(peliculas_api), 200
-
-@app.route('/listar_series_actor/<actor_id>', methods=['GET'])
-def listar_series_de_actor(actor_id):  # noqa: E501
-    """Listar series en las que ha participado un actor en específico.
-
-    Obtiene una lista de todas las series en las que ha participado un actor. # noqa: E501
-
-    :param actor_id: ID del actor
-    :type actor_id: int
-
-    :rtype: Union[List[Serie], Tuple[List[Serie], int], Tuple[List[Serie], int, Dict[str, str]]
-    """
-
-    actor_db = ActorDB.objects.get(id=ObjectId(actor_id))
-    if not actor_db:
-        return jsonify({"message": "Actor no encontrado", "status": "error"}), 404
-
-    series = SerieDB.objects(actores=actor_db)
-    series_api = [serie.to_api_model() for serie in series]
-    return jsonify(series_api), 200
-
 @app.route('/obtener_actor/<actor_id>', methods=['GET'])
 def obtener_actor(actor_id):  # noqa: E501
     """Obtener un actor específico
@@ -150,7 +110,6 @@ def obtener_actor(actor_id):  # noqa: E501
 
     :rtype: Union[Actor, Tuple[Actor, int], Tuple[Actor, int, Dict[str, str]]
     """ 
-
     actor_db = ActorDB.objects.get(id=ObjectId(actor_id))
     if not actor_db:
         return jsonify({"message": "Actor no encontrado", "status": "error"}), 404

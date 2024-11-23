@@ -16,7 +16,90 @@ from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
 from openapi_server.models.historial_perfil_db import HistorialPerfilDB
 from openapi_server.models.lista_perfil_db import ListaPerfilDB
 
+def eliminar_datos_perfil(user_id, perfil_id):
+    # Se han de eliminar las recomendaciones y visualizaciones del perfil
+    recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/recomendacion")
+    if recomendaciones_perfil.status_code != 200:
+        return jsonify({"message": "Error al eliminar las recomendaciones del perfil"}), 500
+
+    visualizaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/visualizacion")
+    if visualizaciones_perfil.status_code != 200:
+        return jsonify({"message": "Error al eliminar las visualizaciones del perfil"}), 500
+
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['PUT'])
+def new_actualizar_perfil_usuario(user_id, profile_id):
+    """Actualiza el perfil especificado
+
+    Actualiza el perfil especificado de un usuario # noqa: E501
+
+    :param user_id: ID del usuario especificado
+    :type user_id: int
+    :param profile_id: ID del perfil a obtener
+    :type profile_id: int
+
+    :rtype: Union[Perfil, Tuple[Perfil, int], Tuple[Perfil, int, Dict[str, str]]
+    """
+    # Verifica si la solicitud contiene JSON
+    if not request.is_json:
+        return jsonify({"message": "La solicitud debe contener datos JSON"}), 400
+
+    perfil_data = request.get_json()
+    perfil_api = Perfil.from_dict(perfil_data)
+    perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
+
+    if perfil_db is None:
+        return jsonify({"message": "No se ha encontrado el perfil a actualizar", "status": "error"}), 404
+
+    # Actualiza los campos del perfil
+    perfil_db.nombre = perfil_api.nombre
+    perfil_db.foto_perfil = perfil_api.foto_perfil
+
+    # Se gestionan las preferencias de contenido
+    preferencias_db = PreferenciasContenidoDB.query.filter_by(perfil_id=perfil_db.perfil_id).first()
+
+    ## Se actualizan las preferencias de contenido
+    preferencias_db.subtitulos = perfil_api.preferencias_contenido.subtitulos
+    preferencias_db.idioma_audio = perfil_api.preferencias_contenido.idioma_audio
+
+    ## Se eliminan los géneros anteriores
+    GeneroPreferenciasDB.query.filter_by(preferencias_id=preferencias_db.preferencias_id).delete()
+
+    ## Se añaden los nuevos géneros
+    genero_preferencias_db = GeneroPreferenciasDB.query.filter_by(preferencias_id=preferencias_db.preferencias_id).all()
+    for gpdb in genero_preferencias_db:
+        db.session.delete(gpdb)
+
+    generos_name_list = perfil_api.preferencias_contenido.generos
+    generos_response = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_generos')
+    if generos_response.status_code != 200:
+        return jsonify({"message": "Error al obtener los géneros"}), 500
+
+    generos = generos_response.json()
+    for g in generos:
+        if g['nombre'] in generos_name_list:
+            genero_preferencias_db = GeneroPreferenciasDB(
+                preferencias_id=preferencias_db.preferencias_id,
+                genero_id=g['id']
+            )
+            db.session.add(genero_preferencias_db)
+
+    # Se guardan los cambios en la base de datos
+    db.session.commit()
+
+    # Se actualizan las recomendaciones al perfil
+    recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
+
+    if recomendaciones_perfil.status_code != 200:
+        return jsonify({"message": "Error al eliminar las recomendaciones del perfil"}), 500
+
+    recomendaciones_perfil = requests.post(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
+
+    if recomendaciones_perfil.status_code != 201:
+        return jsonify({"message": "Error al crear las recomendaciones del perfil"}), 500
+
+    return jsonify(perfil_api.serialize()), 200
+
+# @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['PUT'])
 def actualizar_perfil_usuario(user_id, profile_id):  
     """Actualiza el perfil especificado
 
@@ -29,7 +112,6 @@ def actualizar_perfil_usuario(user_id, profile_id):
 
     :rtype: Union[Perfil, Tuple[Perfil, int], Tuple[Perfil, int, Dict[str, str]]
     """
-
     # Verifica si la solicitud contiene JSON
     if request.is_json:
         # Carga los datos JSON enviados en la solicitud
@@ -114,20 +196,14 @@ def borrar_perfiles_usuario(user_id):  # noqa: E501
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     perfiles_db = PerfilDB.query.filter_by(user_id=user_id).all()
-    if perfiles_db is not None:
-        for perfil_db in perfiles_db:
-            # Se han de eliminar las recomendaciones y visualizaciones del perfil
-            recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
-            if recomendaciones_perfil.status_code != 200:
-                return jsonify({"message": "Error al eliminar las recomendaciones del perfil"}), 500
+    if perfiles_db is None:
+        return jsonify({"message": "No se ha encontrado el perfil a eliminar"}, 404)
 
-            visualizaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/visualizacion")
-            if visualizaciones_perfil.status_code != 200:
-                return jsonify({"message": "Error al eliminar las visualizaciones del perfil"}), 500
+    for perfil_db in perfiles_db:
+        # Se han de eliminar las recomendaciones y visualizaciones del perfil
+        eliminar_datos_perfil(perfil_db.user_id, perfil_db.perfil_id)
 
-        return jsonify({"message": "Datos de los perfiles eliminados con éxito", "status": "success"}), 200
-    else:
-        return jsonify({"message": "No se ha podido eliminar los perfiles", "status": "error"}), 404
+    return jsonify({"message": "Datos de los perfiles eliminados con éxito", "status": "success"}), 200
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['DELETE'])
 def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
@@ -145,13 +221,7 @@ def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
     perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
     if perfil_db is not None:
         # Se han de eliminar las recomendaciones y visualizaciones del perfil
-        recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
-        if recomendaciones_perfil.status_code != 200:
-            return jsonify({"message": "Error al eliminar las recomendaciones del perfil"}), 500
-
-        visualizaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/visualizacion")
-        if visualizaciones_perfil.status_code != 200:
-            return jsonify({"message": "Error al eliminar las visualizaciones del perfil"}), 500
+        eliminar_datos_perfil(perfil_db.user_id, perfil_db.perfil_id)
 
         db.session.delete(perfil_db)
         db.session.commit()
@@ -249,6 +319,7 @@ def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
     # Ahora se hace la petición al microservicio de contenidos para obtener los datos de las series y películas
     response_capitulos = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_lista_capitulos', json=lista_capitulos)
 
+    # Se añade la fecha de visualización a los capítulos
     if response_capitulos.status_code == 200:
         capitulos = response_capitulos.json()
         for c in capitulos:
@@ -258,6 +329,7 @@ def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
 
     response_peliculas = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_lista_peliculas', json=lista_peliculas)
 
+    # Se añade la fecha de visualización a las películas
     if response_peliculas.status_code == 200:
         peliculas = response_peliculas.json()
         for p in peliculas:
@@ -378,18 +450,17 @@ def obtener_lista_perfil(user_id, profile_id):  # noqa: E501
     # Ahora se hace la petición al microservicio de contenidos para obtener los datos de las series y películas
     response_series = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_lista_series', json=lista_series)
 
-    if response_series.status_code == 200:
-        series = response_series.json()
-    else:
+    if response_series.status_code != 200:
         return jsonify({"message": "No se ha podido obtener la lista de series", "status": "error"}), 404
 
     response_peliculas = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_lista_peliculas', json=lista_peliculas)
 
-    if response_peliculas.status_code == 200:
-        peliculas = response_peliculas.json()
-    else:
+    if response_peliculas.status_code != 200:
         return jsonify({"message": "No se ha podido obtener la lista de películas", "status": "error"}), 404
-    
+
+    series = response_series.json()
+    peliculas = response_peliculas.json()
+
     return jsonify({"series": series, "peliculas": peliculas}), 200
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>/lista/<contenido_id>', methods=['POST'])
@@ -438,12 +509,12 @@ def eliminar_contenido_lista(user_id, profile_id, contenido_id):
 
     lista_db = ListaPerfilDB.query.filter_by(perfil_id=perfil_db.perfil_id, contenido=contenido_id).first()
     if lista_db is None:
-        return jsonify({"message": "No se ha encontrado el contenido en el historial", "status": "error"}), 404
+        return jsonify({"message": "No se ha encontrado el contenido en la lista", "status": "error"}), 404
 
     db.session.delete(lista_db)
     db.session.commit()
 
-    return jsonify({"message": "Contenido eliminado del historial", "status": "success"}), 200
+    return jsonify({"message": "Contenido eliminado de la lista", "status": "success"}), 200
 
 @app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['GET'])
 def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
@@ -466,7 +537,6 @@ def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
             return jsonify({"message": "No hay perfiles disponibles", "status": "error"}), 404
         else:
             return jsonify(perfil.serialize()), 200
-    
 
 @app.route('/usuario/<user_id>/perfiles', methods=['GET'])
 def obtener_perfiles(user_id):  # noqa: E501
