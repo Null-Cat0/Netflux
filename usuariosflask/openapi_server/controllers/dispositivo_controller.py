@@ -10,7 +10,7 @@ from flask import request, jsonify
 def actualizar_dispositivos(user_id, nombre_dispositivo, dispositivo_id):
     if request.is_json:
         actualizar_dispositivos_request = ActualizarDispositivosRequest.from_dict(request.get_json())
-    
+
         dispositivo_usuario_db = DispositivosUsuarioDB.query.filter_by(
             user_id=user_id, dispositivo_id=dispositivo_id, nombre_dispositivo=nombre_dispositivo
         ).first()
@@ -88,7 +88,7 @@ def obtener_dispositivos(user_id):  # noqa: E501
                 "nombre": dispositivo_usuario_db.nombre_dispositivo,
                 "tipo": dispositivos_aux.tipo_dispositivo,
                 "dispositivo_id": dispositivo_usuario_db.dispositivo_id
-                }
+            }
             dispositivos.append(disp)
      
     return jsonify(dispositivos), 200    
@@ -133,7 +133,5 @@ def crear_dispositivo(user_id):  # noqa: E501
         db.session.commit()
 
         return jsonify({"message": "Dispositivo creado con éxito", "status": "success"}), 200
-    
     else:
         return jsonify({"message": "Error en la creación del dispositivo", "status": "error"}), 404
-    

@@ -208,7 +208,6 @@ def editar_pelicula(pelicula_id):
                     flash(data['message'], 'danger')
                 except requests.exceptions.JSONDecodeError:
                     flash("Error en el servidor. No se recibió una respuesta válida.", 'danger')
-                    
 
 @pelicula_bp.route('/eliminar_pelicula/<pelicula_id>', methods=['GET'])
 def eliminar_pelicula(pelicula_id):
