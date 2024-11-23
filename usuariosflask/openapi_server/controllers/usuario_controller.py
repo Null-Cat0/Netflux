@@ -150,9 +150,6 @@ def crear_usuario():  # noqa: E501
         if request_perfil.status_code != 201:
             return jsonify({"message": "Error al crear el perfil por defecto del usuario"}), 500
 
-        # db.session.add(perfiles_db)
-        # db.session.update(usuario_db)
-
         db.session.commit()
         return jsonify({"message": "Usuario creado con éxito", "status": "success"}), 201
 

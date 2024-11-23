@@ -78,6 +78,7 @@ def editar_actor(actor_id):
             
             if response.status_code == 200:
                 actor = response.json()
+                actor["fecha_nacimiento"] = datetime.strptime(actor["fecha_nacimiento"], '%a, %d %b %Y %H:%M:%S %Z').strftime('%Y-%d-%m')
                 return render_template("formulario_actor.html", actor=actor)
             else:
                 try:

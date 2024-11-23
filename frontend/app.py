@@ -48,7 +48,7 @@ def pagina_inicio():
 
             rs,rp = [],[]
             for recomendacion in recomendaciones_pelicula:
-                response = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}//obtener_pelicula/{recomendacion}")
+                response = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/obtener_pelicula/{recomendacion}")
                 if response.status_code == 200:
                     rp.append(response.json())
             
@@ -65,8 +65,8 @@ def pagina_inicio():
             perfil=data,
             peliculas=peliculas,
             series=series,
-            recomendaciones_pelicula=peliculas,
-            recomendaciones_serie=series
+            recomendaciones_pelicula=rp,
+            recomendaciones_serie=rs
         )
     else:
         data = response.json()
