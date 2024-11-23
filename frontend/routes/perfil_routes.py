@@ -262,11 +262,14 @@ def agregar_a_lista_perfil(perfil_id, contenido_id,):
         data = response.json()
         flash(f"{data['message']}", 'warning')
         
-    if es_serie == 'True':
+    referer = request.referrer.split('/')[-1]
+    if referer == 'mi_lista':
+        return redirect(url_for('perfil.obtener_mi_lista', perfil_id=perfil_id))
+    elif referer == 'lista_series':
         return redirect(url_for('serie.obtener_series'))
     else:
         return redirect(url_for('pelicula.obtener_peliculas'))
-    
+
 @perfil_bp.route('/eliminar_de_lista_perfil/<perfil_id>/<contenido_id>', methods=['GET','POST'])
 def eliminar_de_lista_perfil(perfil_id, contenido_id):
     usuario_id = session.get('logged_user_id')
@@ -327,8 +330,6 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
     
     serie_id = request.form.get('serie_id')
     temporada_id = request.form.get('temporada_id')
-    mi_lista = request.form.get('mi_lista')
-    print(f"serie_id: {serie_id}, temporada_id: {temporada_id}")
     
     # Se obtiene el contenido correspondiente al contenido_id
     if serie_id and temporada_id:
@@ -357,21 +358,21 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
         response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/historial/pelicula/{contenido_id}")
         if response.status_code == 200:
             actualizar_datos_historial(usuario_id, perfil_id, contenido_id)
-
-        else:    
+        else:
             response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
             if response.status_code == 201:
                 flash("Contenido agregado al historial", 'success')
             else:
                 data = response.json()
                 flash(f"{data['message']}", 'danger')
-    if mi_lista:
-        return redirect(url_for('perfil.obtener_mi_lista', perfil_id=perfil_id))    
+
+    referer = request.referrer.split('/')[-1]
+    if referer.split('?')[0] == 'inicio':
+        return redirect(url_for('pagina_inicio', perfil_id=perfil_id))
+    elif referer == 'lista_series':
+        return redirect(url_for('serie.obtener_series'))
     else:
-        if serie_id and temporada_id:
-            return redirect(url_for('serie.obtener_series'))
-        else:
-            return redirect(url_for('pelicula.obtener_peliculas'))
+        return redirect(url_for('pelicula.obtener_peliculas'))
     
 @perfil_bp.route('/eliminar_de_historial_perfil/<perfil_id>/<contenido_id>', methods=['GET','POST'])
 def eliminar_de_historial_perfil(perfil_id, contenido_id):

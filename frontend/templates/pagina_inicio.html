@@ -2,6 +2,7 @@
 
 {% block title %}Inicio - Netflux{% endblock %}
 {%block head%}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <style>
     .series-card {
         border-radius: 12px;
@@ -103,13 +104,15 @@
                             <div class="d-flex justify-content-between mt-auto">
                                 <!-- Botón para abrir el modal -->
                                 <button class="btn btn-danger btn-sm me-2 w-50" data-bs-toggle="modal" data-bs-target="#recomSerieModal{{ serie.id }}">Ver Más</button>
-                                <!-- Botón de marcar como vista -->
-                                <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}" 
-                                id="markAsViewedBtn{{ serie.id }}" 
-                                class="btn btn-outline-light btn-sm w-50"
-                                onclick="toggleViewedStatus(this)">
-                                    Marcar como vista
-                                </a>
+                                <form action="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}" method="POST">
+                                    <!-- Botón de Añadir/Quitar de la lista -->
+                                    <button type="submit"
+                                        class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
+                                        id="{{serie.id}}">
+                                    <i class="fas fa-plus"></i>
+                                    </button>
+                                    <input type="hidden" name="es_serie" value="True">
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -137,13 +140,15 @@
                             <div class="d-flex justify-content-between mt-auto">
                                 <!-- Botón para abrir el modal -->
                                 <button class="btn btn-danger btn-sm me-2 w-50" data-bs-toggle="modal" data-bs-target="#recomMovieModal{{ pelicula.id }}">Ver Más</button>
-                                <!-- Botón de marcar como vista -->
-                                <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}" 
-                                id="markAsViewedBtn{{ pelicula.id }}" 
-                                class="btn btn-outline-light btn-sm w-50"
-                                onclick="toggleViewedStatus(this)">
-                                    Marcar como vista
-                                </a>
+                                <form action="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}" method="POST">
+                                    <!-- Botón de Añadir/Quitar de la lista -->
+                                    <button type="submit"
+                                        class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
+                                        id="{{pelicula.id}}">
+                                    <i class="fas fa-plus"></i>
+                                    </button>
+                                    <input type="hidden" name="es_serie" value="False">
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -174,6 +179,12 @@
                                         No disponible
                                     {% endif %}
                                 </p>
+                                <div class="mt-4 col-3">
+                                    <a href="{{url_for('perfil.agregar_a_historial_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id)}}" 
+                                        id="markAsViewedBtn{{ pelicula.id }}" class="btn btn-outline-light w-100">
+                                        Marcar como vista
+                                    </a>
+                                </div>
                             </div>
                             <div class="modal-footer border-0">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -203,13 +214,12 @@
                             <div class="d-flex justify-content-between mt-auto">
                                 <!-- Botón para abrir el modal -->
                                 <button class="btn btn-danger btn-sm me-2 w-50" data-bs-toggle="modal" data-bs-target="#recomMovieModal{{ pelicula.id }}">Ver Más</button>
-                                <!-- Botón de marcar como vista -->
-                                <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}" 
-                                id="markAsViewedBtn{{ pelicula.id }}" 
-                                class="btn btn-outline-light btn-sm w-50"
-                                onclick="toggleViewedStatus(this)">
-                                    Marcar como vista
-                                </a>
+                                <!-- Botón de Añadir/Quitar de la lista -->
+                                <button type="submit"
+                                    class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
+                                    id="{{pelicula.id}}">
+                                <i class="fas fa-plus"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -240,6 +250,12 @@
                                         No disponible
                                     {% endif %}
                                 </p>
+                                <div class="mt-4 col-3">
+                                    <a href="{{url_for('perfil.agregar_a_historial_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id)}}" 
+                                        id="markAsViewedBtn{{ pelicula.id }}" class="btn btn-outline-light w-100">
+                                        Marcar como vista
+                                    </a>
+                                </div>
                             </div>
                             <div class="modal-footer border-0">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -269,13 +285,15 @@
                         <div class="d-flex justify-content-between mt-auto">
                             <!-- Botón para abrir el modal -->
                             <button class="btn btn-danger btn-sm me-2 w-50" data-bs-toggle="modal" data-bs-target="#recomSerieModal{{ serie.id }}">Ver Más</button>
-                            <!-- Botón de marcar como vista -->
-                            <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}" 
-                            id="markAsViewedBtn{{ serie.id }}" 
-                            class="btn btn-outline-light btn-sm w-50"
-                            onclick="toggleViewedStatus(this)">
-                                Marcar como vista
-                            </a>
+                            <form action="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}" method="POST">
+                                <!-- Botón de Añadir/Quitar de la lista -->
+                                <button type="submit"
+                                    class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
+                                    id="{{serie.id}}">
+                                <i class="fas fa-plus"></i>
+                                </button>
+                                <input type="hidden" name="es_serie" value="True">
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -333,10 +351,19 @@
                                                     <div class="accordion-body">
                                                         <ul class="list-unstyled">
                                                             {% for capitulo in temporada.capitulos %}
-                                                                <li class="mb-3">
+                                                            <li class="mb-3 d-flex justify-content-between align-items-center">
+                                                                <div>
                                                                     <strong>{{ capitulo.numero }}. {{ capitulo.titulo }}</strong> ({{ capitulo.duracion }} min)
                                                                     <p class="mb-0">{{ capitulo.sinopsis }}</p>
-                                                                </li>
+                                                                </div>
+                                                                <form action="{{ url_for('perfil.agregar_a_historial_perfil', perfil_id=session['perfil_id'], contenido_id=capitulo.capitulo_id) }}" method="POST">
+                                                                    <input type="hidden" name="serie_id" value="{{ serie.id }}">
+                                                                    <input type="hidden" name="temporada_id" value="{{ temporada.temporada_id }}">
+                                                                    <button type="submit" class="btn btn-outline-light w-100">
+                                                                        Marcar como visto
+                                                                    </button>
+                                                                </form>
+                                                            </li>
                                                             {% endfor %}
                                                         </ul>
                                                     </div>
