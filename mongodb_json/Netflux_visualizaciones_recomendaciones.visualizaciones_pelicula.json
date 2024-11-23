@@ -1,0 +1,12 @@
+[{
+  "_id": {
+    "$oid": "674214712f4308a16d10b75c"
+  },
+  "id_perfil": 1,
+  "pelicula_id": {
+    "$oid": "672d0c5aded625b8e72d5637"
+  },
+  "fecha_visualizacion": {
+    "$date": "2024-11-23T18:44:17.541Z"
+  }
+}]

@@ -1,0 +1,61 @@
+[{
+  "_id": {
+    "$oid": "6728f96874e138c46adcc392"
+  },
+  "nombre": "Leonardo DiCapo",
+  "fecha_nacimiento": {
+    "$date": "1974-11-11T00:00:00.000Z"
+  },
+  "biografia": "Leonardo DiCaprio es un actor y productor de cine estadounidense conocido por la rara ocurrencia de nunca haber tenido una pareja mayor de 22 años.",
+  "nacionalidad": "Los Ángeles"
+},
+{
+  "_id": {
+    "$oid": "6728f97874e138c46adcc393"
+  },
+  "nombre": "Robert Downey Jr.",
+  "fecha_nacimiento": {
+    "$date": {
+      "$numberLong": "-149731200000"
+    }
+  },
+  "biografia": "Conocido por su papel de Iron Man en el Universo Cinematográfico de Marvel.",
+  "nacionalidad": "Manhattan, Nueva York"
+},
+{
+  "_id": {
+    "$oid": "6728fa1ef6a47861e9d47a87"
+  },
+  "nombre": "Meryl Streep",
+  "fecha_nacimiento": {
+    "$date": {
+      "$numberLong": "-647827200000"
+    }
+  },
+  "biografia": "Meryl Streep es una actriz estadounidense considerada una de las mejores de su generación, famosa por sus papeles en Kramer vs. Kramer, The Devil Wears Prada, y Mamma Mia!",
+  "nacionalidad": "Nueva Jersey, Estados Unidos"
+},
+{
+  "_id": {
+    "$oid": "672c8de4232a304bf8157889"
+  },
+  "nombre": "Pedro Pascal",
+  "fecha_nacimiento": {
+    "$date": "1975-02-04T00:00:00.000Z"
+  },
+  "biografia": "Actor chileno-estadounidense conocido por su papel en 'The Mandalorian' y 'Game of Thrones'.",
+  "nacionalidad": "Santiago de Chile"
+},
+{
+  "_id": {
+    "$oid": "672c8df8232a304bf815788b"
+  },
+  "nombre": "Carlos Climas",
+  "fecha_nacimiento": {
+    "$date": {
+      "$numberLong": "-693187200000"
+    }
+  },
+  "biografia": "Actor estadounidense y ex-jugador de balonpié, conocido por su papel en 'Rocky' y 'The Mandalorian'.",
+  "nacionalidad": "Los Ángeles, California, Estados Unidos"
+}]

@@ -1,0 +1,87 @@
+[{
+  "_id": {
+    "$oid": "672cad086f73d1e71a361c9f"
+  },
+  "titulo": "Inception",
+  "genero": [
+    {
+      "$oid": "6739f775822273c3db260de6"
+    },
+    {
+      "$oid": "6739f775822273c3db260dea"
+    }
+  ],
+  "sinopsis": "Un ladrón que accede a los sueños de las personas debe plantar una idea en la mente de un CEO.",
+  "anio_estreno": 2010,
+  "duracion": 148,
+  "actores": [
+    {
+      "$oid": "672c8de4232a304bf8157889"
+    }
+  ],
+  "precuela": {
+    "$oid": "672d0c5aded625b8e72d5637"
+  }
+},
+{
+  "_id": {
+    "$oid": "672d0c5aded625b8e72d5637"
+  },
+  "titulo": "Inception 2",
+  "genero": [
+    {
+      "$oid": "6739f775822273c3db260de8"
+    },
+    {
+      "$oid": "6739f775822273c3db260dea"
+    },
+    {
+      "$oid": "6739f775822273c3db260dee"
+    }
+  ],
+  "sinopsis": "Un ladrón que accede a los sueños de las personas debe plantar una idea en la mente de un CEO.",
+  "anio_estreno": 2010,
+  "duracion": 148,
+  "actores": [
+    {
+      "$oid": "672c8de4232a304bf8157889"
+    },
+    {
+      "$oid": "6728fa1ef6a47861e9d47a87"
+    }
+  ],
+  "secuela": {
+    "$oid": "672cad086f73d1e71a361c9f"
+  }
+},
+{
+  "_id": {
+    "$oid": "673098761cf7160d2e6a5d96"
+  },
+  "titulo": "Inception 3",
+  "genero": [
+    {
+      "$oid": "6739f775822273c3db260de6"
+    },
+    {
+      "$oid": "6739f775822273c3db260dea"
+    },
+    {
+      "$oid": "6739f775822273c3db260de9"
+    }
+  ],
+  "sinopsis": "Un londinense que accede a los sueños de las personas debe plantar un pino en el despacho de un CEO.",
+  "anio_estreno": 2019,
+  "duracion": 126,
+  "actores": [
+    {
+      "$oid": "672c8de4232a304bf8157889"
+    },
+    {
+      "$oid": "6728f97874e138c46adcc393"
+    }
+  ],
+  "precuela": {
+    "$oid": "672cad086f73d1e71a361c9f"
+  }
+}]

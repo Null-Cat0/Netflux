@@ -1,0 +1,21 @@
+[{
+  "_id": {
+    "$oid": "674214a32f4308a16d10b75e"
+  },
+  "id_perfil": 1,
+  "peliculas_recomendadas": [
+    "672cad086f73d1e71a361c9f",
+    "673098761cf7160d2e6a5d96"
+  ]
+},
+{
+  "_id": {
+    "$oid": "674214fd2f4308a16d10b762"
+  },
+  "id_perfil": 2,
+  "peliculas_recomendadas": [
+    "672cad086f73d1e71a361c9f",
+    "672d0c5aded625b8e72d5637",
+    "673098761cf7160d2e6a5d96"
+  ]
+}]

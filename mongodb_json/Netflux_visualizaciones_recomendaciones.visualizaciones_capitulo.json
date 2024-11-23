@@ -1,0 +1,18 @@
+[{
+  "_id": {
+    "$oid": "674214752f4308a16d10b75d"
+  },
+  "id_perfil": 1,
+  "serie_id": {
+    "$oid": "674213a6b41b6de8404a2baf"
+  },
+  "temporada_id": {
+    "$oid": "674213b9b41b6de8404a2bb0"
+  },
+  "capitulo_id": {
+    "$oid": "67421429b41b6de8404a2bb1"
+  },
+  "fecha_visualizacion": {
+    "$date": "2024-11-23T18:44:21.579Z"
+  }
+}]

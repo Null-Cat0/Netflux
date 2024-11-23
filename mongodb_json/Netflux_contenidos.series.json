@@ -1,0 +1,100 @@
+[{
+  "_id": {
+    "$oid": "674212f0b41b6de8404a2bac"
+  },
+  "titulo": "Stranger Things",
+  "genero": [
+    {
+      "$oid": "6739f775822273c3db260de7"
+    },
+    {
+      "$oid": "6739f775822273c3db260de9"
+    },
+    {
+      "$oid": "6739f775822273c3db260dea"
+    }
+  ],
+  "sinopsis": "En la Indiana de los años 80, un grupo de jóvenes amigos es testigo de fuerzas sobrenaturales y de hazañas secretas del gobierno. Mientras buscan respuestas, los niños desentrañan una serie de misterios extraordinarios.",
+  "anio_estreno": 2016,
+  "temporadas": [
+    {
+      "temporada_id": {
+        "$oid": "6742130ab41b6de8404a2bad"
+      },
+      "numero": 1,
+      "anio_lanzamiento": 2016,
+      "capitulos": [
+        {
+          "capitulo_id": {
+            "$oid": "67421330b41b6de8404a2bae"
+          },
+          "numero": 1,
+          "titulo": "Querido Billy",
+          "duracion": 78,
+          "sinopsis": "Max está en grave peligro y se le acaba el tiempo. Un paciente del manicomio de Pennhurst recibe visitas. En otro lugar, en Rusia, Hopper trabaja duro."
+        }
+      ]
+    }
+  ],
+  "actores": [
+    {
+      "$oid": "6728f96874e138c46adcc392"
+    },
+    {
+      "$oid": "6728fa1ef6a47861e9d47a87"
+    },
+    {
+      "$oid": "672c8de4232a304bf8157889"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "674213a6b41b6de8404a2baf"
+  },
+  "titulo": "Lucifer",
+  "genero": [
+    {
+      "$oid": "6739f775822273c3db260de6"
+    },
+    {
+      "$oid": "6739f775822273c3db260de8"
+    },
+    {
+      "$oid": "6739f775822273c3db260dee"
+    }
+  ],
+  "sinopsis": "La serie se centrará en Lucifer quien, aburrido e infeliz como el Señor del Infierno, dimite de su trono y abandona su reino para trasladarse a la ciudad de Los Angeles y abrir un lujoso piano-bar llamado Lux. Una vez allí ayudará a la policía a castigar a los más peligrosos criminales de la ciudad.",
+  "anio_estreno": 2016,
+  "temporadas": [
+    {
+      "temporada_id": {
+        "$oid": "674213b9b41b6de8404a2bb0"
+      },
+      "numero": 1,
+      "anio_lanzamiento": 2017,
+      "capitulos": [
+        {
+          "capitulo_id": {
+            "$oid": "67421429b41b6de8404a2bb1"
+          },
+          "numero": 1,
+          "titulo": "Quién es el nuevo rey del Infierno?",
+          "duracion": 55,
+          "sinopsis": "Con demonios asesinos sueltos por Los Ángeles, depende de Lucifer frenar el caos y proteger a los que más le importan."
+        }
+      ]
+    }
+  ],
+  "actores": [
+    {
+      "$oid": "6728f97874e138c46adcc393"
+    },
+    {
+      "$oid": "672c8df8232a304bf815788b"
+    },
+    {
+      "$oid": "672c8de4232a304bf8157889"
+    }
+  ]
+}]

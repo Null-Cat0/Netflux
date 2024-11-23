@@ -1,0 +1,60 @@
+[{
+  "_id": {
+    "$oid": "6739f775822273c3db260de6"
+  },
+  "nombre": "comedia"
+},
+{
+  "_id": {
+    "$oid": "6739f775822273c3db260de7"
+  },
+  "nombre": "drama"
+},
+{
+  "_id": {
+    "$oid": "6739f775822273c3db260de8"
+  },
+  "nombre": "accion"
+},
+{
+  "_id": {
+    "$oid": "6739f775822273c3db260de9"
+  },
+  "nombre": "terror"
+},
+{
+  "_id": {
+    "$oid": "6739f775822273c3db260dea"
+  },
+  "nombre": "ciencia ficcion"
+},
+{
+  "_id": {
+    "$oid": "6739f775822273c3db260deb"
+  },
+  "nombre": "romance"
+},
+{
+  "_id": {
+    "$oid": "6739f775822273c3db260dec"
+  },
+  "nombre": "documental"
+},
+{
+  "_id": {
+    "$oid": "6739f775822273c3db260ded"
+  },
+  "nombre": "animacion"
+},
+{
+  "_id": {
+    "$oid": "6739f775822273c3db260dee"
+  },
+  "nombre": "fantasia"
+},
+{
+  "_id": {
+    "$oid": "6739f775822273c3db260def"
+  },
+  "nombre": "aventura"
+}]

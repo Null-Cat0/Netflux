@@ -1,0 +1,20 @@
+[{
+  "_id": {
+    "$oid": "674214a32f4308a16d10b75f"
+  },
+  "id_perfil": 1,
+  "series_recomendadas": [
+    "674212f0b41b6de8404a2bac",
+    "674213a6b41b6de8404a2baf"
+  ]
+},
+{
+  "_id": {
+    "$oid": "674214fd2f4308a16d10b763"
+  },
+  "id_perfil": 2,
+  "series_recomendadas": [
+    "674212f0b41b6de8404a2bac",
+    "674213a6b41b6de8404a2baf"
+  ]
+}]
