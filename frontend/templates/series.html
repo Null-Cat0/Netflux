@@ -98,14 +98,15 @@
                                         <i class="fas fa-trash-alt fa-lg"></i>
                                     </a>
                                     {% endif %}
+                                    <form action="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}" method="POST">
                                     <!-- Botón de Añadir/Quitar de la lista -->
-                                    <a href="{{ url_for('perfil.agregar_a_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}"
-                                    class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
-                                    id="addToListBtn{{ serie.id }}" 
-                                    onclick="toggleAddToList(this)">
+                                    <button type="submit"
+                                        class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center mx-2" 
+                                        id="{{serie.id}}">
                                     <i class="fas fa-plus"></i>
-                                </a>
+                                    </button>
                                     <input type="hidden" name="es_serie" value="True">
+                                    </form>
                                 </div>
                             </div>
                         
@@ -188,6 +189,13 @@
                                                                 <strong>{{ capitulo.numero }}. {{ capitulo.titulo }}</strong> ({{ capitulo.duracion }} min)
                                                                 <p class="mb-0">{{ capitulo.sinopsis }}</p>
                                                             </div>
+                                                            <form action="{{ url_for('perfil.agregar_a_historial_perfil', perfil_id=session['perfil_id'], contenido_id=capitulo.capitulo_id) }}" method="POST">
+                                                                <input type="hidden" name="serie_id" value="{{ serie.id }}">
+                                                                <input type="hidden" name="temporada_id" value="{{ temporada.temporada_id }}">
+                                                                <button type="submit" class="btn btn-outline-light w-100">
+                                                                    Marcar como visto
+                                                                </button>
+                                                            </form>
                                                             {% if es_admin %}
                                                             <div>
                                                                 <a href="{{url_for('serie.editar_capitulo', serie_id=serie.id, temporada_id=temporada.temporada_id, capitulo_id=capitulo.capitulo_id)}}" class="btn btn-warning btn-sm me-2">Editar</a>

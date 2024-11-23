@@ -5,12 +5,18 @@
 {% block head %}
 <title>Mi lista - Netflux</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
+    /* Tarjetas (Películas y Series) */
     .media-card {
         border-radius: 12px;
         overflow: hidden;
         background-color: #1c1c1c;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
     }
 
     .media-card:hover {
@@ -25,6 +31,10 @@
 
     .media-card .card-body {
         padding: 15px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .media-card h5 {
@@ -35,14 +45,16 @@
     .media-card .card-text {
         font-size: 0.9rem;
         color: #bbb;
+        flex: 1;
     }
 
-    .media-card .btn-outline-light {
+    .btn-outline-light {
         border-radius: 50px;
         padding: 5px 15px;
         font-size: 0.85rem;
     }
 
+    /* Modales */
     .modal-content {
         background-color: #141414;
         border-radius: 12px;
@@ -71,6 +83,22 @@
     .btn-close-white {
         filter: invert(1);
     }
+
+    /* Accordion */
+    .accordion-button {
+        background-color: #1c1c1c;
+        color: white;
+        border: none;
+    }
+
+    .accordion-button:hover {
+        background-color: #444;
+    }
+
+    .accordion-body {
+        background-color: #1c1c1c;
+        color: white;
+    }
 </style>
 {% endblock %}
 
@@ -80,24 +108,62 @@
 
     <!-- Sección de Películas -->
     <div class="mb-5">
-        <h2 class="text-white">Películas</h2>
+        <h2 class="text-white text-center">Películas</h2>
         {% if peliculas %}
-        <div class="row g-4">
+        <div class="row g-4 ">
             {% for pelicula in peliculas %}
             <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="card media-card shadow-sm h-100">
+                <div class="card media-card shadow-sm">
                     <img src="{{ pelicula.imagen if pelicula.imagen else 'static/default-movie.jpg' }}" class="card-img-top" alt="{{ pelicula.titulo }}">
                     <div class="card-body text-white">
                         <h5 class="card-title">{{ pelicula.titulo }}</h5>
                         <p class="card-text">{{ pelicula.sinopsis | truncate(100) }}</p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="d-flex justify-content-between align-items-center">
                             <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#movieModal{{ pelicula.id }}">Ver Más</button>
-                            <a href="{{ url_for('perfil.eliminar_de_lista_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id) }}"
-                                class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center mx-2"
-                                style="width: 36px; height: 36px; text-align: center;">
+                            <button class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center mx-2"
+                                style="width: 36px; height: 36px; text-align: center;"
+                                data-bs-toggle="modal" data-bs-target="#confirmDeleteMovieModal{{ pelicula.id }}">
                                 <i class="fas fa-times"></i>
-                            </a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Modal de detalles de la película -->
+            <div class="modal fade" id="movieModal{{ pelicula.id }}" tabindex="-1" aria-labelledby="movieModalLabel{{ pelicula.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <img src="{{ pelicula.imagen_url if pelicula.imagen_url else 'static/default-movie.jpg' }}" alt="{{ pelicula.titulo }}">
+                        <div class="modal-body">
+                            <h2>{{ pelicula.titulo }}</h2>
+                            <p><strong>Sinopsis:</strong> {{ pelicula.sinopsis }}</p>
+                            <p><strong>Género:</strong> 
+                                {% for genero in pelicula.genero %}
+                                    {{ genero.nombre }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            <p><strong>Año de estreno:</strong> {{ pelicula.anio_estreno }}</p>
+                            <p><strong>Duración:</strong> {{ pelicula.duracion }} minutos</p>
+                            <p><strong>Actores:</strong> 
+                                {% if pelicula.actores %}
+                                    {% for actor in pelicula.actores %}
+                                        {{ actor.nombre }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    No disponible
+                                {% endif %}
+                            </p>
+                            <!-- Botón Marcar como vista -->
+                            <div class="mt-4 col-3">
+                                <a href="{{url_for('perfil.agregar_a_historial_perfil', perfil_id=session['perfil_id'], contenido_id=pelicula.id)}}" 
+                                    id="markAsViewedBtn{{ pelicula.id }}" class="btn btn-outline-light w-100">
+                                    Marcar como vista
+                                </a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         </div>
                     </div>
                 </div>
@@ -111,27 +177,123 @@
 
     <!-- Sección de Series -->
     <div>
-        <h2 class="text-white">Series</h2>
+        <h2 class="text-white text-center">Series</h2>
         {% if series %}
-        <div class="row g-4">
+        <div class="row g-4 ">
             {% for serie in series %}
             <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="card media-card shadow-sm h-100">
+                <div class="card media-card shadow-sm">
                     <img src="{{ serie.imagen if serie.imagen else 'static/default-series.jpg' }}" class="card-img-top" alt="{{ serie.titulo }}">
                     <div class="card-body text-white">
                         <h5 class="card-title">{{ serie.titulo }}</h5>
                         <p class="card-text">{{ serie.sinopsis | truncate(100) }}</p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#seriesModal{{ serie.id }}">Ver Más</button>
-                            <a href="{{ url_for('perfil.eliminar_de_lista_perfil', perfil_id=session['perfil_id'], contenido_id=serie.id) }}"
-                                class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center mx-2"
-                                style="width: 36px; height: 36px; text-align: center;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#serieModal{{ serie.id }}">Ver Más</button>
+                            <button class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center mx-2"
+                                style="width: 36px; height: 36px; text-align: center;"
+                                data-bs-toggle="modal" data-bs-target="#confirmDeleteSeriesModal{{ serie.id }}">
                                 <i class="fas fa-times"></i>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+
+                       <!-- Modal de información de la serie -->
+                       <div class="modal fade" id="serieModal{{ serie.id }}" tabindex="-1" aria-labelledby="serieModalLabel{{ serie.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-centered">
+                            <div class="modal-content bg-dark text-white rounded">
+                                <!-- Encabezado del modal -->
+                                <div class="modal-header border-0">
+                                    <h5 class="modal-title" id="serieModalLabel{{ serie.id }}">{{ serie.titulo }}</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                </div>
+                    
+                                <!-- Cuerpo del modal -->
+                                <div class="modal-body">
+                                    <!-- Fila 1: Información general -->
+                                    <div class="row mb-4">
+                                        <div class="col-md-8">
+                                            <p><strong>Género:</strong> 
+                                                {% for genero in serie.genero %}
+                                                    {{ genero.nombre }}{% if not loop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                            <p><strong>Año de Estreno:</strong> {{ serie.anio_estreno }}</p>
+                                            <p><strong>Sinopsis:</strong></p>
+                                            <p>{{ serie.sinopsis }}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong>Actores:</strong> 
+                                                {% if serie.actores %}
+                                                    {% for actor in serie.actores %}
+                                                        {{ actor.nombre }}{% if not loop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    No disponible
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                    
+                                    <!-- Fila 2: Temporadas -->
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h6>Temporadas</h6>
+                                                {% if es_admin %}
+                                                <a href="{{ url_for('serie.crear_temporada', serie_id=serie.id) }}" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-plus me-2"></i>Añadir Temporada
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                            <div class="accordion" id="accordionTemporadas{{ serie.id }}">
+                                                {% for temporada in serie.temporadas %}
+                                                <div class="accordion-item bg-dark text-white">
+                                                    <h2 class="accordion-header" id="headingTemporada{{ temporada.numero }}">
+                                                        <button class="accordion-button collapsed text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTemporada{{ temporada.numero }}" aria-expanded="false" aria-controls="collapseTemporada{{ temporada.numero }}">
+                                                            Temporada {{ temporada.numero }} ({{ temporada.anio_lanzamiento }})
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseTemporada{{ temporada.numero }}" class="accordion-collapse collapse" aria-labelledby="headingTemporada{{ temporada.numero }}" data-bs-parent="#accordionTemporadas{{ serie.id }}">
+                                                        <div class="accordion-body">
+                                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                                <h6>Capítulos</h6>
+                                                            </div>
+                                                            <ul class="list-unstyled">
+                                                                {% for capitulo in temporada.capitulos %}
+                                                                <li class="mb-3 d-flex justify-content-between align-items-center">
+                                                                    <div>
+                                                                        <strong>{{ capitulo.numero }}. {{ capitulo.titulo }}</strong> ({{ capitulo.duracion }} min)
+                                                                        <p class="mb-0">{{ capitulo.sinopsis }}</p>
+                                                                    </div>
+                                                                    <form action="{{ url_for('perfil.agregar_a_historial_perfil', perfil_id=session['perfil_id'], contenido_id=capitulo.capitulo_id) }}" method="POST">
+                                                                        <input type="hidden" name="serie_id" value="{{ serie.id }}">
+                                                                        <input type="hidden" name="temporada_id" value="{{ temporada.temporada_id }}">
+                                                                        <input type="hidden" name="mi_lista" value="True">
+                                                                        <button type="submit" class="btn btn-outline-light w-100">
+                                                                            Marcar como visto
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                    
+                                <!-- Pie del modal -->
+                                <div class="modal-footer border-0">
+                                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             {% endfor %}
         </div>
         {% else %}
@@ -139,17 +301,4 @@
         {% endif %}
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    function toggleViewedStatus(button) {
-        if (button.innerText === "Marcar como visto") {
-            button.innerText = "Vista";
-            button.classList.remove("btn-outline-light");
-            button.classList.add("btn-light");
-            button.classList.add("text-dark");
-        }
-    }
-</script>
 {% endblock %}

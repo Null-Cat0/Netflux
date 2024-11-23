@@ -5,6 +5,38 @@
 {% block head %}
     <title>Actores - Netflux</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .actor-card {
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #1c1c1c;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .actor-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .actor-card img {
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .actor-card .card-body {
+            padding: 15px;
+        }
+
+        .actor-card h5 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .actor-card .card-text {
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -17,20 +49,20 @@
                 <i class="fas fa-plus me-2"></i> Añadir Actor
             </a>
         </div>
-    {%endif%}
+    {% endif %}
     
     <!-- Lista de Actores -->
     {% if actores %}
-        <div class="row">
+        <div class="row g-4">
             {% for actor in actores %}
-                <div class="col-md-4 col-lg-3 mb-4">
-                    <div class="card bg-dark text-white shadow-sm h-100">
-                        <img src="" class="card-img-top" alt="{{ actor.nombre }}">
-                        <div class="card-body">
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    <div class="card actor-card shadow-sm h-100">
+                        <img src="{{ actor.imagen_url if actor.imagen_url else 'static/default-actor.jpg' }}" class="card-img-top" alt="{{ actor.nombre }}">
+                        <div class="card-body text-white">
                             <h5 class="card-title">{{ actor.nombre }}</h5>
                             <p class="card-text">{{ actor.biografia | truncate(100) }}</p>
                             <div class="d-flex justify-content-between align-items-center mt-3">
-                                <a href="" class="btn btn-outline-light btn-sm">Ver Más</a>
+                                <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#actorModal{{ actor.id }}">Ver Más</button>
                                 <div class="d-flex">
                                     {% if es_admin %}
                                         <!-- Botón de Editar -->
@@ -44,6 +76,37 @@
                                         </a>
                                     {% endif %}
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de información del actor -->
+                <div class="modal fade" id="actorModal{{ actor.id }}" tabindex="-1" aria-labelledby="actorModalLabel{{ actor.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white rounded">
+                            <!-- Encabezado del modal -->
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title" id="actorModalLabel{{ actor.id }}">{{ actor.nombre }}</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <!-- Cuerpo del modal -->
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <img src="{{ actor.imagen_url if actor.imagen_url else 'static/default-actor.jpg' }}" alt="{{ actor.nombre }}" class="img-fluid rounded mb-3">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <p><strong>Nombre:</strong> {{ actor.nombre }}</p>
+                                        <p><strong>Fecha de nacimiento:</strong> {{ actor.fecha_nacimiento }}</p>
+                                        <p><strong>Biografía:</strong> {{ actor.biografia }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pie del modal -->
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
                             </div>
                         </div>
                     </div>

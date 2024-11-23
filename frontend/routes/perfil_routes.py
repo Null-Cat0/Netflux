@@ -1,8 +1,10 @@
 import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from datetime import datetime
 
 from global_config import UsuariosConfig as userConf
 from global_config import ContenidosConfig as contConf
+from global_config import VisualizacionesConfig as visConf
 
 perfil_bp = Blueprint('perfil', __name__)
 
@@ -234,7 +236,7 @@ def agregar_a_lista_perfil(perfil_id, contenido_id,):
         flash("Debes iniciar sesión para acceder a esta página", 'danger')
         return redirect(url_for('user.login'))
     
-    es_series = request.form.get('es_series')
+    es_serie = request.form.get('es_serie')
     
     response = requests.post(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/lista/{contenido_id}")
     if response.status_code == 201:
@@ -243,7 +245,7 @@ def agregar_a_lista_perfil(perfil_id, contenido_id,):
         data = response.json()
         flash(f"{data['message']}", 'warning')
         
-    if es_series == 'True':
+    if es_serie == 'True':
         return redirect(url_for('serie.obtener_series'))
     else:
         return redirect(url_for('pelicula.obtener_peliculas'))
@@ -261,4 +263,121 @@ def eliminar_de_lista_perfil(perfil_id, contenido_id):
     else:
         data = response.json()
         flash(f"Error: {data['message']}", 'danger')
-    return redirect(url_for('perfil.obtener_mi_lista', perfil_id=perfil_id))    
+    return redirect(url_for('perfil.obtener_mi_lista', perfil_id=perfil_id))  
+
+@perfil_bp.route('/mi_historial/<perfil_id>', methods=['GET'])
+def obtener_mi_historial(perfil_id):
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Debes iniciar sesión para acceder a esta página", 'danger')
+        return redirect(url_for('user.login'))
+    
+    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/historial")
+    # Manejar la respuesta del microservicio
+    if response.status_code == 200:
+        data = response.json()
+       
+        historial = []
+        capitulos = data["capitulos"]
+        peliculas = data["peliculas"]
+        
+        for capitulo in capitulos:
+            capitulo["fecha_visualizacion"] = datetime.strptime(capitulo["fecha_visualizacion"], '%a, %d %b %Y %H:%M:%S %Z').strftime('%d/%m/%Y')
+            historial.append(capitulo)
+            
+        for pelicula in peliculas:
+            pelicula["fecha_visualizacion"] = datetime.strptime(pelicula["fecha_visualizacion"], '%a, %d %b %Y %H:%M:%S %Z').strftime('%d/%m/%Y')
+            historial.append(pelicula)
+            
+        # Se ordena el historial por fecha de visualización
+        historial = sorted(historial, key=lambda x: datetime.strptime(x["fecha_visualizacion"], '%d/%m/%Y'), reverse=True)
+            
+        print("El historial es:", historial)
+        
+        return render_template("mi_historial.html", historial=historial)
+    else:
+        data = response.json()
+        flash(f"Error: {data['message']}", 'danger')
+        
+    return render_template("mi_historial.html")  
+
+@perfil_bp.route('/agregar_a_historial_perfil/<perfil_id>/<contenido_id>', methods=['GET','POST'])
+def agregar_a_historial_perfil(perfil_id, contenido_id):
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Debes iniciar sesión para acceder a esta página", 'danger')
+        return redirect(url_for('user.login'))
+    
+    serie_id = request.form.get('serie_id')
+    temporada_id = request.form.get('temporada_id')
+    mi_lista = request.form.get('mi_lista')
+    print(f"serie_id: {serie_id}, temporada_id: {temporada_id}")
+    
+    # Se obtiene el contenido correspondiente al contenido_id
+    if serie_id and temporada_id:
+        response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/historial/capitulo/{contenido_id}")
+        if response.status_code == 200:
+            print("Se va a proceder a actualizar el contenido")
+            response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion/{contenido_id}")
+            if response.status_code == 200:
+                flash("Contenido actualizado en el historial", 'success')
+            else:
+                data = response.json()
+                flash(f"{data['message']}", 'danger')
+        else:
+            data = {
+                'serie_id': serie_id,
+                'temporada_id': temporada_id,
+                'capitulo_id': contenido_id
+            }
+            print("Los datos son: ", data)
+            print("Se va a proceder a agregar el contenido")
+            response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
+            if response.status_code == 201:
+                flash("Contenido agregado al historial", 'success')
+            else:
+                data = response.json()
+                flash(f"{data['message']}", 'danger')
+    else:
+        data = {
+            'pelicula_id': contenido_id
+        }
+        # Se busca si el contenido ya está en el historial
+        response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/historial/pelicula/{contenido_id}")
+        if response.status_code == 200:
+            response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion/{contenido_id}")
+            if response.status_code == 200:
+                flash("Contenido actualizado en el historial", 'success')
+            else:
+                data = response.json()
+                flash(f"{data['message']}", 'danger')
+        else:    
+            response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
+            if response.status_code == 201:
+                flash("Contenido agregado al historial", 'success')
+            else:
+                data = response.json()
+                flash(f"{data['message']}", 'danger')
+    if mi_lista:
+        return redirect(url_for('perfil.obtener_mi_lista', perfil_id=perfil_id))    
+    else:
+        if serie_id and temporada_id:
+            return redirect(url_for('serie.obtener_series'))
+        else:
+            return redirect(url_for('pelicula.obtener_peliculas'))
+    
+@perfil_bp.route('/eliminar_de_historial_perfil/<perfil_id>/<contenido_id>', methods=['GET','POST'])
+def eliminar_de_historial_perfil(perfil_id, contenido_id):
+    usuario_id = session.get('logged_user_id')
+    if not usuario_id:
+        flash("Debes iniciar sesión para acceder a esta página", 'danger')
+        return redirect(url_for('user.login'))
+    
+    response = requests.delete(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion/{contenido_id}")
+    if response.status_code == 200:
+        flash("Contenido eliminado del historial", 'success')
+    else:
+        data = response.json()
+        flash(f"Error: {data['message']}", 'danger')
+        
+    return redirect(url_for('perfil.obtener_mi_historial', perfil_id=perfil_id))

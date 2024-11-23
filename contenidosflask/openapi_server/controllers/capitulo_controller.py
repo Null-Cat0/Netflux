@@ -200,5 +200,5 @@ def obtener_lista_capitulos():
                 }
                 lista_capitulos.append(custom_data)
                 break
-  
+
     return jsonify(lista_capitulos), 200

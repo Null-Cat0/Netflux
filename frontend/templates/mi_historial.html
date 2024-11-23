@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi historial - Netflux{% endblock %}
+
+{% block head %}
+<title>Mi historial - Netflux</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<style>
+    .history-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: #1c1c1c;
+        margin-bottom: 5px;
+        border-radius: 8px;
+        color: white;
+        transition: background-color 0.3s;
+    }
+
+    .history-item:hover {
+        background-color: #444;
+    }
+
+    .history-item .info {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .history-item .info span {
+        font-size: 0.9rem;
+        color: #bbb;
+    }
+
+    .history-item .delete-btn {
+        background-color: transparent;
+        border: none;
+        color: #e50914;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .history-item .delete-btn:hover {
+        color: #ff3d3d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center text-white mb-5" style="font-size: 2.2rem;">Mi historial</h1>
+
+    <!-- Lista de contenido del historial -->
+    <div>
+        {% if historial %}
+        <div>
+            {% for contenido in historial %}
+            <div class="history-item">
+                <!-- Películas -->
+                {% if not contenido.nombre_capitulo %}
+                <div class="info">
+                    {% set es_pelicula="true"%}
+                    <span>{{ contenido.fecha_visualizacion }}</span>
+                    <span>{{ contenido.titulo }}</span>
+                </div>
+                {% else %}
+                <!-- Capítulos -->
+                <div class="info">
+                    {% set es_pelicula="false"%}
+                    <span>{{ contenido.fecha_visualizacion }}</span>
+                    <span>{{ contenido.nombre_serie }}: Temporada {{ contenido.num_temporada }}: Episodio {{ contenido.numero_capitulo }}: "{{ contenido.nombre_capitulo }}"</span>
+                </div>
+                {% endif %}
+                {% if es_pelicula == "true" %}
+                <a class="delete-btn" href="{{ url_for('perfil.eliminar_de_historial_perfil', perfil_id=session['perfil_id'], contenido_id=contenido.id) }}">
+                    <i class="fas fa-times"></i>
+                </a>
+                {% else %}
+                <a class="delete-btn" href="{{ url_for('perfil.eliminar_de_historial_perfil', perfil_id=session['perfil_id'], contenido_id=contenido.capitulo_id) }}">
+                    <i class="fas fa-times"></i>
+                </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-white">No hay contenido en tu historial.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

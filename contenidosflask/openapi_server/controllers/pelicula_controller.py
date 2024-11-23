@@ -235,4 +235,5 @@ def obtener_lista_peliculas():
 
     lista_peliculas = PeliculaDB.objects(id__in=lista_ids)
     list_peliculas_api = [pelicula.to_api_model() for pelicula in lista_peliculas]
+    
     return jsonify(list_peliculas_api), 200
