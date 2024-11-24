@@ -6,7 +6,7 @@ from flask import request, jsonify
 
 from openapi_server.models.actualizar_dispositivos_request import ActualizarDispositivosRequest
 
-@app.route('/usuarios/<user_id>/dispositivos/<dispositivo_id>/<nombre_dispositivo>/', methods=['PUT'])
+@app.route('/usuarios/<user_id>/dispositivos/<dispositivo_id>/<nombre_dispositivo>', methods=['PUT'])
 def actualizar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
     if request.is_json:
         actualizar_dispositivos_request = ActualizarDispositivosRequest.from_dict(request.get_json())

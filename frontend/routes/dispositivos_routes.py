@@ -101,10 +101,13 @@ def editar_dispositivo(nombre_dispositivo, dispositivo_id):
     
     if request.method == 'POST':
         user_id = session.get('logged_user_id')
-        
+
         # Asegurarse de capturar los valores del formulario correctamente
         nombre_dispositivo_actualizado = request.form.get('nombre_dispositivo')
         tipo_dispositivo_actualizado = request.form.get('tipo_dispositivo')
+
+        print(f"\nNombre dispositivo: {nombre_dispositivo_actualizado}\n")
+        print(f"\nDispositivo ID: {tipo_dispositivo_actualizado}\n")
         
         if not nombre_dispositivo_actualizado or not tipo_dispositivo_actualizado:
             flash("Error: Los campos del formulario están vacíos.", 'danger')

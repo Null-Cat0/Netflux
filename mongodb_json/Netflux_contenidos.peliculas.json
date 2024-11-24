@@ -1,87 +1,74 @@
 [{
   "_id": {
-    "$oid": "672cad086f73d1e71a361c9f"
+    "$oid": "674323f17cb018d92a65c079"
   },
-  "titulo": "Inception",
+  "titulo": "Cleopatra",
   "genero": [
     {
       "$oid": "6739f775822273c3db260de6"
     },
     {
-      "$oid": "6739f775822273c3db260dea"
+      "$oid": "6739f775822273c3db260de7"
+    },
+    {
+      "$oid": "6739f775822273c3db260deb"
+    },
+    {
+      "$oid": "6739f775822273c3db260ded"
+    },
+    {
+      "$oid": "6739f775822273c3db260dee"
+    },
+    {
+      "$oid": "6739f775822273c3db260def"
     }
   ],
-  "sinopsis": "Un ladrón que accede a los sueños de las personas debe plantar una idea en la mente de un CEO.",
-  "anio_estreno": 2010,
-  "duracion": 148,
+  "sinopsis": "La princesa Cleopatra se convierte en reina de Egipto y tiene un hijo extramatrimonial con el gobernante romano sin hijos Julio César. A través de dos romances, se esfuerza por proteger a Egipto de los romanos y convertir a su hijo en el heredero del Imperio Romano de César.",
+  "anio_estreno": 1999,
+  "duracion": 177,
   "actores": [
     {
-      "$oid": "672c8de4232a304bf8157889"
+      "$oid": "6728f96874e138c46adcc392"
+    },
+    {
+      "$oid": "6728fa1ef6a47861e9d47a87"
+    },
+    {
+      "$oid": "672c8df8232a304bf815788b"
     }
-  ],
-  "precuela": {
-    "$oid": "672d0c5aded625b8e72d5637"
-  }
+  ]
 },
 {
   "_id": {
-    "$oid": "672d0c5aded625b8e72d5637"
+    "$oid": "67433a4fa132a6ead023941b"
   },
-  "titulo": "Inception 2",
+  "titulo": "Venom: The Last Dance",
   "genero": [
+    {
+      "$oid": "6739f775822273c3db260de7"
+    },
     {
       "$oid": "6739f775822273c3db260de8"
     },
     {
+      "$oid": "6739f775822273c3db260de9"
+    },
+    {
       "$oid": "6739f775822273c3db260dea"
     },
     {
-      "$oid": "6739f775822273c3db260dee"
+      "$oid": "6739f775822273c3db260ded"
     }
   ],
-  "sinopsis": "Un ladrón que accede a los sueños de las personas debe plantar una idea en la mente de un CEO.",
-  "anio_estreno": 2010,
-  "duracion": 148,
+  "sinopsis": "Eddie y Venom, a la fuga, se enfrentan a la persecución de ambos mundos. A medida que las circunstancias se endurecen, se ven obligados a tomar una decisión desgarradora que podría marcar el final de su asociación simbiótica.",
+  "anio_estreno": 2024,
+  "duracion": 110,
   "actores": [
     {
-      "$oid": "672c8de4232a304bf8157889"
+      "$oid": "6728f96874e138c46adcc392"
     },
     {
       "$oid": "6728fa1ef6a47861e9d47a87"
     }
-  ],
-  "secuela": {
-    "$oid": "672cad086f73d1e71a361c9f"
-  }
-},
-{
-  "_id": {
-    "$oid": "673098761cf7160d2e6a5d96"
-  },
-  "titulo": "Inception 3",
-  "genero": [
-    {
-      "$oid": "6739f775822273c3db260de6"
-    },
-    {
-      "$oid": "6739f775822273c3db260dea"
-    },
-    {
-      "$oid": "6739f775822273c3db260de9"
-    }
-  ],
-  "sinopsis": "Un londinense que accede a los sueños de las personas debe plantar un pino en el despacho de un CEO.",
-  "anio_estreno": 2019,
-  "duracion": 126,
-  "actores": [
-    {
-      "$oid": "672c8de4232a304bf8157889"
-    },
-    {
-      "$oid": "6728f97874e138c46adcc393"
-    }
-  ],
-  "precuela": {
-    "$oid": "672cad086f73d1e71a361c9f"
-  }
+  ]
 }]
