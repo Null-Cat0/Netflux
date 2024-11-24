@@ -13,9 +13,6 @@ class PeliculaDB(db.Document):
     duracion = db.IntField(required=True)
     actores = db.ListField(db.ReferenceField(ActorDB)) 
 
-    secuela = db.ReferenceField('self', required=False)
-    precuela = db.ReferenceField('self', required=False)
-
     def to_api_model(self):
         from openapi_server.models.pelicula import Pelicula
         return Pelicula(
@@ -26,8 +23,4 @@ class PeliculaDB(db.Document):
             anio_estreno=self.anio_estreno,
             duracion=self.duracion,
             actores=[actor.to_api_model() for actor in self.actores] if self.actores else [],
-
-            # Se retorna el título de la secuela y la precuela
-            secuela=self.secuela.titulo if self.secuela else None,
-            precuela=self.precuela.titulo if self.precuela else None
         )

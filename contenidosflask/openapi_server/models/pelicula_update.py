@@ -13,7 +13,7 @@ class PeliculaUpdate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, titulo=None, genero=None, sinopsis=None, anio_estreno=None, duracion=None, actores=None, secuela=None, precuela=None):  # noqa: E501
+    def __init__(self, id=None, titulo=None, genero=None, sinopsis=None, anio_estreno=None, duracion=None, actores=None):  # noqa: E501
         """PeliculaUpdate - a model defined in OpenAPI
 
         :param id: The id of this PeliculaUpdate.  # noqa: E501
@@ -41,9 +41,6 @@ class PeliculaUpdate(Model):
             'anio_estreno': int,
             'duracion': int,
             'actores': List[str],
-
-            'secuela': str,
-            'precuela': str
         }
 
         self.attribute_map = {
@@ -54,9 +51,6 @@ class PeliculaUpdate(Model):
             'anio_estreno': 'anio_estreno',
             'duracion': 'duracion',
             'actores': 'actores',
-
-            'secuela': 'secuela',
-            'precuela': 'precuela'
         }
 
         self._id = id
@@ -67,9 +61,6 @@ class PeliculaUpdate(Model):
         self._duracion = duracion
         self._actores = [ObjectId(actor) if isinstance(actor, str) else actor for actor in (actores or [])]
 
-        # Se asume que secuela y precuela son IDs de otras películas u objetos de tipo Pelicula
-        self._secuela = ObjectId(secuela) if isinstance(secuela, str) else secuela
-        self._precuela = ObjectId(precuela) if isinstance(precuela, str) else precuela
 
     def to_db_model(self):
         from openapi_server.models.pelicula_db import PeliculaDB
@@ -80,9 +71,6 @@ class PeliculaUpdate(Model):
             anio_estreno=self._anio_estreno,
             duracion=self._duracion,
             actores=[ObjectId(actor) for actor in self._actores] if self._actores else [],
-
-            secuela=ObjectId(self._secuela),
-            precuela=ObjectId(self._precuela)
         )
 
     @classmethod
@@ -251,46 +239,4 @@ class PeliculaUpdate(Model):
         :type actores: List[Actor]
         """
 
-        self._actores = actores
-
-    @property
-    def secuela(self) -> {str, str}:
-        """Gets the secuela of this Pelicula.
-
-
-        :return: The secuela of this Pelicula.
-        :rtype: str
-        """
-        return self._secuela
-
-    @secuela.setter
-    def secuela(self, secuela: {str, str}):
-        """Sets the secuela of this Pelicula.
-
-
-        :param secuela: The secuela of this Pelicula.
-        :type secuela: str
-        """
-
-        self._secuela = secuela
-
-    @property
-    def precuela(self) -> {str, str}:
-        """Gets the precuela of this Pelicula.
-
-
-        :return: The precuela of this Pelicula.
-        :rtype: str
-        """
-        return self._precuela
-
-    @precuela.setter
-    def precuela(self, precuela: {str, str}):
-        """Sets the precuela of this Pelicula.
-
-
-        :param precuela: The precuela of this Pelicula.
-        :type precuela: str
-        """
-
-        self._precuela = precuela
+        self._actores = actores    
