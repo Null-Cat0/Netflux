@@ -36,7 +36,6 @@ def crear_actor():
                 'biografia': biografia
             }
             
-            print(actor_data)
             # Hacer la llamada POST al microservicio de películas
             response = requests.post(
                 f"{contConf.CONTENIDOS_BASE_URL}/actores", json=actor_data)

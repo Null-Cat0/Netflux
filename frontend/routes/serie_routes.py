@@ -269,8 +269,6 @@ def crear_temporada(serie_id):
                 "numero": numero,
                 "anio_lanzamiento": anio_lanzamiento
             }
-            print("El id de la serie es: ", serie_id)
-            print("Los datos son: ", data)
 
             response = requests.post(f"{contConf.CONTENIDOS_BASE_URL}/series/{serie_id}/temporadas", json=data)
             if response.status_code == 201:
