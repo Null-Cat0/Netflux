@@ -15,7 +15,42 @@ tags:
 - description: Datos sobre las recomendaciones
   name: Recomendacion
 paths:
-  /perfil/{perfilId}/recomendaciones:
+  /usuarios/{usuarioId}/perfiles/{perfilId}/recomendaciones:
+    delete:
+      description: Elimina las recomendaciones de un perfil
+      operationId: eliminar_recomendacion_perfil
+      parameters:
+      - description: ID del perfil especificado
+        explode: false
+        in: path
+        name: perfilId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del usuario especificado
+        explode: false
+        in: path
+        name: usuarioId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Recomendaciones eliminadas correctamente
+        "404":
+          description: Perfil o usuario no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Elimina todas las recomendaciones de un perfil
+      tags:
+      - Recomendacion
+      x-openapi-router-controller: openapi_server.controllers.recomendacion_controller
     get:
       description: Obtiene una lista de las recomendaciones para el perfil
       operationId: obtener_recomendaciones_perfil
@@ -44,6 +79,52 @@ paths:
         "500":
           description: Error interno del servidor
       summary: Obtiene una lista de las recomendaciones para el perfil
+      tags:
+      - Recomendacion
+      x-openapi-router-controller: openapi_server.controllers.recomendacion_controller
+    patch:
+      description: Actualiza las recomendaciones de un perfil
+      operationId: actualizar_lista_recomendacion_perfil
+      parameters:
+      - description: ID del perfil especificado
+        explode: false
+        in: path
+        name: perfilId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del usuario especificado
+        explode: false
+        in: path
+        name: usuarioId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recomendacion'
+        description: ID del contenido a visualizar
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recomendacion'
+          description: Recomendaciones actualizadas correctamente
+        "404":
+          description: Perfil o recomendacion no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Actualiza las recomendaciones de un perfil
       tags:
       - Recomendacion
       x-openapi-router-controller: openapi_server.controllers.recomendacion_controller
@@ -83,42 +164,42 @@ paths:
       tags:
       - Recomendacion
       x-openapi-router-controller: openapi_server.controllers.recomendacion_controller
-  /perfil/{perfilId}/recomendaciones/{recomendacionId}:
-    delete:
-      description: Elimina una recomendación en específico de un perfil
-      operationId: eliminar_recomendacion_perfil
-      parameters:
-      - description: ID del perfil especificado
-        explode: false
-        in: path
-        name: perfilId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      - description: ID de la recomendacion especificada
-        explode: false
-        in: path
-        name: recomendacionId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "204":
-          description: Recomendación eliminada correctamente
-        "404":
-          description: Perfil o recomendacion no encontrado
-        "500":
-          description: Error interno del servidor
-      summary: Elimina una recomendación en específico de un perfil
-      tags:
-      - Recomendacion
-      x-openapi-router-controller: openapi_server.controllers.recomendacion_controller
+  # /perfil/{perfilId}/recomendaciones/{recomendacionId}:
+  #   delete:
+  #     description: Elimina una recomendación en específico de un perfil
+  #     operationId: eliminar_recomendacion_perfil
+  #     parameters:
+  #     - description: ID del perfil especificado
+  #       explode: false
+  #       in: path
+  #       name: perfilId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     - description: ID de la recomendacion especificada
+  #       explode: false
+  #       in: path
+  #       name: recomendacionId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     responses:
+  #       "204":
+  #         description: Recomendación eliminada correctamente
+  #       "404":
+  #         description: Perfil o recomendacion no encontrado
+  #       "500":
+  #         description: Error interno del servidor
+  #     summary: Elimina una recomendación en específico de un perfil
+  #     tags:
+  #     - Recomendacion
+  #     x-openapi-router-controller: openapi_server.controllers.recomendacion_controller
   # /visualizacion/{contenidoId}:
   #   get:
   #     description: Lista de perfiles que han visto el contenido especificado.
@@ -151,7 +232,42 @@ paths:
   #     tags:
   #     - Visualizacion
   #     x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
-  /visualizacion/{perfilId}:
+  /usuarios/{userId}/perfiles/{perfilId}/visualizaciones:
+    delete:
+      description: Elimina todas las visualizaciones de un perfil
+      operationId: borrar_visualizaciones_perfil
+      parameters:
+      - description: ID del perfil especificado
+        explode: false
+        in: path
+        name: perfilId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del usuario especificado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Visualizaciones eliminadas correctamente
+        "404":
+          description: Perfil o usuario no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Elimina todas las visualizaciones de un perfil
+      tags:
+      - Visualizacion
+      x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
     get:
       description: Obtiene una lista de todos los capítulos o películas visualizados
         o en progreso por el perfil especificado.
@@ -220,7 +336,109 @@ paths:
       tags:
       - Visualizacion
       x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
-  /visualizacion/{perfilId}/{capituloId}:
+  /usuarios/{userId}/perfiles/{perfilId}/visualizaciones/{contenidoId}:
+    delete:
+      description: Elimina una visualización en específico de un perfil
+      operationId: borrar_visualizacion_perfil
+      parameters:
+      - description: ID del perfil especificado
+        explode: false
+        in: path
+        name: perfilId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del contenido a eliminar
+        explode: false
+        in: path
+        name: contenidoId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del usuario especificado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Visualización eliminada correctamente
+        "404":
+          description: Perfil o visualización no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Elimina una visualización en específico de un perfil
+      tags:
+      - Visualizacion
+      x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
+    patch:
+      description: Actualiza la visualización de un capítulo o película por un perfil
+      operationId: actualizar_visualizacion_contenido_perfil
+      parameters:
+      - description: ID del perfil especificado
+        explode: false
+        in: path
+        name: perfilId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del contenido a visualizar
+        explode: false
+        in: path
+        name: contenidoId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del usuario especificado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Visualizacion'
+        description: ID del contenido a visualizar
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Visualizacion'
+          description: Visualización actualizada exitosamente
+        "404":
+          description: Perfil o visualización no encontrada
+        "500":
+          description: Error interno del servidor
+      summary: Actualiza la visualización de un capítulo o película por un perfil
+      tags:
+      - Visualizacion
+      x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
+  /usuarios/{userId}/perfiles/{perfilId}/visualizaciones/capitulos/{capituloId}:
     get:
       description: Obtiene el capítulo en visualización por el perfil especificado.
       operationId: obtener_visualizacion_capitulo_perfil
@@ -235,10 +453,20 @@ paths:
           format: int64
           type: integer
         style: simple
-      - description: ID del perfil a obtener
+      - description: ID del capitulo a obtener
         explode: false
         in: path
         name: capituloId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del usuario especificado
+        explode: false
+        in: path
+        name: userId
         required: true
         schema:
           example: 1
@@ -250,9 +478,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/Capitulo'
-                type: array
+                $ref: '#/components/schemas/Capitulo'
           description: Capítulo obtenido correctamente
         "404":
           description: Perfil o contenido no encontrado
@@ -262,7 +488,7 @@ paths:
       tags:
       - Visualizacion
       x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
-  /visualizacion/{perfilId}/{peliculaId}:
+  /usuarios/{userId}/perfiles/{perfilId}/visualizaciones/peliculas/{peliculaId}:
     get:
       description: Obtiene la película en visualización por el perfil especificado.
       operationId: obtener_visualizacion_pelicula_perfil
@@ -277,10 +503,20 @@ paths:
           format: int64
           type: integer
         style: simple
-      - description: ID del perfil a obtener
+      - description: ID de la película a obtener
         explode: false
         in: path
         name: peliculaId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del usuario especificado
+        explode: false
+        in: path
+        name: userId
         required: true
         schema:
           example: 1
@@ -302,6 +538,88 @@ paths:
       tags:
       - Visualizacion
       x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
+  # /visualizacion/{perfilId}/{capituloId}:
+  #   get:
+  #     description: Obtiene el capítulo en visualización por el perfil especificado.
+  #     operationId: obtener_visualizacion_capitulo_perfil
+  #     parameters:
+  #     - description: ID del perfil a obtener
+  #       explode: false
+  #       in: path
+  #       name: perfilId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     - description: ID del perfil a obtener
+  #       explode: false
+  #       in: path
+  #       name: capituloId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     responses:
+  #       "200":
+  #         content:
+  #           application/json:
+  #             schema:
+  #               items:
+  #                 $ref: '#/components/schemas/Capitulo'
+  #               type: array
+  #         description: Capítulo obtenido correctamente
+  #       "404":
+  #         description: Perfil o contenido no encontrado
+  #       "500":
+  #         description: Error interno del servidor
+  #     summary: Obtiene el capítulo en visualización del perfil especificado
+  #     tags:
+  #     - Visualizacion
+  #     x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
+  # /visualizacion/{perfilId}/{peliculaId}:
+  #   get:
+  #     description: Obtiene la película en visualización por el perfil especificado.
+  #     operationId: obtener_visualizacion_pelicula_perfil
+  #     parameters:
+  #     - description: ID del perfil a obtener
+  #       explode: false
+  #       in: path
+  #       name: perfilId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     - description: ID del perfil a obtener
+  #       explode: false
+  #       in: path
+  #       name: peliculaId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     responses:
+  #       "200":
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/Pelicula'
+  #         description: Película obtenida correctamente
+  #       "404":
+  #         description: Perfil o contenido no encontrado
+  #       "500":
+  #         description: Error interno del servidor
+  #     summary: Obtiene la película visualizada por el perfil especificado
+  #     tags:
+  #     - Visualizacion
+  #     x-openapi-router-controller: openapi_server.controllers.visualizacion_controller
 components:
   schemas:
     Visualizacion:

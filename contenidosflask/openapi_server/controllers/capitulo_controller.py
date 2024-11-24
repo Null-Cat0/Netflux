@@ -7,7 +7,7 @@ from openapi_server.models.serie import CapituloEmbedded  # noqa: E501
 from flask import jsonify, request
 from bson import ObjectId
 
-@app.route('/actualizar_capitulo_serie/<serie_id>/<temporada_id>/<capitulo_id>', methods=['PUT'])
+@app.route('/series/<serie_id>/temporadas/<temporada_id>/capitulos/<capitulo_id>', methods=['PUT'])
 def actualizar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
     """Actualizar un capítulo existente
 
@@ -54,7 +54,7 @@ def actualizar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
     serie.save()
     return jsonify({"message": "Capítulo actualizado correctamente", "status": "success"}), 200
 
-@app.route('/asignar_capitulo_serie/<serie_id>/<temporada_id>', methods=['POST'])
+@app.route('/series/<serie_id>/temporadas/<temporada_id>/capitulos', methods=['POST'])
 def crear_capitulo(serie_id, temporada_id):  # noqa: E501
     """Crear un nuevo capítulo para una temporada
 
@@ -90,7 +90,7 @@ def crear_capitulo(serie_id, temporada_id):  # noqa: E501
     serie.save()
     return jsonify({"message": "Capítulo creado correctamente", "status": "success"}), 201
 
-@app.route('/eliminar_capitulo_serie/<serie_id>/<temporada_id>/<capitulo_id>', methods=['DELETE'])
+@app.route('/series/<serie_id>/temporadas/<temporada_id>/capitulos/<capitulo_id>', methods=['DELETE'])
 def eliminar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
     """Eliminar un capítulo
 
@@ -121,7 +121,7 @@ def eliminar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
     serie.save()
     return jsonify({"message": "Capítulo eliminado correctamente", "status": "success"}), 200
 
-@app.route('/listar_capitulos_serie/<serie_id>/<temporada_id>', methods=['GET'])
+@app.route('/series/<serie_id>/temporadas/<temporada_id>/capitulos', methods=['GET'])
 def listar_capitulos(serie_id, temporada_id):  # noqa: E501
     """Listar todos los capítulos de una temporada
 
@@ -146,7 +146,7 @@ def listar_capitulos(serie_id, temporada_id):  # noqa: E501
     capitulos_json = [capitulo for capitulo in temporada_api.capitulos]
     return jsonify(capitulos_json), 200
 
-@app.route('/obtener_capitulo_serie/<serie_id>/<temporada_id>/<capitulo_id>', methods=['GET'])
+@app.route('/series/<serie_id>/temporadas/<temporada_id>/capitulos/<capitulo_id>', methods=['GET'])
 def obtener_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
     """Obtener un capítulo específico de una temporada
 

@@ -6,7 +6,7 @@ from openapi_server.models.serie import TemporadaEmbedded  # noqa: E501
 from flask import jsonify, request
 from bson import ObjectId
 
-@app.route('/actualizar_temporada_serie/<serie_id>/<temporada_id>', methods=['PUT'])
+@app.route('/series/<serie_id>/temporadas/<temporada_id>', methods=['PUT'])
 def actualizar_temporada(serie_id, temporada_id):  # noqa: E501
     """Actualizar una temporada existente
 
@@ -48,7 +48,7 @@ def actualizar_temporada(serie_id, temporada_id):  # noqa: E501
 
     return jsonify({"message": "Temporada actualizada correctamente", "status": "success"}), 200
 
-@app.route('/asignar_temporada_serie/<serie_id>', methods=['POST'])
+@app.route('/series/<serie_id>/temporadas', methods=['POST'])
 def crear_temporada(serie_id):  # noqa: E501
     """Crear una nueva temporada para una serie
 
@@ -76,7 +76,7 @@ def crear_temporada(serie_id):  # noqa: E501
     serie.save()
     return jsonify({"message": "Temporada creada correctamente", "status": "success"}), 201
 
-@app.route('/eliminar_temporada_serie/<serie_id>/<temporada_id>', methods=['DELETE'])
+@app.route('/series/<serie_id>/temporadas/<temporada_id>', methods=['DELETE'])
 def eliminar_temporada(serie_id, temporada_id):  # noqa: E501
     """Eliminar una temporada
 
@@ -101,7 +101,7 @@ def eliminar_temporada(serie_id, temporada_id):  # noqa: E501
     serie.save()
     return jsonify({"message": "Temporada eliminada correctamente", "status": "success"}), 200
 
-@app.route('/listar_temporadas_serie/<serie_id>', methods=['GET'])
+@app.route('/series/<serie_id>/temporadas', methods=['GET'])
 def listar_temporadas(serie_id):  # noqa: E501
     """Listar todas las temporadas de una serie
 
@@ -120,7 +120,7 @@ def listar_temporadas(serie_id):  # noqa: E501
     temporadas_json = [temporada for temporada in serie_api.temporadas]
     return jsonify(temporadas_json), 200
 
-@app.route('/obtener_temporada_serie/<serie_id>/<temporada_id>', methods=['GET'])
+@app.route('/series/<serie_id>/temporadas/<temporada_id>', methods=['GET'])
 def obtener_temporada(serie_id, temporada_id):  # noqa: E501
     """Obtener una temporada específica de una serie
 

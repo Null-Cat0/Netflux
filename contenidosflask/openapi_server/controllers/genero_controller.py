@@ -6,7 +6,7 @@ from openapi_server.models.genero_db import GeneroDB
 from flask import jsonify, request
 from bson import ObjectId
 
-@app.route('/actualizar_genero/<genero_id>', methods=['PUT'])
+@app.route('/generos/<genero_id>', methods=['PUT'])
 def actualizar_genero(genero_id):  # noqa: E501
     """Actualizar un género existente
 
@@ -33,8 +33,7 @@ def actualizar_genero(genero_id):  # noqa: E501
     else:
         return jsonify({"message": "Datos inválidos o malformados", "status": "error"}), 400
 
-
-@app.route('/listar_generos', methods=['GET'])
+@app.route('/generos', methods=['GET'])
 def listar_generos():  # noqa: E501
     """Listar todos los géneros
 
@@ -46,8 +45,7 @@ def listar_generos():  # noqa: E501
     list_generos_api = [genero.to_api_model().serialize() for genero in generos_db]
     return jsonify(list_generos_api), 200
 
-
-@app.route('/obtener_genero/<genero_id>', methods=['GET'])
+@app.route('/generos/<genero_id>', methods=['GET'])
 def obtener_genero(genero_id):  # noqa: E501
     """Obtener un género específico
 

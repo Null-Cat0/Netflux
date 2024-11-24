@@ -17,7 +17,7 @@ tags:
 - description: Información sobre los dispositivos del usuario
   name: Dispositivo
 paths:
-  /user/{userId}/dispositivos:
+  /usuarios/{userId}/dispositivos:
     get:
       description: Obtiene la lista de dispositivos registrados por el usuario
       operationId: obtener_dispositivos
@@ -53,10 +53,10 @@ paths:
       tags:
       - Dispositivo
       x-openapi-router-controller: openapi_server.controllers.dispositivo_controller
-    patch:
-      description: Actualiza un dispositivo a la lista de dispositivos registrados
+    post:
+      description: Añade un nuevo dispositivo a la lista de dispositivos registrados
         del usuario
-      operationId: actualizar_dispositivos
+      operationId: crear_dispositivo
       parameters:
       - description: ID del usuario
         explode: false
@@ -72,22 +72,56 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/actualizarDispositivos_request'
-        description: ID del dispositivo a actualizar
+              type: string
+        description: Nombre del dispositivo a añadir
         required: true
       responses:
-        "204":
-          description: Lista actualizada exitosamente
+        "201":
+          description: Dispositivo añadido exitosamente
         "404":
           description: Usuario no encontrado
         "500":
           description: Error del servidor
-      summary: Actualiza un dispositivo a la lista de dispositivos registrados del
-        usuario
+      summary: Añade un nuevo dispositivo a la lista de dispositivos registrados
+        del usuario
       tags:
       - Dispositivo
       x-openapi-router-controller: openapi_server.controllers.dispositivo_controller
-  /user/{userId}/dispositivos/{dispositivoId}:
+    # patch:
+    #   description: Actualiza un dispositivo a la lista de dispositivos registrados
+    #     del usuario
+    #   operationId: actualizar_dispositivos
+    #   parameters:
+    #   - description: ID del usuario
+    #     explode: false
+    #     in: path
+    #     name: userId
+    #     required: true
+    #     schema:
+    #       example: 1
+    #       format: int64
+    #       type: integer
+    #     style: simple
+    #   requestBody:
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: '#/components/schemas/actualizarDispositivos_request'
+    #     description: ID del dispositivo a actualizar
+    #     required: true
+    #   responses:
+    #     "204":
+    #       description: Lista actualizada exitosamente
+    #     "404":
+    #       description: Usuario no encontrado
+    #     "500":
+    #       description: Error del servidor
+    #   summary: Actualiza un dispositivo a la lista de dispositivos registrados del
+    #     usuario
+    #   tags:
+    #   - Dispositivo
+    #   x-openapi-router-controller: openapi_server.controllers.dispositivo_controller
+  /usuarios/{userId}/dispositivos/{dispositivoId}/{nombreDispositivo}:
     delete:
       description: Elimina un dispositivo de la lista de dispositivos registrados
         del usuario
@@ -125,25 +159,69 @@ paths:
       tags:
       - Dispositivo
       x-openapi-router-controller: openapi_server.controllers.dispositivo_controller
-  /usuario:
-    # get:
-      # description: Obtiene una lista de todos los usuarios disponibles en el sistema.
-      # operationId: listar_usuarios
-      # responses:
-        # "200":
-          # content:
-            # application/json:
-              # schema:
-                # items:
-                  # $ref: '#/components/schemas/Usuario'
-                # type: array
-          # description: Lista de usuarios obtenida exitosamente
-        # "500":
-          # description: Error interno del servidor
-      # summary: Listar todos los usuarios
-      # tags:
-      # - Usuario
-      # x-openapi-router-controller: openapi_server.controllers.usuario_controller
+    put:
+      description: Actualiza un dispositivo de la lista de dispositivos registrados
+        del usuario
+      operationId: actualizar_dispositivo
+      parameters:
+      - description: ID del usuario
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del usuario
+        explode: false
+        in: path
+        name: dispositivoId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Nombre del dispositivo a actualizar
+        required: true
+      responses:
+        "200":
+          description: Dispositivo actualizado exitosamente
+        "404":
+          description: Usuario o dispositivo no encontrado
+        "500":
+          description: Error del servidor
+      summary: Actualiza un dispositivo de la lista de dispositivos registrados del
+        usuario
+      tags:
+      - Dispositivo
+      x-openapi-router-controller: openapi_server.controllers.dispositivo_controller
+  /usuarios:
+    get:
+      description: Obtiene una lista de todos los usuarios disponibles en el sistema.
+      operationId: listar_usuarios
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Usuario'
+                type: array
+          description: Lista de usuarios obtenida exitosamente
+        "500":
+          description: Error interno del servidor
+      summary: Listar todos los usuarios
+      tags:
+      - Usuario
+      x-openapi-router-controller: openapi_server.controllers.usuario_controller
     post:
       description: Crea un nuevo usuario con la información proporcionada.
       operationId: crear_usuario
@@ -169,7 +247,7 @@ paths:
       tags:
       - Usuario
       x-openapi-router-controller: openapi_server.controllers.usuario_controller
-  /usuario/{userId}:
+  /usuarios/{userId}:
     delete:
       description: Elimina un usuario específico por su ID.
       operationId: eliminar_usuario
@@ -233,7 +311,42 @@ paths:
       tags:
       - Usuario
       x-openapi-router-controller: openapi_server.controllers.usuario_controller
-  /usuario/{userId}/perfiles:
+  /usuarios/{userId}/password:
+    patch:
+      description: Actualiza la contraseña de un usuario específico por su ID.
+      operationId: actualizar_password
+      parameters:
+      - description: ID del usuario a actualizar
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Nueva contraseña del usuario
+        required: true
+      responses:
+        "200":
+          description: Contraseña actualizada exitosamente
+        "400":
+          description: Solicitud inválida
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error interno del servidor
+      summary: Actualizar la contraseña de un usuario
+      tags:
+      - Usuario
+      x-openapi-router-controller: openapi_server.controllers.usuario_controller
+  /usuarios/{userId}/perfiles:
     get:
       description: Lista los perfiles de un usuario
       operationId: obtener_perfiles
@@ -299,7 +412,7 @@ paths:
       tags:
       - Perfil
       x-openapi-router-controller: openapi_server.controllers.perfil_controller
-  /usuario/{userId}/perfiles/{profileId}:
+  /usuarios/{userId}/perfiles/{profileId}:
     delete:
       description: Borra el perfil especificado de un usuario
       operationId: borrar_perfil_usuario
@@ -422,7 +535,42 @@ paths:
       tags:
       - Perfil
       x-openapi-router-controller: openapi_server.controllers.perfil_controller
-  /usuario/{userId}/perfiles/{profileId}/historial:
+  /usuarios/{userId}/perfiles/{profileId}/historial:
+    delete:
+      description: Borra el historial de un perfil
+      operationId: eliminar_contenido_historial
+      parameters:
+      - description: ID del usuario específicado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del perfil específico
+        explode: false
+        in: path
+        name: profileId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Historial borrado exitosamente
+        "404":
+          description: Usuario o perfil no encontrado
+        "500":
+          description: Error del servidor
+      summary: Borra el historial de un perfil
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
     get:
       description: Obtiene el historial de contenido completado por un perfil. Esta
         lista contendrá las series o películas terminadas de ver por el perfil.
@@ -465,49 +613,102 @@ paths:
       tags:
       - Perfil
       x-openapi-router-controller: openapi_server.controllers.perfil_controller
-    # post:
-    #   description: Añade un nuevo contenido al historial de un perfil
-    #   operationId: agregar_historial_perfil
-    #   parameters:
-    #   - description: ID del usuario específicado
-    #     explode: false
-    #     in: path
-    #     name: userId
-    #     required: true
-    #     schema:
-    #       example: 1
-    #       format: int64
-    #       type: integer
-    #     style: simple
-    #   - description: ID del perfil específico
-    #     explode: false
-    #     in: path
-    #     name: profileId
-    #     required: true
-    #     schema:
-    #       example: 1
-    #       format: int64
-    #       type: integer
-    #     style: simple
-    #   requestBody:
-    #     content:
-    #       application/json:
-    #         schema:
-    #           $ref: '#/components/schemas/Capitulo'
-    #     description: Objeto del contenido a añadir
-    #     required: true
-    #   responses:
-    #     "201":
-    #       description: Contenido añadido exitosamente
-    #     "404":
-    #       description: Usuario o perfil no encontrado
-    #     "500":
-    #       description: Error del servidor
-    #   summary: Añade un nuevo contenido al historial de un perfil
-    #   tags:
-    #   - Perfil
-    #   x-openapi-router-controller: openapi_server.controllers.perfil_controller
-  /usuario/{userId}/perfiles/{profileId}/lista:
+    post:
+      description: Añade un nuevo contenido al historial de un perfil
+      operationId: agregar_contenido_historial
+      parameters:
+      - description: ID del usuario específicado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del perfil específico
+        explode: false
+        in: path
+        name: profileId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Capitulo'
+        description: Objeto del contenido a añadir
+        required: true
+      responses:
+        "201":
+          description: Contenido añadido exitosamente
+        "404":
+          description: Usuario o perfil no encontrado
+        "500":
+          description: Error del servidor
+      summary: Añade un nuevo contenido al historial de un perfil
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+  /usuarios/{userId}/perfiles/{profileId}/historial/{contentId}:
+    patch:
+      description: Actualiza la fecha de visualización de un contenido del historial de un perfil
+      operationId: actualizar_contenido_historial
+      parameters:
+      - description: ID del usuario específicado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del perfil específico
+        explode: false
+        in: path
+        name: profileId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del contenido específico
+        explode: false
+        in: path
+        name: contentId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Capitulo'
+        description: Objeto del contenido a actualizar
+        required: true
+      responses:
+        "200":
+          description: Contenido actualizado exitosamente
+        "404":
+          description: Usuario, perfil o contenido no encontrado
+        "500":
+          description: Error del servidor
+      summary: Actualiza un contenido del historial de un perfil
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+  /usuarios/{userId}/perfiles/{profileId}/lista:
     get:
       description: Obtiene la lista de contenidos guardados para ver de un perfil
       operationId: obtener_lista_perfil
@@ -546,6 +747,94 @@ paths:
         "500":
           description: Error del servidor
       summary: Obtiene la lista de un perfil concreto
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+  /usuarios/{userId}/perfiles/{profileId}/lista/{contentId}:
+    delete:
+      description: Elimina un contenido de la lista de un perfil
+      operationId: eliminar_contenido_lista
+      parameters:
+      - description: ID del usuario específicado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del perfil específico
+        explode: false
+        in: path
+        name: profileId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del contenido específico
+        explode: false
+        in: path
+        name: contentId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Contenido eliminado exitosamente
+        "404":
+          description: Usuario, perfil o contenido no encontrado
+        "500":
+          description: Error del servidor
+      summary: Elimina un contenido de la lista de un perfil
+      tags:
+      - Perfil
+      x-openapi-router-controller: openapi_server.controllers.perfil_controller
+    post:
+      description: Añade un nuevo contenido a la lista de un perfil
+      operationId: agregar_contenido_lista
+      parameters:
+      - description: ID del usuario específicado
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      - description: ID del perfil específico
+        explode: false
+        in: path
+        name: profileId
+        required: true
+        schema:
+          example: 1
+          format: int64
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Capitulo'
+        description: Objeto del contenido a añadir
+        required: true
+      responses:
+        "201":
+          description: Contenido añadido exitosamente
+        "404":
+          description: Usuario o perfil no encontrado
+        "500":
+          description: Error del servidor
+      summary: Añade un nuevo contenido a la lista de un perfil
       tags:
       - Perfil
       x-openapi-router-controller: openapi_server.controllers.perfil_controller

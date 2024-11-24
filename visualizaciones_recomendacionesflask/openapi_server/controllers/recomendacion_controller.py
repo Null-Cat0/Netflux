@@ -11,7 +11,7 @@ from flask import jsonify, request
 from openapi_server.models.recomendacion_pelicula_db import RecomendacionPeliculaDB
 from openapi_server.models.recomendacion_serie_db import RecomendacionSerieDB
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['PATCH'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/recomendaciones', methods=['PATCH'])
 def actualizar_lista_recomendacion_perfil(user_id, perfil_id):
     """Actualiza una recomendación para un perfil
 
@@ -25,7 +25,7 @@ def actualizar_lista_recomendacion_perfil(user_id, perfil_id):
     :rtype: Union[Recomendacion, Tuple[Recomendacion, int], Tuple[Recomendacion, int, Dict[str, str]]
     """
     # Obtener el perfil con una petición al microservicio de usuario
-    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
     if response_perfil.status_code != 200:
         return jsonify({"message": "Perfil no encontrado"}), 404
@@ -49,7 +49,7 @@ def actualizar_lista_recomendacion_perfil(user_id, perfil_id):
 
     return jsonify({"message": "Recomendaciones actualizadas correctamente"}), 200
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['POST'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/recomendaciones', methods=['POST'])
 def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     """Crea una recomendación para un perfil
 
@@ -64,7 +64,7 @@ def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     """
 
     # Obtener el perfil con una petición al microservicio de usuario
-    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
     if response_perfil.status_code != 200:
         return jsonify({"message": "Perfil no encontrado"}), 404
@@ -74,8 +74,8 @@ def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     generos_perfil = [genero["id"] for genero in generos_perfil]
 
     # Se obtienen todas las películas y series
-    lista_peliculas_api = requests.get(f"{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_peliculas")
-    lista_series_api = requests.get(f"{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_series")
+    lista_peliculas_api = requests.get(f"{ContenidosConfig.CONTENIDOS_BASE_URL}/peliculas")
+    lista_series_api = requests.get(f"{ContenidosConfig.CONTENIDOS_BASE_URL}/series")
 
     if lista_peliculas_api.status_code != 200 or lista_series_api.status_code != 200:
         return jsonify({"message": "Error al obtener las películas o series"}), 500
@@ -112,11 +112,11 @@ def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
 
     return jsonify({"message": "Recomendaciones creadas correctamente"}), 201
     
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['DELETE'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/recomendaciones', methods=['DELETE'])
 def eliminar_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
-    """Elimina una recomendación en específico de un perfil
+    """Elimina una recomendación de un perfil
 
-    Elimina una recomendación en específico de un perfil # noqa: E501
+    Elimina una recomendación de un perfil # noqa: E501
 
     :param perfil_id: ID del perfil especificado
     :type perfil_id: int
@@ -126,7 +126,7 @@ def eliminar_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     # Se comprueba si existe el perfil
-    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
     if response_perfil.status_code != 200:
         return jsonify({"message": "Perfil no encontrado"}), 404
@@ -143,10 +143,9 @@ def eliminar_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
 
     return jsonify({"message": "Recomendaciones eliminadas correctamente"}), 200
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/recomendacion', methods=['GET'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/recomendaciones', methods=['GET'])
 def obtener_recomendaciones_perfil(user_id, perfil_id):
     """Obtiene una lista de las recomendaciones para el perfil"""
-    
    
     recomendaciones_peliculas = RecomendacionPeliculaDB.objects(id_perfil=perfil_id)
     recomendaciones_series = RecomendacionSerieDB.objects(id_perfil=perfil_id)
@@ -158,11 +157,9 @@ def obtener_recomendaciones_perfil(user_id, perfil_id):
         if pelicula.id_perfil == int(perfil_id):  # Verificar perfil
             peliculas_recomendadas.extend(pelicula.peliculas_recomendadas)
 
-
     for serie in recomendaciones_series:
         if serie.id_perfil == int(perfil_id):  # Verificar perfil
             series_recomendadas.extend(serie.series_recomendadas)
-
 
     recomendaciones = {
         "peliculas": peliculas_recomendadas,

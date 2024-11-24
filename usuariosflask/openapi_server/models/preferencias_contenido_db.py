@@ -31,21 +31,13 @@ class PreferenciasContenidoDB(db.Model):
         generos_ids = [genero.genero_id for genero in self.generos]
 
         # Ahora obtenemos los nombres de los generos asociados a este perfil con los ids obtenidos. 
-        # Para ello, realizamos una petición al microservicio de contenidos
-        # response_generos = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/obtener_lista_generos', json=generos_ids)
-
-        generos = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_generos")
+        generos = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/generos")
         pref_generos = []
 
         for genero in generos.json():
             if genero["id"] in generos_ids:
                 pref_generos.append(genero)
         return pref_generos
-
-        # if response_generos.status_code == 200:
-        #     return response_generos.json()
-        # else:
-        #     return []
     
     def to_api_model(self):
         from openapi_server.models.preferencias_contenido import PreferenciasContenido

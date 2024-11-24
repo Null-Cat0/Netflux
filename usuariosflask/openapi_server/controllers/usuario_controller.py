@@ -18,7 +18,7 @@ from openapi_server.models.perfil_db import PerfilDB
 from openapi_server.models.dispositivo_db import DispositivoDB
 from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
-@app.route('/actualizar_usuario/<int:user_id>', methods=['PUT'])
+@app.route('/usuarios/<user_id>', methods=['PUT'])
 def actualizar_usuario(user_id):  # noqa: E501
     """Actualizar un usuario existente"""
 
@@ -65,7 +65,7 @@ def actualizar_usuario(user_id):  # noqa: E501
 
     return jsonify({"message": "Usuario actualizado con éxito", "status": "success"}), 200
 
-@app.route('/actualizar_password/<user_id>', methods=['PATCH'])
+@app.route('/usuarios/<user_id>/password', methods=['PATCH'])
 def actualizar_password(user_id):  # noqa: E501
     """Actualizar la contraseña de un usuario
 
@@ -104,8 +104,7 @@ def actualizar_password(user_id):  # noqa: E501
     
     return jsonify({"message": "Contraseña actualizada con éxito", "status": "success"}), 200
 
-
-@app.route('/crear_usuario', methods=['GET', 'POST'])
+@app.route('/usuarios', methods=['GET', 'POST'])
 def crear_usuario():  # noqa: E501
     """Crear un nuevo usuario
 
@@ -145,7 +144,7 @@ def crear_usuario():  # noqa: E501
             "foto_perfil": 'netflux_rojo.png',
             "preferencias_contenido": {},
         }
-        request_perfil = requests.post(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{usuario_db.user_id}/perfiles", json=payload)
+        request_perfil = requests.post(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{usuario_db.user_id}/perfiles", json=payload)
 
         if request_perfil.status_code != 201:
             return jsonify({"message": "Error al crear el perfil por defecto del usuario"}), 500
@@ -153,7 +152,7 @@ def crear_usuario():  # noqa: E501
         db.session.commit()
         return jsonify({"message": "Usuario creado con éxito", "status": "success"}), 201
 
-@app.route('/eliminar_usuario/<user_id>', methods=['DELETE'])
+@app.route('/usuarios/<user_id>', methods=['DELETE'])
 def eliminar_usuario(user_id):  # noqa: E501
     """Eliminar un usuario
 
@@ -169,7 +168,7 @@ def eliminar_usuario(user_id):  # noqa: E501
     if usuario is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 404
     else:
-        request_borrar_perfiles = requests.delete(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles")
+        request_borrar_perfiles = requests.delete(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles")
 
         if request_borrar_perfiles.status_code != 200:
             return jsonify({"message": "Error al borrar los perfiles del usuario"}), 500
@@ -178,12 +177,11 @@ def eliminar_usuario(user_id):  # noqa: E501
         db.session.commit()
         return jsonify({"message": "Usuario eliminado con éxito", "status": "success"}), 200
     
-@app.route('/listar_usuarios', methods=['GET'])
+@app.route('/usuarios', methods=['GET'])
 def listar_usuarios():  # noqa: E501
     """Listar todos los usuarios
 
     Obtiene una lista de todos los usuarios disponibles en el sistema. # noqa: E501
-
 
     :rtype: Union[List[Usuario], Tuple[List[Usuario], int], Tuple[List[Usuario], int, Dict[str, str]]
     """
@@ -191,7 +189,7 @@ def listar_usuarios():  # noqa: E501
     list_usuarios_api = [usuario.to_api_model() for usuario in list_usuarios_db]
     return jsonify([usuario.serialize() for usuario in list_usuarios_api]), 200
 
-@app.route('/usuario/<user_id>', methods=['GET'])
+@app.route('/usuarios/<user_id>', methods=['GET'])
 def obtener_usuario(user_id):  # noqa: E501
     """Obtener un usuario específico
 

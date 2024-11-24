@@ -22,22 +22,22 @@ def pagina_inicio():
     usuario_id = session.get('logged_user_id')
 
     response = requests.get(
-        f"{Config.USUARIOS.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles/{perfil_id}")
+        f"{Config.USUARIOS.USUARIOS_BASE_URL}/usuarios/{str(usuario_id)}/perfiles/{perfil_id}")
 
     peliculas, series = [], []
     if response.status_code == 200:
         data = response.json()
 
-        response_peliculas = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/listar_peliculas")
+        response_peliculas = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/peliculas")
         if response_peliculas.status_code == 200:
             peliculas = response_peliculas.json()
 
-        response_series = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/listar_series")
+        response_series = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/series")
         if response_series.status_code == 200:
             series = response_series.json()
 
         response_recomendaciones = requests.get(
-            f"{Config.VISUALIZACIONES.VISUALIZACIONES_BASE_URL}/usuario/{str(usuario_id)}/perfil/{perfil_id}/recomendacion")
+            f"{Config.VISUALIZACIONES.VISUALIZACIONES_BASE_URL}/usuarios/{str(usuario_id)}/perfiles/{perfil_id}/recomendaciones")
 
         recomendaciones_pelicula = []
         recomendaciones_serie = []
@@ -48,12 +48,12 @@ def pagina_inicio():
 
             rs,rp = [],[]
             for recomendacion in recomendaciones_pelicula:
-                response = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/obtener_pelicula/{recomendacion}")
+                response = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/peliculas/{recomendacion}")
                 if response.status_code == 200:
                     rp.append(response.json())
             
             for recomendacion in recomendaciones_serie:
-                response = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/obtener_serie/{recomendacion}")
+                response = requests.get(f"{Config.CONTENIDOS.CONTENIDOS_BASE_URL}/series/{recomendacion}")
                 if response.status_code == 200:
                     rs.append(response.json())
 

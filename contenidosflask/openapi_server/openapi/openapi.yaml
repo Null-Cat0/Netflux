@@ -208,7 +208,7 @@ paths:
       tags:
       - Pelicula
       x-openapi-router-controller: openapi_server.controllers.pelicula_controller
-  /pelicula/{peliculaId}:
+  /peliculas/{peliculaId}:
     delete:
       description: Elimina una película específica por su ID.
       operationId: eliminar_pelicula
@@ -302,111 +302,77 @@ paths:
       tags:
       - Pelicula
       x-openapi-router-controller: openapi_server.controllers.pelicula_controller
-  /pelicula/{peliculaId}/actores:
-    get:
-      description: Obtiene una lista de todos los actores que participan en una película
-        específica.
-      operationId: listar_actores_de_pelicula
-      parameters:
-      - description: ID de la película
-        explode: false
-        in: path
-        name: peliculaId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/Actor'
-                type: array
-          description: Lista de actores obtenida exitosamente
-        "404":
-          description: película no encontrada
-        "500":
-          description: Error interno del servidor
-      summary: Listar actores de una película específica
-      tags:
-      - Pelicula
-      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
-    patch:
-      description: Asigna un actor existente a una película específica.
-      operationId: asignar_actor_a_pelicula
-      parameters:
-      - description: ID de la película
-        explode: false
-        in: path
-        name: peliculaId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/asignarActorASerie_request'
-        description: ID del actor a asignar
-        required: true
-      responses:
-        "204":
-          description: Actor asignado a la película exitosamente
-        "400":
-          description: Solicitud inválida
-        "404":
-          description: película o actor no encontrado
-        "500":
-          description: Error interno del servidor
-      summary: Asignar un actor a una película
-      tags:
-      - Pelicula
-      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
-  /pelicula/{peliculaId}/actores/{actorId}:
-    delete:
-      description: Elimina un actor existente de una película específica.
-      operationId: eliminar_actor_pelicula
-      parameters:
-      - description: ID de la película
-        explode: false
-        in: path
-        name: peliculaId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      - description: ID del actor
-        explode: false
-        in: path
-        name: actorId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "204":
-          description: Actor eliminado de la película correctamente
-        "400":
-          description: Solicitud inválida
-        "404":
-          description: Película o actor no encontrado
-        "500":
-          description: Error interno del servidor
-      summary: Elimnar un actor de una película
-      tags:
-      - Pelicula
-      x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+  # /peliculas/{peliculaId}/actores:
+  #   get:
+  #     description: Obtiene una lista de todos los actores que participan en una película
+  #       específica.
+  #     operationId: listar_actores_de_pelicula
+  #     parameters:
+  #     - description: ID de la película
+  #       explode: false
+  #       in: path
+  #       name: peliculaId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     responses:
+  #       "200":
+  #         content:
+  #           application/json:
+  #             schema:
+  #               items:
+  #                 $ref: '#/components/schemas/Actor'
+  #               type: array
+  #         description: Lista de actores obtenida exitosamente
+  #       "404":
+  #         description: película no encontrada
+  #       "500":
+  #         description: Error interno del servidor
+  #     summary: Listar actores de una película específica
+  #     tags:
+  #     - Pelicula
+  #     x-openapi-router-controller: openapi_server.controllers.pelicula_controller
+  # /peliculas/{peliculaId}/actores/{actorId}:
+  #   delete:
+  #     description: Elimina un actor existente de una película específica.
+  #     operationId: eliminar_actor_pelicula
+  #     parameters:
+  #     - description: ID de la película
+  #       explode: false
+  #       in: path
+  #       name: peliculaId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     - description: ID del actor
+  #       explode: false
+  #       in: path
+  #       name: actorId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     responses:
+  #       "204":
+  #         description: Actor eliminado de la película correctamente
+  #       "400":
+  #         description: Solicitud inválida
+  #       "404":
+  #         description: Película o actor no encontrado
+  #       "500":
+  #         description: Error interno del servidor
+  #     summary: Elimnar un actor de una película
+  #     tags:
+  #     - Pelicula
+  #     x-openapi-router-controller: openapi_server.controllers.pelicula_controller
   /series:
     get:
       description: "Obtiene una lista de todas las series de televisión disponibles\
@@ -580,78 +546,78 @@ paths:
       tags:
       - Serie
       x-openapi-router-controller: openapi_server.controllers.serie_controller
-    patch:
-      description: Asigna un actor existente a una serie específica.
-      operationId: asignar_actor_a_serie
-      parameters:
-      - description: ID de la serie
-        explode: false
-        in: path
-        name: serieId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/asignarActorASerie_request'
-        description: ID del actor a asignar
-        required: true
-      responses:
-        "204":
-          description: Actor asignado a la serie exitosamente
-        "400":
-          description: Solicitud inválida
-        "404":
-          description: Serie o actor no encontrado
-        "500":
-          description: Error interno del servidor
-      summary: Asignar un actor a una serie
-      tags:
-      - Serie
-      x-openapi-router-controller: openapi_server.controllers.serie_controller
-  /series/{serieId}/actores/{actorId}:
-    delete:
-      description: Elimina un actor existente de una serie específica.
-      operationId: eliminar_actor_serie
-      parameters:
-      - description: ID de la serie
-        explode: false
-        in: path
-        name: serieId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      - description: ID del actor
-        explode: false
-        in: path
-        name: actorId
-        required: true
-        schema:
-          example: 1
-          format: int64
-          type: integer
-        style: simple
-      responses:
-        "204":
-          description: Actor eliminado de la serie correctamente
-        "400":
-          description: Solicitud inválida
-        "404":
-          description: Serie o actor no encontrado
-        "500":
-          description: Error interno del servidor
-      summary: Elimnar un actor de una serie
-      tags:
-      - Serie
-      x-openapi-router-controller: openapi_server.controllers.serie_controller
+    # post:
+    #   description: Asigna un actor existente a una serie específica.
+    #   operationId: asignar_actor_a_serie
+    #   parameters:
+    #   - description: ID de la serie
+    #     explode: false
+    #     in: path
+    #     name: serieId
+    #     required: true
+    #     schema:
+    #       example: 1
+    #       format: int64
+    #       type: integer
+    #     style: simple
+    #   requestBody:
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: '#/components/schemas/asignarActorASerie_request'
+    #     description: ID del actor a asignar
+    #     required: true
+    #   responses:
+    #     "204":
+    #       description: Actor asignado a la serie exitosamente
+    #     "400":
+    #       description: Solicitud inválida
+    #     "404":
+    #       description: Serie o actor no encontrado
+    #     "500":
+    #       description: Error interno del servidor
+    #   summary: Asignar un actor a una serie
+    #   tags:
+    #   - Serie
+    #   x-openapi-router-controller: openapi_server.controllers.serie_controller
+  # /series/{serieId}/actores/{actorId}:
+  #   delete:
+  #     description: Elimina un actor existente de una serie específica.
+  #     operationId: eliminar_actor_serie
+  #     parameters:
+  #     - description: ID de la serie
+  #       explode: false
+  #       in: path
+  #       name: serieId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     - description: ID del actor
+  #       explode: false
+  #       in: path
+  #       name: actorId
+  #       required: true
+  #       schema:
+  #         example: 1
+  #         format: int64
+  #         type: integer
+  #       style: simple
+  #     responses:
+  #       "204":
+  #         description: Actor eliminado de la serie correctamente
+  #       "400":
+  #         description: Solicitud inválida
+  #       "404":
+  #         description: Serie o actor no encontrado
+  #       "500":
+  #         description: Error interno del servidor
+  #     summary: Elimnar un actor de una serie
+  #     tags:
+  #     - Serie
+  #     x-openapi-router-controller: openapi_server.controllers.serie_controller
   /series/{serieId}/temporadas:
     get:
       description: Obtiene una lista de todas las temporadas de una serie específica.

@@ -2,12 +2,12 @@ from openapi_server.models.dispositivo_db import DispositivoDB
 from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
 from openapi_server import app, db
-
-from openapi_server.models.actualizar_dispositivos_request import ActualizarDispositivosRequest
 from flask import request, jsonify
 
-@app.route('/usuario/<int:user_id>/dispositivo/<string:nombre_dispositivo>/<int:dispositivo_id>', methods=['PUT'])
-def actualizar_dispositivos(user_id, nombre_dispositivo, dispositivo_id):
+from openapi_server.models.actualizar_dispositivos_request import ActualizarDispositivosRequest
+
+@app.route('/usuarios/<user_id>/dispositivos/<dispositivo_id>/<nombre_dispositivo>/', methods=['PUT'])
+def actualizar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
     if request.is_json:
         actualizar_dispositivos_request = ActualizarDispositivosRequest.from_dict(request.get_json())
 
@@ -40,8 +40,7 @@ def actualizar_dispositivos(user_id, nombre_dispositivo, dispositivo_id):
         else:
             return jsonify({"message": "El dispositivo no existe", "status": "error"}), 404
 
-
-@app.route('/usuario/<int:user_id>/dispositivo/<string:nombre_dispositivo>/<int:dispositivo_id>', methods=['DELETE'])
+@app.route('/usuarios/<user_id>/dispositivos/<dispositivo_id>/<nombre_dispositivo>', methods=['DELETE'])
 def eliminar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
     """Elimina un dispositivo de la lista de dispositivos registrados del usuario
 
@@ -67,8 +66,7 @@ def eliminar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
     else:
         return jsonify({"message": "El dispositivo no existe", "status": "error"}), 404
 
-
-@app.route('/usuario/<user_id>/dispositivos', methods=['GET'])
+@app.route('/usuarios/<user_id>/dispositivos', methods=['GET'])
 def obtener_dispositivos(user_id):  # noqa: E501
     """Obtiene la lista de dispositivos registrados por el usuario
 
@@ -93,7 +91,7 @@ def obtener_dispositivos(user_id):  # noqa: E501
      
     return jsonify(dispositivos), 200    
 
-@app.route('/usuario/<user_id>/dispositivo', methods=['POST'])
+@app.route('/usuarios/<user_id>/dispositivos', methods=['POST'])
 def crear_dispositivo(user_id):  # noqa: E501
     """Registra un nuevo dispositivo para el usuario
 

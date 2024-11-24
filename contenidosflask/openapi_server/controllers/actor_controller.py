@@ -10,7 +10,7 @@ from openapi_server.models.serie_db import SerieDB
 from flask import jsonify, request
 from bson import ObjectId
 
-@app.route('/actualizar_actor/<actor_id>', methods=['PUT'])
+@app.route('/actores/<actor_id>', methods=['PUT'])
 def actualizar_actor(actor_id):  # noqa: E501
     """Actualizar un actor existente
 
@@ -44,7 +44,7 @@ def actualizar_actor(actor_id):  # noqa: E501
     actor_to_update.save()
     return jsonify({"message": "Actor actualizado correctamente", "status": "success"}), 200
 
-@app.route('/crear_actor', methods=['POST'])
+@app.route('/actores', methods=['POST'])
 def crear_actor():  # noqa: E501
     """Crear un nuevo actor
 
@@ -65,7 +65,7 @@ def crear_actor():  # noqa: E501
     else:
         return jsonify({"message": "Error al crear el actor", "status": "error"}), 400
 
-@app.route('/eliminar_actor/<actor_id>', methods=['DELETE'])
+@app.route('/actores/<actor_id>', methods=['DELETE'])
 def eliminar_actor(actor_id):  # noqa: E501
     """Eliminar un actor
 
@@ -87,7 +87,7 @@ def eliminar_actor(actor_id):  # noqa: E501
     actor.delete()
     return jsonify({"message": "Actor eliminado correctamente", "status": "success"}), 200
    
-@app.route('/listar_actores', methods=['GET'])
+@app.route('/actores', methods=['GET'])
 def listar_actores():  # noqa: E501
     """Listar todos los actores
 
@@ -99,7 +99,7 @@ def listar_actores():  # noqa: E501
     list_actores_api = [actor.to_api_model() for actor in actores_db]
     return jsonify(list_actores_api), 200
 
-@app.route('/obtener_actor/<actor_id>', methods=['GET'])
+@app.route('/actores/<actor_id>', methods=['GET'])
 def obtener_actor(actor_id):  # noqa: E501
     """Obtener un actor específico
 

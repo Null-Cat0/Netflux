@@ -14,7 +14,7 @@ from openapi_server.models.visualizacion_capitulo_db import VisualizacionCapitul
 
 from bson import ObjectId
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion/<contenido_id>', methods=['PATCH'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/visualizaciones/<contenido_id>', methods=['PATCH'])
 def actualizar_visualizacion_contenido_perfil(user_id, perfil_id, contenido_id):  # noqa: E501
     """Actualiza la visualización de un capítulo o película por un perfil
 
@@ -28,7 +28,7 @@ def actualizar_visualizacion_contenido_perfil(user_id, perfil_id, contenido_id):
     :rtype: Union[Visualizacion, Tuple[Visualizacion, int], Tuple[Visualizacion, int, Dict[str, str]]
     """
     # Se obtiene el perfil con una petición al microservicio de usuario
-    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
     print("He entrado")
     if response_perfil.status_code != 200:
@@ -46,7 +46,7 @@ def actualizar_visualizacion_contenido_perfil(user_id, perfil_id, contenido_id):
 
     return jsonify({"message": "Visualización actualizada"}), 200
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion', methods=['POST'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/visualizaciones', methods=['POST'])
 def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
     """Inicia la visualización de un capítulo o película por un perfil
 
@@ -60,7 +60,7 @@ def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
     :rtype: Union[Visualizacion, Tuple[Visualizacion, int], Tuple[Visualizacion, int, Dict[str, str]]
     """
     # Se obtiene el perfil con una petición al microservicio de usuario
-    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
     if response_perfil.status_code != 200:
         return jsonify({"message": "Perfil no encontrado"}), 404
@@ -98,7 +98,7 @@ def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
             "pelicula_id": visualizacion["pelicula_id"]
         }
 
-    response_historial = requests.post(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}/historial", json=payload)
+    response_historial = requests.post(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/historial", json=payload)
 
     if response_historial.status_code != 201:
         return jsonify({"message": "Error al actualizar el historial de visualizaciones"}), 500
@@ -108,7 +108,7 @@ def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
 
     return jsonify({"message": "Visualización creada"}), 201
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion', methods=['DELETE'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/visualizaciones', methods=['DELETE'])
 def borrar_visualizaciones_perfil(user_id, perfil_id):
     """Borra todas las visualizaciones de un perfil
 
@@ -132,7 +132,7 @@ def borrar_visualizaciones_perfil(user_id, perfil_id):
 
     return jsonify({"message": "Visualizaciones borradas"}), 200
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion/<contenido_id>', methods=['DELETE'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/visualizaciones/<contenido_id>', methods=['DELETE'])
 def borrar_visualizacion_perfil(user_id, perfil_id, contenido_id):  # noqa: E501
     """Borra una visualización dado el id de un contenido
 
@@ -168,7 +168,7 @@ def borrar_visualizacion_perfil(user_id, perfil_id, contenido_id):  # noqa: E501
             "pelicula_id": visualizacion_api.pelicula_id
         }
 
-    response_historial = requests.delete(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}/historial", json=payload)
+    response_historial = requests.delete(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/historial", json=payload)
 
     if response_historial.status_code != 200:
         return jsonify({"message": "Error al actualizar el historial de visualizaciones"}), 500
@@ -178,33 +178,33 @@ def borrar_visualizacion_perfil(user_id, perfil_id, contenido_id):  # noqa: E501
 
     return jsonify({"message": "Visualización borrada"}), 200
 
-@app.route('/contenido/<contenido_id>/visualizacion', methods=['GET'])
-def listar_visualizaciones_contenido(contenido_id):  # noqa: E501
-    """Lista de perfiles que han visto el contenido especificado
+# @app.route('/contenido/<contenido_id>/visualizacion', methods=['GET'])
+# def listar_visualizaciones_contenido(contenido_id):  # noqa: E501
+#     """Lista de perfiles que han visto el contenido especificado
 
-    Lista de perfiles que han visto el contenido especificado. # noqa: E501
+#     Lista de perfiles que han visto el contenido especificado. # noqa: E501
 
-    :param contenido_id: ID del perfil a obtener
-    :type contenido_id: int
+#     :param contenido_id: ID del perfil a obtener
+#     :type contenido_id: int
 
-    :rtype: Union[List[Perfil], Tuple[List[Perfil], int], Tuple[List[Perfil], int, Dict[str, str]]
-    """
-    # Contenido_id puede ser una película o un capítulo
-    visualizaciones = VisualizacionPeliculaDB.objects().filter(pelicula_id=ObjectId(contenido_id))
+#     :rtype: Union[List[Perfil], Tuple[List[Perfil], int], Tuple[List[Perfil], int, Dict[str, str]]
+#     """
+#     # Contenido_id puede ser una película o un capítulo
+#     visualizaciones = VisualizacionPeliculaDB.objects().filter(pelicula_id=ObjectId(contenido_id))
 
-    if len(visualizaciones) == 0:
-        visualizaciones = VisualizacionCapituloDB.objects().filter(capitulo_id=ObjectId(contenido_id))
+#     if len(visualizaciones) == 0:
+#         visualizaciones = VisualizacionCapituloDB.objects().filter(capitulo_id=ObjectId(contenido_id))
 
-    if len(visualizaciones) == 0:
-        return jsonify({"message": "Visualización no encontrada"}), 404
+#     if len(visualizaciones) == 0:
+#         return jsonify({"message": "Visualización no encontrada"}), 404
 
-    perfiles = []
-    for visualizacion in visualizaciones:
-        perfiles.append(visualizacion.to_api_model().id_perfil)
+#     perfiles = []
+#     for visualizacion in visualizaciones:
+#         perfiles.append(visualizacion.to_api_model().id_perfil)
 
-    return jsonify(perfiles), 200
+#     return jsonify(perfiles), 200
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/visualizacion', methods=['GET'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/visualizaciones', methods=['GET'])
 def listar_visualizaciones_perfil(user_id, perfil_id):  # noqa: E501
     """Historial de un perfil en específico
 
@@ -216,7 +216,7 @@ def listar_visualizaciones_perfil(user_id, perfil_id):  # noqa: E501
     :rtype: Union[List[Visualizacion], Tuple[List[Visualizacion], int], Tuple[List[Visualizacion], int, Dict[str, str]]
     """
     # Se comprueba si existe el perfil
-    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
     if response_perfil.status_code != 200:
         return jsonify({"message": "Perfil no encontrado"}), 404
@@ -233,7 +233,7 @@ def listar_visualizaciones_perfil(user_id, perfil_id):  # noqa: E501
 
     return jsonify(visualizaciones), 200
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/historial/capitulo/<capitulo_id>', methods=['GET'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/visualizaciones/capitulos/<capitulo_id>', methods=['GET'])
 def obtener_visualizacion_capitulo_perfil(user_id, perfil_id, capitulo_id):  # noqa: E501
     """Obtiene el capítulo en visualización del perfil especificado
 
@@ -248,7 +248,7 @@ def obtener_visualizacion_capitulo_perfil(user_id, perfil_id, capitulo_id):  # n
     """
     print("He entrado en el existe")
     # Se comprueba si existe el perfil
-    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
     if response_perfil.status_code != 200:
         return jsonify({"message": "Perfil no encontrado"}), 404
@@ -261,7 +261,7 @@ def obtener_visualizacion_capitulo_perfil(user_id, perfil_id, capitulo_id):  # n
 
     return jsonify(visualizacion.to_api_model()), 200
 
-@app.route('/usuario/<user_id>/perfil/<perfil_id>/historial/pelicula/<pelicula_id>', methods=['GET'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/visualizaciones/peliculas/<pelicula_id>', methods=['GET'])
 def obtener_visualizacion_pelicula_perfil(user_id, perfil_id, pelicula_id):  # noqa: E501
     """Obtiene la película visualizada por el perfil especificado
 
@@ -275,7 +275,7 @@ def obtener_visualizacion_pelicula_perfil(user_id, perfil_id, pelicula_id):  # n
     :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
     """
     # Se comprueba si existe el perfil
-    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}")
+    response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
     if response_perfil.status_code != 200:
         return jsonify({"message": "Perfil no encontrado"}), 404

@@ -111,14 +111,6 @@ def crear_pelicula():  # noqa: E501
                 "status": "error"
             }), 400
         
-        if pelicula_api.secuela:
-            if not PeliculaDB.objects.get(titulo=pelicula_api.secuela):
-                return jsonify({"message": "Error al crear la película, la secuela no existe en la base de datos", "status": "error"}), 400
-
-        if pelicula_api.precuela:
-             if not PeliculaDB.objects.get(titulo=pelicula_api.precuela):
-                return jsonify({"message": "Error al crear la película, la precuela no existe en la base de datos", "status": "error"}), 400
-
         pelicula_db = pelicula_api.to_db_model()
         pelicula_db.save()
         return jsonify({"message": "Película creada con éxito", "status": "success"}), 201

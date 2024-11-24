@@ -17,17 +17,18 @@ from openapi_server.models.genero_preferencias_db import GeneroPreferenciasDB
 from openapi_server.models.historial_perfil_db import HistorialPerfilDB
 from openapi_server.models.lista_perfil_db import ListaPerfilDB
 
+# Método auxiliar para eliminar las recomendaciones y visualizaciones de un perfil
 def eliminar_datos_perfil(user_id, perfil_id):
     # Se han de eliminar las recomendaciones y visualizaciones del perfil
-    recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/recomendacion")
+    recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/recomendaciones")
     if recomendaciones_perfil.status_code != 200:
         return jsonify({"message": "Error al eliminar las recomendaciones del perfil"}), 500
 
-    visualizaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/visualizacion")
+    visualizaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/visualizaciones")
     if visualizaciones_perfil.status_code != 200:
         return jsonify({"message": "Error al eliminar las visualizaciones del perfil"}), 500
 
-@app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['PUT'])
+@app.route('/usuarios/<user_id>/perfiles/<profile_id>', methods=['PUT'])
 def actualizar_perfil_usuario(user_id, profile_id):
     """Actualiza el perfil especificado
 
@@ -71,7 +72,7 @@ def actualizar_perfil_usuario(user_id, profile_id):
         db.session.delete(gpdb)
 
     generos_name_list = perfil_api.preferencias_contenido.generos
-    generos_response = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_generos')
+    generos_response = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/generos')
     if generos_response.status_code != 200:
         return jsonify({"message": "Error al obtener los géneros"}), 500
 
@@ -88,19 +89,19 @@ def actualizar_perfil_usuario(user_id, profile_id):
     db.session.commit()
 
     # Se actualizan las recomendaciones al perfil
-    recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
+    recomendaciones_perfil = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{perfil_db.user_id}/perfiles/{perfil_db.perfil_id}/recomendaciones")
 
     if recomendaciones_perfil.status_code != 200:
         return jsonify({"message": "Error al eliminar las recomendaciones del perfil"}), 500
 
-    recomendaciones_perfil = requests.post(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
+    recomendaciones_perfil = requests.post(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{perfil_db.user_id}/perfiles/{perfil_db.perfil_id}/recomendaciones")
 
     if recomendaciones_perfil.status_code != 201:
         return jsonify({"message": "Error al crear las recomendaciones del perfil"}), 500
 
     return jsonify(perfil_api.serialize()), 200
 
-@app.route('/usuario/<user_id>/perfiles', methods=['DELETE'])
+@app.route('/usuarios/<user_id>/perfiles', methods=['DELETE'])
 def borrar_perfiles_usuario(user_id):  # noqa: E501
     """Borra todos los perfiles de un usuario
 
@@ -121,7 +122,7 @@ def borrar_perfiles_usuario(user_id):  # noqa: E501
 
     return jsonify({"message": "Datos de los perfiles eliminados con éxito", "status": "success"}), 200
 
-@app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['DELETE'])
+@app.route('/usuarios/<user_id>/perfiles/<profile_id>', methods=['DELETE'])
 def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
     """Borra el perfil especificado
 
@@ -145,7 +146,7 @@ def borrar_perfil_usuario(user_id, profile_id):  # noqa: E501
     else:
         return jsonify({"message": "No se ha podido eliminar el perfil", "status": "error"}), 404
 
-@app.route('/usuario/<user_id>/perfiles', methods=['POST'])
+@app.route('/usuarios/<user_id>/perfiles', methods=['POST'])
 def crear_perfil(user_id):  # noqa: E501
     """Añade un nuevo perfil al usuario especificado
 
@@ -183,7 +184,7 @@ def crear_perfil(user_id):  # noqa: E501
         db.session.commit()
 
         generos_name_list = preferencias_api.generos or []
-        generos_response = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/listar_generos')
+        generos_response = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/generos')
         if generos_response.status_code == 200:
             generos = generos_response.json()
             for genero in generos:
@@ -195,7 +196,7 @@ def crear_perfil(user_id):  # noqa: E501
             return jsonify({"message": "Error al obtener los géneros"}), 500
 
         # Se crean recomendaciones al perfil
-        recomendaciones_perfil = requests.post(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{perfil_db.user_id}/perfil/{perfil_db.perfil_id}/recomendacion")
+        recomendaciones_perfil = requests.post(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{perfil_db.user_id}/perfiles/{perfil_db.perfil_id}/recomendaciones")
 
         if recomendaciones_perfil.status_code != 201:
             return jsonify({"message": "Error al crear la recomendaciones del perfil"}), 500
@@ -205,7 +206,7 @@ def crear_perfil(user_id):  # noqa: E501
     else:
         return jsonify({"message": "Ha habido un error con su solicitud, inténtelo de nuevo más tarde", "status": "error"}), 404
  
-@app.route('/usuario/<user_id>/perfiles/<profile_id>/historial', methods=['GET'])
+@app.route('/usuarios/<user_id>/perfiles/<profile_id>/historial', methods=['GET'])
 def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
     """Obtiene el historial de contenido completado por de un perfil
 
@@ -255,7 +256,7 @@ def obtener_historial_perfil(user_id, profile_id):  # noqa: E501
 
     return jsonify({"capitulos": capitulos, "peliculas": peliculas}), 200
 
-@app.route('/usuario/<user_id>/perfiles/<profile_id>/historial', methods=['POST'])
+@app.route('/usuarios/<user_id>/perfiles/<profile_id>/historial', methods=['POST'])
 def agregar_contenido_historial(user_id, profile_id):
     # Verifica si la solicitud contiene JSON
     if request.is_json:
@@ -270,14 +271,14 @@ def agregar_contenido_historial(user_id, profile_id):
     cap = False
     if "pelicula_id" in contenido_json:
         pelicula_id = contenido_json["pelicula_id"]
-        response_contenido = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_pelicula/{pelicula_id}')
+        response_contenido = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/peliculas/{pelicula_id}')
 
     elif "serie_id" and "temporada_id" and "capitulo_id" in contenido_json:
         serie_id = contenido_json["serie_id"]
         temporada_id = contenido_json["temporada_id"]
         capitulo_id = contenido_json["capitulo_id"]
 
-        response_contenido = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_capitulo_serie/{serie_id}/{temporada_id}/{capitulo_id}')
+        response_contenido = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/series/{serie_id}/temporadas/{temporada_id}/capitulos/{capitulo_id}')
         cap = True
 
     else:
@@ -306,7 +307,7 @@ def agregar_contenido_historial(user_id, profile_id):
 
     return jsonify({"message": "Contenido añadido al historial", "status": "success"}), 201
 
-@app.route('/usuario/<user_id>/perfiles/<perfil_id>/historial/<contenido_id>', methods=['PATCH'])
+@app.route('/usuarios/<user_id>/perfiles/<perfil_id>/historial/<contenido_id>', methods=['PATCH'])
 def actualizar_contenido_historial(user_id, perfil_id, contenido_id):
     perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=perfil_id).first()
     if perfil_db is None:
@@ -322,7 +323,7 @@ def actualizar_contenido_historial(user_id, perfil_id, contenido_id):
 
     return jsonify({"message": "Fecha de visualización actualizada", "status": "success"}), 200
 
-@app.route('/usuario/<user_id>/perfiles/<profile_id>/historial', methods=['DELETE'])
+@app.route('/usuarios/<user_id>/perfiles/<profile_id>/historial', methods=['DELETE'])
 def eliminar_contenido_historial(user_id, profile_id):
     if not request.is_json:
         return jsonify({"message": "La solicitud debe contener un JSON"}), 400
@@ -352,7 +353,7 @@ def eliminar_contenido_historial(user_id, profile_id):
 
     return jsonify({"message": "Contenido eliminado del historial", "status": "success"}), 200
 
-@app.route('/usuario/<user_id>/perfiles/<profile_id>/lista', methods=['GET'])
+@app.route('/usuarios/<user_id>/perfiles/<profile_id>/lista', methods=['GET'])
 def obtener_lista_perfil(user_id, profile_id):  # noqa: E501
     """Obtiene la lista de un perfil concreto
 
@@ -395,7 +396,7 @@ def obtener_lista_perfil(user_id, profile_id):  # noqa: E501
 
     return jsonify({"series": series, "peliculas": peliculas}), 200
 
-@app.route('/usuario/<user_id>/perfiles/<profile_id>/lista/<contenido_id>', methods=['POST'])
+@app.route('/usuarios/<user_id>/perfiles/<profile_id>/lista/<contenido_id>', methods=['POST'])
 def agregar_contenido_lista(user_id, profile_id, contenido_id):
     # Buscamos el perfil en la base de datos
     perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
@@ -404,12 +405,12 @@ def agregar_contenido_lista(user_id, profile_id, contenido_id):
 
     # Buscamos el contenido en la base de datos
     ## Hay que ver si es una serie o una película
-    response_serie = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_serie/{contenido_id}')
+    response_serie = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/series/{contenido_id}')
     if response_serie.status_code == 200:
         contenido_db = response_serie.json()
         es_serie = True
     else:
-        response_pelicula = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/obtener_pelicula/{contenido_id}')
+        response_pelicula = requests.get(f'{ContenidosConfig.CONTENIDOS_BASE_URL}/peliculas/{contenido_id}')
         if response_pelicula.status_code == 200:
             contenido_db = response_pelicula.json()
             es_serie = False
@@ -433,7 +434,7 @@ def agregar_contenido_lista(user_id, profile_id, contenido_id):
 
     return jsonify({"message": "Contenido añadido a la lista", "status": "success"}), 201
 
-@app.route('/usuario/<user_id>/perfiles/<profile_id>/lista/<contenido_id>', methods=['DELETE'])
+@app.route('/usuarios/<user_id>/perfiles/<profile_id>/lista/<contenido_id>', methods=['DELETE'])
 def eliminar_contenido_lista(user_id, profile_id, contenido_id):
     perfil_db = PerfilDB.query.filter_by(user_id=user_id, perfil_id=profile_id).first()
     if perfil_db is None:
@@ -448,7 +449,7 @@ def eliminar_contenido_lista(user_id, profile_id, contenido_id):
 
     return jsonify({"message": "Contenido eliminado de la lista", "status": "success"}), 200
 
-@app.route('/usuario/<user_id>/perfiles/<profile_id>', methods=['GET'])
+@app.route('/usuarios/<user_id>/perfiles/<profile_id>', methods=['GET'])
 def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
     """Obtiene el perfil específico de un usuario concreto
 
@@ -470,7 +471,7 @@ def obtener_perfil_usuario(user_id, profile_id):  # noqa: E501
         else:
             return jsonify(perfil.serialize()), 200
 
-@app.route('/usuario/<user_id>/perfiles', methods=['GET'])
+@app.route('/usuarios/<user_id>/perfiles', methods=['GET'])
 def obtener_perfiles(user_id):  # noqa: E501
     """Obtiene todos los perfiles del usuario especificado
 

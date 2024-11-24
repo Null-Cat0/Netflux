@@ -11,7 +11,7 @@ from openapi_server.models.serie_update import SerieUpdate  # noqa: E501
 from flask import jsonify, request
 from bson import ObjectId
 
-@app.route('/actualizar_serie/<serie_id>', methods=['PUT'])
+@app.route('/series/<serie_id>', methods=['PUT'])
 def actualizar_serie(serie_id):  # noqa: E501
     """Actualizar una serie existente
 
@@ -63,33 +63,33 @@ def actualizar_serie(serie_id):  # noqa: E501
     serie_to_update.save()
     return jsonify({"message": "Serie actualizada correctamente", "status": "success"}), 200
 
-@app.route('/asignar_actor_serie/<serie_id>', methods=['POST'])
-def asignar_actor_a_serie(serie_id): # noqa: E501
-    """Asignar un actor a una serie
+# @app.route('/asignar_actor_serie/<serie_id>', methods=['POST'])
+# def asignar_actor_a_serie(serie_id): # noqa: E501
+#     """Asignar un actor a una serie
 
-    Asigna un actor existente a una serie específica. # noqa: E501
+#     Asigna un actor existente a una serie específica. # noqa: E501
 
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param asignar_actor_a_serie_request: ID del actor a asignar
-    :type asignar_actor_a_serie_request: dict | bytes
+#     :param serie_id: ID de la serie
+#     :type serie_id: int
+#     :param asignar_actor_a_serie_request: ID del actor a asignar
+#     :type asignar_actor_a_serie_request: dict | bytes
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
-    if request.is_json:
-        actor_a_asignar = AsignarActorRequest.from_dict(request.get_json())  # noqa: E501
+#     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+#     """
+#     if request.is_json:
+#         actor_a_asignar = AsignarActorRequest.from_dict(request.get_json())  # noqa: E501
     
-    serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
-    if not serie_db:
-        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
+#     serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
+#     if not serie_db:
+#         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
     
-    if not ActorDB.objects.get(id=ObjectId(actor_a_asignar.actor_id)):
-        return jsonify({"message": "Actor no encontrado", "status": "error"}), 404
+#     if not ActorDB.objects.get(id=ObjectId(actor_a_asignar.actor_id)):
+#         return jsonify({"message": "Actor no encontrado", "status": "error"}), 404
 
-    serie_db.update(add_to_set__actores=ObjectId(actor_a_asignar.actor_id))
-    return jsonify({"message": "Actor asignado a la serie", "status": "success"}), 200
+#     serie_db.update(add_to_set__actores=ObjectId(actor_a_asignar.actor_id))
+#     return jsonify({"message": "Actor asignado a la serie", "status": "success"}), 200
 
-@app.route('/crear_serie', methods=['POST'])
+@app.route('/series', methods=['POST'])
 def crear_serie():  # noqa: E501
     """Crear una nueva serie
 
@@ -121,31 +121,31 @@ def crear_serie():  # noqa: E501
     else:
         return jsonify({"message": "Error al crear la serie", "status": "error"}), 400
 
-@app.route('/eliminar_actor_serie/<serie_id>/<actor_id>', methods=['DELETE'])
-def eliminar_actor_serie(serie_id, actor_id):  # noqa: E501
-    """Elimnar un actor de una serie
+# @app.route('/eliminar_actor_serie/<serie_id>/<actor_id>', methods=['DELETE'])
+# def eliminar_actor_serie(serie_id, actor_id):  # noqa: E501
+#     """Elimnar un actor de una serie
 
-    Elimina un actor existente de una serie específica. # noqa: E501
+#     Elimina un actor existente de una serie específica. # noqa: E501
 
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param actor_id: ID del actor
-    :type actor_id: int
+#     :param serie_id: ID de la serie
+#     :type serie_id: int
+#     :param actor_id: ID del actor
+#     :type actor_id: int
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
-    serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
-    if not serie_db:
-        return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
+#     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+#     """
+#     serie_db = SerieDB.objects.get(id=ObjectId(serie_id))
+#     if not serie_db:
+#         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
 
-    actor_db = ActorDB.objects.get(id=ObjectId(actor_id))
-    if not actor_db in serie_db.actores:
-        return jsonify({"message": "Actor no encontrado en la serie", "status": "error"}), 404
+#     actor_db = ActorDB.objects.get(id=ObjectId(actor_id))
+#     if not actor_db in serie_db.actores:
+#         return jsonify({"message": "Actor no encontrado en la serie", "status": "error"}), 404
     
-    serie_db.update(pull__actores=actor_db)
-    return jsonify({"message": "Actor eliminado de la serie", "status": "success"}), 200
+#     serie_db.update(pull__actores=actor_db)
+#     return jsonify({"message": "Actor eliminado de la serie", "status": "success"}), 200
 
-@app.route('/eliminar_serie/<serie_id>', methods=['DELETE'])
+@app.route('/series/<serie_id>', methods=['DELETE'])
 def eliminar_serie(serie_id):  # noqa: E501
     """Eliminar una serie
 
@@ -163,7 +163,7 @@ def eliminar_serie(serie_id):  # noqa: E501
     serie_db.delete()
     return jsonify({"message": "Serie eliminada correctamente", "status": "success"}), 200
 
-@app.route('/listar_actores_serie/<serie_id>', methods=['GET'])
+@app.route('/series/<serie_id>/actores', methods=['GET'])
 def listar_actores_de_serie(serie_id):  # noqa: E501
     """Listar los actores de una serie específica
 
@@ -182,7 +182,7 @@ def listar_actores_de_serie(serie_id):  # noqa: E501
     actores_api = [actor.to_api_model() for actor in actores]
     return jsonify(actores_api), 200
 
-@app.route('/listar_series', methods=['GET'])
+@app.route('/series', methods=['GET'])
 def listar_series():  # noqa: E501
     """Listar todas las series
 
@@ -194,7 +194,7 @@ def listar_series():  # noqa: E501
     list_series_api = [serie.to_api_model() for serie in series_db]
     return jsonify(list_series_api), 200
 
-@app.route('/obtener_serie/<serie_id>', methods=['GET'])
+@app.route('/series/<serie_id>', methods=['GET'])
 def obtener_serie(serie_id):  # noqa: E501
     """Obtener una serie específica
 
