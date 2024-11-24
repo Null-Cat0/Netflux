@@ -14,21 +14,17 @@ def crear_pelicula():
         flash("Usuario no autenticado.", 'danger')
         return redirect(url_for('user.login'))
     
-
-    # Se llama al bakced de actor_controller para obtener la lista de actores
-    # y se envia al formulario de pelicula
-        # Obtener el usuario correspondiente al ID y comprobar si es admin
     es_admin = session.get('es_admin')
     
     if es_admin:
         if request.method == 'GET':
             # Obtener todos los generos
-            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_generos")
+            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/generos")
             if response.status_code == 200:
                 generos = response.json()
             
             # Obtener todos los actores
-            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
+            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/actores")
             if response.status_code == 200:
                 actores = response.json()
             
@@ -58,7 +54,7 @@ def crear_pelicula():
 
 
             response = requests.post(
-                f"{contConf.CONTENIDOS_BASE_URL}/crear_pelicula", json=pelicula_data)
+                f"{contConf.CONTENIDOS_BASE_URL}/peliculas", json=pelicula_data)
             
             # Manejar la respuesta del microservicio
             if response.status_code == 201:
@@ -92,7 +88,7 @@ def obtener_peliculas():
     es_admin = session.get('es_admin')
     
     # Se realiza la solicitud GET al microservicio de contenidos para obtener la lista de películas
-    response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_peliculas")
+    response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/peliculas")
     print("El codigo es:", response.status_code)
     if response.status_code == 200:
         data = response.json()
@@ -102,24 +98,6 @@ def obtener_peliculas():
         flash(f"Error al obtener las películas: {data['message']}", 'danger')        
     
     return render_template("peliculas.html", es_admin=es_admin, peliculas=[])
-
-@pelicula_bp.route('/pelicula/<pelicula_id>', methods=['GET'])
-def pelicula(pelicula_id):
-    usuario_id = session.get('logged_user_id')
-    if not usuario_id:
-        flash("Usuario no autenticado.", 'danger')
-        return redirect(url_for('user.login'))
-    
-    # Hacer la solicitud GET al microservicio de contenidos para obtener la información de la película
-    response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/obtener_pelicula/{pelicula_id}")
-    if response.status_code == 200:
-        data = response.json()
-        return render_template("pelicula.html", pelicula=data)
-    else:
-        data = response.json()
-        flash(f"Error: {data['message']}", 'danger')
-    
-    return render_template("pelicula.html", pelicula={})
 
 @pelicula_bp.route('/editar_pelicula/<pelicula_id>', methods=['GET', 'POST'])
 def editar_pelicula(pelicula_id):
@@ -133,12 +111,12 @@ def editar_pelicula(pelicula_id):
     if es_admin:
         if request.method == 'GET':
             # Hacer la llamada GET al microservicio de películas para obtener la información de la película
-            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/obtener_pelicula/{pelicula_id}")
+            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/peliculas/{pelicula_id}")
             
             if response.status_code == 200:
                 pelicula = response.json()
                 # Obtener todos los generos
-                response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_generos")
+                response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/generos")
                 if response.status_code == 200:
                     data = response.json()
                     genero_nombre_id = []  # Crear una lista para almacenar los generos como diccionarios
@@ -148,7 +126,7 @@ def editar_pelicula(pelicula_id):
                             'nombre': genero.get('nombre', 'N/A')  
                         })
                 # Obtener todos los actores
-                response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
+                response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/actores")
                 if response.status_code == 200:
                     data = response.json()
                     actor_nombre_id = []  # Crear una lista para almacenar los actores como diccionarios
@@ -174,8 +152,6 @@ def editar_pelicula(pelicula_id):
             duracion = request.form.get('duracion')
             actores = request.form.getlist('actores')
 
-
-            print(actores)
             if actores is None: 
                 actores = []    
             # Crear el payload para enviar al microservicio
@@ -189,7 +165,7 @@ def editar_pelicula(pelicula_id):
             }
             # Hacer la llamada PUT al microservicio de películas
             response = requests.put(
-                f"{contConf.CONTENIDOS_BASE_URL}/editar_pelicula/{pelicula_id}", json=pelicula_data)
+                f"{contConf.CONTENIDOS_BASE_URL}/peliculas/{pelicula_id}", json=pelicula_data)
             # Manejar la respuesta del microservicio
             if response.status_code == 200:
                 try:
@@ -221,7 +197,7 @@ def eliminar_pelicula(pelicula_id):
         # - Alguna visualización y por ello, en el historial
 
         ## Primero se obtienen los usuarios
-        response = requests.get(f"{userConf.USUARIOS_BASE_URL}/listar_usuarios")
+        response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuarios")
         if response.status_code != 200:
             flash("Error al obtener la lista de usuarios.", 'danger')
             return redirect(url_for('pelicula.obtener_peliculas'))
@@ -230,7 +206,7 @@ def eliminar_pelicula(pelicula_id):
         ## Luego se obtienen los perfiles de cada usuario
         perfiles = []
         for usuario in usuarios:
-            response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario['user_id']}/perfiles")
+            response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario['user_id']}/perfiles")
             if response.status_code != 200:
                 flash(f"Error al obtener los perfiles del usuario {usuario['user_id']}.", 'danger')
                 return redirect(url_for('pelicula.obtener_peliculas'))
@@ -241,13 +217,13 @@ def eliminar_pelicula(pelicula_id):
             user_id = perfil["user_id"]
             perfil_id = perfil["perfil_id"]
 
-            response = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/visualizacion/{pelicula_id}")
+            response = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/visualizaciones/{pelicula_id}")
             if response.status_code not in [200, 404]:
                 flash(f"Error al eliminar las visualizaciones del perfil {perfil_id}.", 'danger')
                 return redirect(url_for('pelicula.obtener_peliculas'))
 
             # Tras verificar el historial, se verifican las listas de recomendaciones
-            response = requests.get(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/recomendacion")
+            response = requests.get(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/recomendaciones")
             if response.status_code != 200:
                 flash(f"Error al obtener las recomendaciones del perfil {perfil_id}.", 'danger')
                 return redirect(url_for('pelicula.obtener_peliculas'))
@@ -256,19 +232,19 @@ def eliminar_pelicula(pelicula_id):
             lista_peliculas = recomendaciones['peliculas']
             if pelicula_id in lista_peliculas:
                 lista_peliculas.remove(pelicula_id)
-                response = requests.patch(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuario/{user_id}/perfil/{perfil_id}/recomendacion", json={'peliculas_recomendadas': lista_peliculas})
+                response = requests.patch(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/recomendaciones", json={'peliculas_recomendadas': lista_peliculas})
                 if response.status_code != 200:
                     flash(f"Error al eliminar la película {pelicula_id} de las recomendaciones del perfil {perfil_id}.", 'danger')
                     return redirect(url_for('pelicula.obtener_peliculas'))
 
             # Se borra el contenido de la lista del perfil
-            response = requests.delete(f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/perfiles/{perfil_id}/lista/{pelicula_id}")
+            response = requests.delete(f"{userConf.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/lista/{pelicula_id}")
             if response.status_code not in [200, 404]: # 404 si no existe la lista
                 flash(f"Error al eliminar la película {pelicula_id} de la lista del perfil {perfil_id}.", 'danger')
                 return redirect(url_for('pelicula.obtener_peliculas'))
 
         # Hacer la solicitud DELETE al microservicio para eliminar la película
-        response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/eliminar_pelicula/{pelicula_id}")
+        response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/peliculas/{pelicula_id}")
         if response.status_code == 200:
             flash("Película eliminada con éxito.", 'success')
         else:

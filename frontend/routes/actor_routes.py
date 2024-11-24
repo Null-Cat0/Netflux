@@ -20,7 +20,6 @@ def crear_actor():
     if es_admin:
         if request.method == 'GET':
             
-            print("Hola cara de bola")
             return render_template("formulario_actor.html")
         
         if request.method == 'POST':
@@ -40,7 +39,7 @@ def crear_actor():
             print(actor_data)
             # Hacer la llamada POST al microservicio de películas
             response = requests.post(
-                f"{contConf.CONTENIDOS_BASE_URL}/crear_actor", json=actor_data)
+                f"{contConf.CONTENIDOS_BASE_URL}/actores", json=actor_data)
             # Manejar la respuesta del microservicio
             if response.status_code == 201:
                 try:
@@ -74,7 +73,7 @@ def editar_actor(actor_id):
     if es_admin:
         if request.method == 'GET':
             # Hacer la llamada GET al microservicio de actores para obtener la información del actor
-            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/obtener_actor/{actor_id}")
+            response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/actores/{actor_id}")
             
             if response.status_code == 200:
                 actor = response.json()
@@ -104,7 +103,7 @@ def editar_actor(actor_id):
             
             # Hacer la llamada PUT al microservicio de actores
             response = requests.put(
-                f"{contConf.CONTENIDOS_BASE_URL}/actualizar_actor/{actor_id}", json=actor_data)
+                f"{contConf.CONTENIDOS_BASE_URL}/actores/{actor_id}", json=actor_data)
             
             if response.status_code == 200:
                 flash("Actor actualizado correctamente.", 'success')
@@ -128,7 +127,7 @@ def eliminar_actor(actor_id):
     
     if es_admin:
         # Hacer la llamada DELETE al microservicio de actores
-        response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/eliminar_actor/{actor_id}")
+        response = requests.delete(f"{contConf.CONTENIDOS_BASE_URL}/actores/{actor_id}")
         
         if response.status_code == 200:
             flash("Actor eliminado correctamente.", 'success')
@@ -151,7 +150,7 @@ def obtener_actores():
     es_admin = session.get('es_admin')
     
     # Se llama al microservicio de actores para obtener la lista de actores
-    response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/listar_actores")
+    response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/actores")
     if response.status_code == 200:
         actores = response.json()
         for actor in actores:

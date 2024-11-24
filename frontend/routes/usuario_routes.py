@@ -95,7 +95,7 @@ def crear_usuario():
 
         # Hacer la solicitud POST al microservicio para crear el usuario
         response = requests.post(
-            f"{userConf.USUARIOS_BASE_URL}/crear_usuario", json=usuario_data)
+            f"{userConf.USUARIOS_BASE_URL}/usuarios", json=usuario_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 201:
@@ -116,7 +116,7 @@ def editar_usuario():
 
     if request.method == 'GET':
         response = requests.get(
-            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}"
+            f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}"
         )
         if response.status_code == 200:
             data = response.json()
@@ -152,10 +152,9 @@ def editar_usuario():
             'dispositivos': dispositivos,
             'esAdmin': esAdmin
         }
-        print(usuario_data)
         # Hacer la solicitud PUT al microservicio para actualizar el usuario
         response = requests.put(
-            f"{userConf.USUARIOS_BASE_URL}/actualizar_usuario/{usuario_id}", json=usuario_data)
+            f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}", json=usuario_data)
 
         if response.status_code == 200:
             session['logged_user_name'] = nombre
@@ -194,7 +193,7 @@ def actualizar_password():
 
         # Hacer la solicitud PATCH al microservicio para actualizar la contraseña
         response = requests.patch(
-            f"{userConf.USUARIOS_BASE_URL}/actualizar_password/{usuario_id}", json=password_data)
+            f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/password", json=password_data)
 
         if response.status_code == 200:
             flash("Contraseña actualizada con éxito", 'success')
@@ -215,7 +214,7 @@ def borrar_cuenta():
         return redirect(url_for('user.login'))
 
     response = requests.delete(
-        f"{userConf.USUARIOS_BASE_URL}/eliminar_usuario/{usuario_id}")
+        f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}")
 
     if response.status_code == 200:
         flash("Cuenta eliminada con éxito", 'success')
