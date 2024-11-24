@@ -201,7 +201,7 @@ def actualizar_password():
         else:
             data = response.json()
             flash(f"Error: {data['message']}", 'danger')
-            return redirect(url_for('user.editar_usuario'))
+            return redirect(url_for('user.actualizar_password'))
     
     return render_template('actualizar_password.html')
 
