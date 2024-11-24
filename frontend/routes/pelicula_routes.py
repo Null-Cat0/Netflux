@@ -173,8 +173,7 @@ def editar_pelicula(pelicula_id):
             anio_estreno = request.form.get('anio_estreno')
             duracion = request.form.get('duracion')
             actores = request.form.getlist('actores')
-            secuela = None
-            precuela = None
+
 
             print(actores)
             if actores is None: 
@@ -187,8 +186,6 @@ def editar_pelicula(pelicula_id):
                 'anio_estreno': anio_estreno,
                 'duracion': duracion,
                 'actores': actores if actores else [],  # Lista de IDs de actores seleccionados
-                'secuela': secuela,
-                'precuela': precuela
             }
             # Hacer la llamada PUT al microservicio de películas
             response = requests.put(
