@@ -20,11 +20,8 @@ from openapi_server.models.dispositivos_usuario_db import DispositivosUsuarioDB
 
 @app.route('/usuarios/<user_id>', methods=['PUT'])
 def actualizar_usuario(user_id):  # noqa: E501
-    """Actualizar un usuario existente"""
-
     if request.is_json:
         usuario_update = UsuarioUpdate.from_dict(request.get_json())
-        print(f"Valor de esAdmin en usuario_update: {usuario_update.esAdmin}")
     else:
         return jsonify({"message": "Solicitud no contiene JSON válido", "status": "error"}), 400
 
@@ -32,9 +29,6 @@ def actualizar_usuario(user_id):  # noqa: E501
     usuario = UsuarioDB.query.filter_by(user_id=user_id).first()
     if usuario is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 404
-
-    # Mostrar datos recibidos para verificación de debug
-    print("Datos recibidos:", request.get_json())
 
     # Actualizar atributos del usuario
     usuario.nombre = usuario_update.nombre
@@ -44,7 +38,6 @@ def actualizar_usuario(user_id):  # noqa: E501
 
     # Convertir 'admin' a booleano correctamente
     usuario.esAdmin =  usuario_update.esAdmin
-    print(f"Valor de esAdmin después de la conversión: {usuario.esAdmin}")
 
     # Eliminar los dispositivos actuales del usuario para agregar los nuevos
     DispositivosUsuarioDB.query.filter_by(user_id=user_id).delete()
@@ -66,17 +59,7 @@ def actualizar_usuario(user_id):  # noqa: E501
     return jsonify({"message": "Usuario actualizado con éxito", "status": "success"}), 200
 
 @app.route('/usuarios/<user_id>/password', methods=['PATCH'])
-def actualizar_password(user_id):  # noqa: E501
-    """Actualizar la contraseña de un usuario
-
-    Actualiza la contraseña de un usuario específico por su ID después de verificar la contraseña antigua. # noqa: E501
-
-    :param user_id: ID del usuario a actualizar
-    :type user_id: int
-
-    :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
-    """
-    
+def actualizar_password(user_id):  # noqa: E501    
     # Verificar si los datos están en formato JSON
     if not request.is_json:
         return jsonify({"message": "La solicitud debe estar en formato JSON", "status": "error"}), 400
@@ -106,16 +89,6 @@ def actualizar_password(user_id):  # noqa: E501
 
 @app.route('/usuarios', methods=['GET', 'POST'])
 def crear_usuario():  # noqa: E501
-    """Crear un nuevo usuario
-
-    Crea un nuevo usuario con la información proporcionada. # noqa: E501
-
-    :param usuario: Objeto del usuario a crear
-    :type usuario: dict | bytes
-
-    :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
-    """
-
    # Capturar los datos enviados en el JSON
     if request.is_json:
         usuario_api = Usuario.from_dict(request.get_json())  # noqa: E501
@@ -154,15 +127,6 @@ def crear_usuario():  # noqa: E501
 
 @app.route('/usuarios/<user_id>', methods=['DELETE'])
 def eliminar_usuario(user_id):  # noqa: E501
-    """Eliminar un usuario
-
-    Elimina un usuario específico por su ID. # noqa: E501
-
-    :param user_id: ID del usuario a eliminar
-    :type user_id: int
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
     usuario = UsuarioDB.query.filter_by(user_id=user_id).first()
 
     if usuario is None:
@@ -179,27 +143,12 @@ def eliminar_usuario(user_id):  # noqa: E501
     
 @app.route('/usuarios', methods=['GET'])
 def listar_usuarios():  # noqa: E501
-    """Listar todos los usuarios
-
-    Obtiene una lista de todos los usuarios disponibles en el sistema. # noqa: E501
-
-    :rtype: Union[List[Usuario], Tuple[List[Usuario], int], Tuple[List[Usuario], int, Dict[str, str]]
-    """
     list_usuarios_db = UsuarioDB.query.all()
     list_usuarios_api = [usuario.to_api_model() for usuario in list_usuarios_db]
     return jsonify([usuario.serialize() for usuario in list_usuarios_api]), 200
 
 @app.route('/usuarios/<user_id>', methods=['GET'])
 def obtener_usuario(user_id):  # noqa: E501
-    """Obtener un usuario específico
-
-    Obtiene la información detallada de un usuario específico por su ID. # noqa: E501
-
-    :param user_id: ID del usuario a obtener
-    :type user_id: int
-
-    :rtype: Union[Usuario, Tuple[Usuario, int], Tuple[Usuario, int, Dict[str, str]]
-    """
     usuario_db = UsuarioDB.query.filter_by(user_id=user_id).first()
     if usuario_db is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 404
@@ -210,8 +159,6 @@ def obtener_usuario(user_id):  # noqa: E501
             dispositivo = DispositivoDB.query.filter_by(dispositivo_id=dispositivo_usuario_db.dispositivo_id).first()
             if dispositivo:  # Solo agrega si el dispositivo existe
                 dispositivos.append(dispositivo.tipo_dispositivo)
-
-    print(dispositivos)  # Verificamos que la lista de dispositivos sea correcta
 
     if usuario_db is None:
         return jsonify({"message": "El usuario no existe", "status": "error"}), 405

@@ -14,17 +14,6 @@ from bson import ObjectId
 
 @app.route('/peliculas/<pelicula_id>', methods=['PUT'])
 def actualizar_pelicula(pelicula_id):  # noqa: E501
-    """Actualizar una película existente
-
-    Actualiza la información de una película específica por su ID. # noqa: E501
-
-    :param pelicula_id: ID de la película a actualizar
-    :type pelicula_id: int
-    :param pelicula_update: Objeto de la película con la información actualizada
-    :type pelicula_update: dict | bytes
-
-    :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
-    """
     if request.is_json:
         pelicula_update = PeliculaUpdate.from_dict(request.get_json())  # noqa: E501
 
@@ -58,19 +47,7 @@ def actualizar_pelicula(pelicula_id):  # noqa: E501
     return jsonify({"message": "Película actualizada correctamente", "status": "success"}), 200
 
 @app.route('/peliculas/<pelicula_id>/actores', methods=['POST'])
-def asignar_actor_a_pelicula(pelicula_id): # noqa: E501
-    """Asignar un actor a una película
-
-    Asigna un actor existente a una película específica. # noqa: E501
-
-    :param pelicula_id: ID de la película
-    :type pelicula_id: int
-    :param asignar_actor_a_serie_request: ID del actor a asignar
-    :type asignar_actor_a_serie_request: dict | bytes
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
-    
+def asignar_actor_a_pelicula(pelicula_id): # noqa: E501    
     if request.is_json:
         actor_a_asignar = AsignarActorRequest.from_dict(request.get_json())
 
@@ -86,15 +63,6 @@ def asignar_actor_a_pelicula(pelicula_id): # noqa: E501
 
 @app.route('/peliculas', methods=['POST'])
 def crear_pelicula():  # noqa: E501
-    """Crear una nueva película
-
-    Crea una nueva película con la información proporcionada. # noqa: E501
-
-    :param pelicula: Objeto de la película a crear
-    :type pelicula: dict | bytes
-
-    :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
-    """
     if request.is_json:
         pelicula_api = Pelicula.from_dict(request.get_json())
 
@@ -119,15 +87,6 @@ def crear_pelicula():  # noqa: E501
 
 @app.route('/peliculas/<pelicula_id>', methods=['DELETE'])
 def eliminar_pelicula(pelicula_id):  # noqa: E501
-    """Eliminar una película
-
-    Elimina una película específica por su ID. # noqa: E501
-
-    :param pelicula_id: ID de la película a eliminar
-    :type pelicula_id: int
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
     pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
     if not pelicula_db:
         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
@@ -138,28 +97,12 @@ def eliminar_pelicula(pelicula_id):  # noqa: E501
 
 @app.route('/peliculas', methods=['GET'])
 def listar_peliculas():  # noqa: E501
-    """Listar todas las películas
-
-    Obtiene una lista de todas las películas disponibles en el sistema, incluyendo información básica como el título, género y año de estreno. # noqa: E501
-
-    :rtype: Union[List[Pelicula], Tuple[List[Pelicula], int], Tuple[List[Pelicula], int, Dict[str, str]]
-    """
     peliculas_db = PeliculaDB.objects()
     list_peliculas = [pelicula.to_api_model() for pelicula in peliculas_db]
     return jsonify(list_peliculas), 200
 
 @app.route('/peliculas/<pelicula_id>', methods=['GET'])
 def obtener_pelicula(pelicula_id):  # noqa: E501
-    """Obtener una película específica
-
-    Obtiene la información detallada de una película específica por su ID. # noqa: E501
-
-    :param pelicula_id: ID de la película a obtener
-    :type pelicula_id: int
-
-    :rtype: Union[Pelicula, Tuple[Pelicula, int], Tuple[Pelicula, int, Dict[str, str]]
-    """
-    print(f"pelicula_id: {pelicula_id}")
     pelicula_db = PeliculaDB.objects.get(id=ObjectId(pelicula_id))
     if not pelicula_db:
         return jsonify({"message": "Película no encontrada", "status": "error"}), 404
@@ -168,12 +111,6 @@ def obtener_pelicula(pelicula_id):  # noqa: E501
 
 @app.route('/obtener_lista_peliculas', methods=['GET'])
 def obtener_lista_peliculas():
-    """Dados los IDs de una lista de películas, obtener la información de cada una de ellas
-
-    Obtiene la información detallada de una lista de películas específicas por sus IDs. # noqa: E501
-
-    :rtype: Union[List[Pelicula], Tuple[List[Pelicula], int], Tuple[List[Pelicula], int, Dict[str, str]]
-    """
     if request.is_json:
         lista_ids = request.get_json()
     else:

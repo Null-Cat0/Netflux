@@ -8,12 +8,6 @@ from bson import ObjectId
 
 @app.route('/generos/<genero_id>', methods=['PUT'])
 def actualizar_genero(genero_id):  # noqa: E501
-    """Actualizar un género existente
-
-    Actualiza la información de un género específico por su ID. # noqa: E501
-
-    :rtype: dict
-    """
     if request.is_json:
         genero_api = Genero.from_dict(request.get_json())
         genero_to_update = GeneroDB.objects(id=ObjectId(genero_id)).first()
@@ -35,24 +29,12 @@ def actualizar_genero(genero_id):  # noqa: E501
 
 @app.route('/generos', methods=['GET'])
 def listar_generos():  # noqa: E501
-    """Listar todos los géneros
-
-    Obtiene una lista de todos los géneros registrados en el sistema. # noqa: E501
-
-    :rtype: List[dict]
-    """
     generos_db = GeneroDB.objects()
     list_generos_api = [genero.to_api_model().serialize() for genero in generos_db]
     return jsonify(list_generos_api), 200
 
 @app.route('/generos/<genero_id>', methods=['GET'])
 def obtener_genero(genero_id):  # noqa: E501
-    """Obtener un género específico
-
-    Obtiene la información detallada de un género específico por su ID. # noqa: E501
-
-    :rtype: dict
-    """
     genero_db = GeneroDB.objects(id=ObjectId(genero_id)).first()
     if not genero_db:
         return jsonify({"message": "Género no encontrado", "status": "error"}), 404

@@ -8,17 +8,6 @@ from bson import ObjectId
 
 @app.route('/series/<serie_id>/temporadas/<temporada_id>', methods=['PUT'])
 def actualizar_temporada(serie_id, temporada_id):  # noqa: E501
-    """Actualizar una temporada existente
-
-    Actualiza la información de una temporada específica de una serie. # noqa: E501
-
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param numero_temporada: Número de la temporada
-    :type numero_temporada: int
-
-    :rtype: dict
-    """
     if not request.is_json:
         return jsonify({"message": "Formato de datos no válido", "status": "error"}), 400
     
@@ -50,17 +39,6 @@ def actualizar_temporada(serie_id, temporada_id):  # noqa: E501
 
 @app.route('/series/<serie_id>/temporadas', methods=['POST'])
 def crear_temporada(serie_id):  # noqa: E501
-    """Crear una nueva temporada para una serie
-
-    Crea una nueva temporada para una serie específica. # noqa: E501
-
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param temporada: Objeto de la temporada a crear
-    :type temporada: dict | bytes
-
-    :rtype: Union[Temporada, Tuple[Temporada, int], Tuple[Temporada, int, Dict[str, str]]
-    """
     if request.is_json:
         temporada = TemporadaEmbedded.from_dict(request.get_json())  # noqa: E501
 
@@ -78,17 +56,6 @@ def crear_temporada(serie_id):  # noqa: E501
 
 @app.route('/series/<serie_id>/temporadas/<temporada_id>', methods=['DELETE'])
 def eliminar_temporada(serie_id, temporada_id):  # noqa: E501
-    """Eliminar una temporada
-
-    Elimina una temporada específica de una serie. # noqa: E501
-
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param temporada_id: ID de la temporada
-    :type temporada_id: int
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
     serie = SerieDB.objects.get(id=ObjectId(serie_id))
     if not serie:
         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
@@ -103,15 +70,6 @@ def eliminar_temporada(serie_id, temporada_id):  # noqa: E501
 
 @app.route('/series/<serie_id>/temporadas', methods=['GET'])
 def listar_temporadas(serie_id):  # noqa: E501
-    """Listar todas las temporadas de una serie
-
-    Obtiene una lista de todas las temporadas de una serie específica. # noqa: E501
-
-    :param serie_id: ID de la serie
-    :type serie_id: int
-
-    :rtype: Union[List[Temporada], Tuple[List[Temporada], int], Tuple[List[Temporada], int, Dict[str, str]]
-    """
     serie = SerieDB.objects.get(id=ObjectId(serie_id))
     if not serie:
         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
@@ -122,17 +80,6 @@ def listar_temporadas(serie_id):  # noqa: E501
 
 @app.route('/series/<serie_id>/temporadas/<temporada_id>', methods=['GET'])
 def obtener_temporada(serie_id, temporada_id):  # noqa: E501
-    """Obtener una temporada específica de una serie
-
-    Obtiene la información detallada de una temporada específica de una serie. # noqa: E501
-
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param temporada_id: ID de la temporada
-    :type temporada_id: int
-
-    :rtype: Union[Temporada, Tuple[Temporada, int], Tuple[Temporada, int, Dict[str, str]]
-    """
     serie = SerieDB.objects.get(id=ObjectId(serie_id))
     if not serie:
         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404

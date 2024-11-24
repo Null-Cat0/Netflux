@@ -13,17 +13,6 @@ from openapi_server.models.recomendacion_serie_db import RecomendacionSerieDB
 
 @app.route('/usuarios/<user_id>/perfiles/<perfil_id>/recomendaciones', methods=['PATCH'])
 def actualizar_lista_recomendacion_perfil(user_id, perfil_id):
-    """Actualiza una recomendación para un perfil
-
-    Actualiza la lista de contenido de una recomendación para un perfil en específico
-
-    :param user_id: ID del usuario especificado
-    :type user_id: int
-    :param perfil_id: ID del perfil especificado
-    :type perfil_id: int
-
-    :rtype: Union[Recomendacion, Tuple[Recomendacion, int], Tuple[Recomendacion, int, Dict[str, str]]
-    """
     # Obtener el perfil con una petición al microservicio de usuario
     response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
@@ -51,18 +40,6 @@ def actualizar_lista_recomendacion_perfil(user_id, perfil_id):
 
 @app.route('/usuarios/<user_id>/perfiles/<perfil_id>/recomendaciones', methods=['POST'])
 def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
-    """Crea una recomendación para un perfil
-
-    Crea una recomendación para un perfil en específico # noqa: E501
-
-    :param user_id: ID del usuario especificado
-    :type user_id: int
-    :param perfil_id: ID del perfil especificado
-    :type perfil_id: int
-
-    :rtype: Union[Recomendacion, Tuple[Recomendacion, int], Tuple[Recomendacion, int, Dict[str, str]]
-    """
-
     # Obtener el perfil con una petición al microservicio de usuario
     response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
@@ -84,7 +61,6 @@ def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     lista_peliculas_genero = []
     for pelicula in lista_peliculas_api.json():
         for genero in pelicula["genero"]:
-            print(f"Genero: {genero}\n")
             if genero["id"] in generos_perfil:
                 lista_peliculas_genero.append(pelicula['id'])
                 break
@@ -114,17 +90,6 @@ def crear_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     
 @app.route('/usuarios/<user_id>/perfiles/<perfil_id>/recomendaciones', methods=['DELETE'])
 def eliminar_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
-    """Elimina una recomendación de un perfil
-
-    Elimina una recomendación de un perfil # noqa: E501
-
-    :param perfil_id: ID del perfil especificado
-    :type perfil_id: int
-    :param recomendacion_id: ID de la recomendacion especificada
-    :type recomendacion_id: int
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
     # Se comprueba si existe el perfil
     response_perfil = requests.get(f"{UsuariosConfig.USUARIOS_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}")
 
@@ -134,8 +99,6 @@ def eliminar_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     recomendaciones_pelicula = RecomendacionPeliculaDB.objects(id_perfil=perfil_id).first()
     recomendaciones_serie = RecomendacionSerieDB.objects(id_perfil=perfil_id).first()
 
-    print(f"Recomendaciones Pelicula: {recomendaciones_pelicula}\n")
-
     if recomendaciones_pelicula:
         recomendaciones_pelicula.delete()
     if recomendaciones_serie:
@@ -144,9 +107,7 @@ def eliminar_recomendacion_perfil(user_id, perfil_id):  # noqa: E501
     return jsonify({"message": "Recomendaciones eliminadas correctamente"}), 200
 
 @app.route('/usuarios/<user_id>/perfiles/<perfil_id>/recomendaciones', methods=['GET'])
-def obtener_recomendaciones_perfil(user_id, perfil_id):
-    """Obtiene una lista de las recomendaciones para el perfil"""
-   
+def obtener_recomendaciones_perfil(user_id, perfil_id):  
     recomendaciones_peliculas = RecomendacionPeliculaDB.objects(id_perfil=perfil_id)
     recomendaciones_series = RecomendacionSerieDB.objects(id_perfil=perfil_id)
 

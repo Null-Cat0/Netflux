@@ -9,21 +9,6 @@ from bson import ObjectId
 
 @app.route('/series/<serie_id>/temporadas/<temporada_id>/capitulos/<capitulo_id>', methods=['PUT'])
 def actualizar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
-    """Actualizar un capítulo existente
-
-    Actualiza la información de un capítulo específico de una temporada de una serie. # noqa: E501
-
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param temporada_id: ID de la temporada
-    :type temporada_id: int
-    :param capitulo_id: ID del capítulo
-    :type capitulo_id: int
-    :param capitulo_update: Objeto del capítulo con la información actualizada
-    :type capitulo_update: dict | bytes
-
-    :rtype: Union[Capitulo, Tuple[Capitulo, int], Tuple[Capitulo, int, Dict[str, str]]
-    """
     if not request.is_json:
         return jsonify({"message": "Formato de datos no válido", "status": "error"}), 400
 
@@ -56,19 +41,6 @@ def actualizar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
 
 @app.route('/series/<serie_id>/temporadas/<temporada_id>/capitulos', methods=['POST'])
 def crear_capitulo(serie_id, temporada_id):  # noqa: E501
-    """Crear un nuevo capítulo para una temporada
-
-    Crea un nuevo capítulo para una temporada específica de una serie. # noqa: E501
-
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param temporada_id: ID de la temporada
-    :type temporada_id: int
-    :param capitulo: Objeto del capítulo a crear
-    :type capitulo: dict | bytes
-
-    :rtype: Union[Capitulo, Tuple[Capitulo, int], Tuple[Capitulo, int, Dict[str, str]]
-    """
     if not request.is_json:
         return jsonify({"message": "Formato de datos no válido", "status": "error"}), 400
 
@@ -92,19 +64,6 @@ def crear_capitulo(serie_id, temporada_id):  # noqa: E501
 
 @app.route('/series/<serie_id>/temporadas/<temporada_id>/capitulos/<capitulo_id>', methods=['DELETE'])
 def eliminar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
-    """Eliminar un capítulo
-
-    Elimina un capítulo específico de una temporada de una serie. # noqa: E501
-
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param temporada_id: ID de la temporada
-    :type temporada_id: int
-    :param capitulo_id: ID del capítulo
-    :type capitulo_id: int
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
     serie = SerieDB.objects(id=ObjectId(serie_id)).first()
     if not serie:
         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
@@ -123,17 +82,6 @@ def eliminar_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
 
 @app.route('/series/<serie_id>/temporadas/<temporada_id>/capitulos', methods=['GET'])
 def listar_capitulos(serie_id, temporada_id):  # noqa: E501
-    """Listar todos los capítulos de una temporada
-
-    Obtiene una lista de todos los capítulos de una temporada específica de una serie. # noqa: E501
-
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param temporada_id: ID de la temporada
-    :type temporada_id: int
-
-    :rtype: Union[List[Capitulo], Tuple[List[Capitulo], int], Tuple[List[Capitulo], int, Dict[str, str]]
-    """
     serie = SerieDB.objects(id=ObjectId(serie_id)).first()
     if not serie:
         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404
@@ -148,19 +96,6 @@ def listar_capitulos(serie_id, temporada_id):  # noqa: E501
 
 @app.route('/series/<serie_id>/temporadas/<temporada_id>/capitulos/<capitulo_id>', methods=['GET'])
 def obtener_capitulo(serie_id, temporada_id, capitulo_id):  # noqa: E501
-    """Obtener un capítulo específico de una temporada
-
-    Obtiene la información detallada de un capítulo específico de una temporada de una serie. # noqa: E501
-
-    :param serie_id: ID de la serie
-    :type serie_id: int
-    :param temporada_id: ID de la temporada
-    :type temporada_id: int
-    :param capitulo_id: ID del capítulo
-    :type capitulo_id: int
-
-    :rtype: Union[Capitulo, Tuple[Capitulo, int], Tuple[Capitulo, int, Dict[str, str]]
-    """
     serie = SerieDB.objects(id=ObjectId(serie_id)).first()
     if not serie:
         return jsonify({"message": "Serie no encontrada", "status": "error"}), 404

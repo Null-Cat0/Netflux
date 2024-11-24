@@ -42,17 +42,6 @@ def actualizar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
 
 @app.route('/usuarios/<user_id>/dispositivos/<dispositivo_id>/<nombre_dispositivo>', methods=['DELETE'])
 def eliminar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
-    """Elimina un dispositivo de la lista de dispositivos registrados del usuario
-
-    Elimina un dispositivo de la lista de dispositivos registrados del usuario # noqa: E501
-
-    :param user_id: ID del usuario
-    :type user_id: int
-    :param dispositivo_id: ID del usuario
-    :type dispositivo_id: int
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
     dispositivo_usuario_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id, dispositivo_id=dispositivo_id, nombre_dispositivo=nombre_dispositivo).first()
 
     if dispositivo_usuario_db is not None:
@@ -68,15 +57,6 @@ def eliminar_dispositivo(user_id, nombre_dispositivo, dispositivo_id):
 
 @app.route('/usuarios/<user_id>/dispositivos', methods=['GET'])
 def obtener_dispositivos(user_id):  # noqa: E501
-    """Obtiene la lista de dispositivos registrados por el usuario
-
-    Obtiene la lista de dispositivos registrados por el usuario # noqa: E501
-
-    :param user_id: ID del usuario
-    :type user_id: int
-
-    :rtype: Union[List[str], Tuple[List[str], int], Tuple[List[str], int, Dict[str, str]]
-    """
     dispositivos_usuarios_db = DispositivosUsuarioDB.query.filter_by(user_id=user_id).all()
     dispositivos = []
     if dispositivos_usuarios_db is not None:
@@ -93,19 +73,6 @@ def obtener_dispositivos(user_id):  # noqa: E501
 
 @app.route('/usuarios/<user_id>/dispositivos', methods=['POST'])
 def crear_dispositivo(user_id):  # noqa: E501
-    """Registra un nuevo dispositivo para el usuario
-
-    Registra un nuevo dispositivo para el usuario # noqa: E501
-
-    :param user_id: ID del usuario
-    :type user_id: int
-    :param nombre_dispositivo: Nombre del dispositivo
-    :type nombre_dispositivo: str
-    :param tipo_dispositivo: Tipo de dispositivo
-    :type tipo_dispositivo: str
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
-    """
     if request.is_json:
         data = request.get_json()
         nombre_dispositivo = data.get('nombre_dispositivo')
