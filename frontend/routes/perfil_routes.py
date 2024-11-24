@@ -35,7 +35,7 @@ def obtener_perfiles():
 
     # Hacer la solicitud GET al microservicio para obtener los perfiles del usuario
     response = requests.get(
-        f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles")
+        f"{userConf.USUARIOS_BASE_URL}/usuarios/{str(usuario_id)}/perfiles")
 
     # Manejar la respuesta del microservicio
     if response.status_code == 200:
@@ -66,7 +66,7 @@ def crear_perfil():
     if request.method == 'POST':
         # Comprobación de que tiene 5 o menos perfiles
         response = requests.get(
-        f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles")
+        f"{userConf.USUARIOS_BASE_URL}/usuarios/{str(usuario_id)}/perfiles")
 
         if response.status_code == 200:
             data = response.json()
@@ -114,7 +114,7 @@ def crear_perfil():
 
         # Hacer la solicitud POST al microservicio para crear el perfil
         response = requests.post(
-            f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles", json=perfil_data)
+            f"{userConf.USUARIOS_BASE_URL}/usuarios/{str(usuario_id)}/perfiles", json=perfil_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 201:
