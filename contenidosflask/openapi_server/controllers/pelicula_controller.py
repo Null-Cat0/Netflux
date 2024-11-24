@@ -54,12 +54,6 @@ def actualizar_pelicula(pelicula_id):  # noqa: E501
         actores_db = [ActorDB.objects.get(id=ObjectId(id)) for id in pelicula_update.actores]
         pelicula_to_update.actores = actores_db # Se cambia la lista de actores por la nueva
 
-    # Reemplazar la secuela y precuela
-    if pelicula_update.secuela:
-        pelicula_to_update.secuela = PeliculaDB.objects.get(id=ObjectId(pelicula_update.secuela))
-    
-    if pelicula_update.precuela:
-        pelicula_to_update.precuela = PeliculaDB.objects.get(id=ObjectId(pelicula_update.precuela))
 
     pelicula_to_update.save()
     return jsonify({"message": "Película actualizada correctamente", "status": "success"}), 200
@@ -118,13 +112,6 @@ def crear_pelicula():  # noqa: E501
                 "status": "error"
             }), 400
         
-        if pelicula_api.secuela:
-            if not PeliculaDB.objects.get(titulo=pelicula_api.secuela):
-                return jsonify({"message": "Error al crear la película, la secuela no existe en la base de datos", "status": "error"}), 400
-
-        if pelicula_api.precuela:
-             if not PeliculaDB.objects.get(titulo=pelicula_api.precuela):
-                return jsonify({"message": "Error al crear la película, la precuela no existe en la base de datos", "status": "error"}), 400
 
         pelicula_db = pelicula_api.to_db_model()
         pelicula_db.save()
@@ -204,7 +191,6 @@ def listar_peliculas():  # noqa: E501
     :rtype: Union[List[Pelicula], Tuple[List[Pelicula], int], Tuple[List[Pelicula], int, Dict[str, str]]
     """
     peliculas_db = PeliculaDB.objects()
-    print(f"peliculas_db: {peliculas_db}")
     list_peliculas = [pelicula.to_api_model() for pelicula in peliculas_db]
     return jsonify(list_peliculas), 200
 
