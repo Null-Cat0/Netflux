@@ -89,7 +89,7 @@ def obtener_peliculas():
     
     # Se realiza la solicitud GET al microservicio de contenidos para obtener la lista de películas
     response = requests.get(f"{contConf.CONTENIDOS_BASE_URL}/peliculas")
-    print("El codigo es:", response.status_code)
+
     if response.status_code == 200:
         data = response.json()
         return render_template("peliculas.html", es_admin=es_admin, peliculas=data)
