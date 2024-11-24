@@ -9,16 +9,15 @@ from global_config import VisualizacionesConfig as visConf
 perfil_bp = Blueprint('perfil', __name__)
 
 def actualizar_datos_historial(usuario_id, perfil_id, contenido_id):    
-    print("Se va a proceder a actualizar el contenido")
 
-    response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion/{contenido_id}")
+    response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/visualizaciones/{contenido_id}")
 
     if response.status_code != 200:
         data = response.json()
         flash(f"{data['message']}", 'danger')
 
     # Se actualiza el contenido en el historial del perfil
-    response = requests.patch(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/historial/{contenido_id}")
+    response = requests.patch(f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/historial/{contenido_id}")
     if response.status_code != 200:
         data = response.json()
         flash(f"{data['message']}", 'danger')
@@ -36,12 +35,11 @@ def obtener_perfiles():
 
     # Hacer la solicitud GET al microservicio para obtener los perfiles del usuario
     response = requests.get(
-        f"{userConf.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles")
+        f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles")
 
     # Manejar la respuesta del microservicio
     if response.status_code == 200:
         data = response.json()
-        print(data)
         return render_template("perfiles.html", perfiles=data)
     else:
         data = response.json()
@@ -57,7 +55,7 @@ def crear_perfil():
         return redirect(url_for('user.login'))  # Asegúrate de tener una ruta de login
     
     if request.method == 'GET':
-        requests_generos = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/listar_generos')
+        requests_generos = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/generos')
         if requests_generos.status_code == 200:
             generos = requests_generos.json()
             return render_template("formulario_perfil.html", generos=generos)
@@ -68,7 +66,7 @@ def crear_perfil():
     if request.method == 'POST':
         # Comprobación de que tiene 5 o menos perfiles
         response = requests.get(
-        f"{userConf.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles")
+        f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles")
 
         if response.status_code == 200:
             data = response.json()
@@ -116,7 +114,7 @@ def crear_perfil():
 
         # Hacer la solicitud POST al microservicio para crear el perfil
         response = requests.post(
-            f"{userConf.USUARIOS_BASE_URL}/usuario/{str(usuario_id)}/perfiles", json=perfil_data)
+            f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles", json=perfil_data)
 
         # Manejar la respuesta del microservicio
         if response.status_code == 201:
@@ -143,12 +141,11 @@ def editar_perfil(perfil_id):
     # Método GET para cargar los datos del perfil
     if request.method == 'GET':
         response = requests.get(
-            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
+            f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}")
 
         if response.status_code == 200:
             data = response.json()
-            print(f"\n\nDATOS PERFIL EN ROUTES: {data}\n\n")
-            response_generos = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/listar_generos')
+            response_generos = requests.get(f'{contConf.CONTENIDOS_BASE_URL}/generos')
             if response_generos.status_code == 200:
                 generos = response_generos.json()
                 return render_template("formulario_perfil.html", perfil=data, generos=generos, is_edit=True)
@@ -190,7 +187,7 @@ def editar_perfil(perfil_id):
         
         # Hacer la solicitud PUT para actualizar el perfil
         response = requests.put(
-            f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}", json=perfil_data)
+            f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}", json=perfil_data)
 
         if response.status_code == 200:
             flash("Perfil actualizado con éxito", 'success')
@@ -215,9 +212,8 @@ def eliminar_perfil(perfil_id):
 
     # Hacer la solicitud DELETE al microservicio para eliminar el perfil
     response = requests.delete(
-        f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}")
+        f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}")
                 
-    print(response)
     if response.status_code == 200:
         flash("Perfil eliminado con éxito", 'success')
         return redirect(url_for('perfil.obtener_perfiles'))
@@ -233,12 +229,11 @@ def obtener_mi_lista(perfil_id):
         flash("Debes iniciar sesión para acceder a esta página", 'danger')
         return redirect(url_for('user.login'))
     
-    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/lista")
+    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/lista")
     
     # Manejar la respuesta del microservicio
     if response.status_code == 200:
         data = response.json()
-        print(data)
         return render_template("mi_lista.html", peliculas=data['peliculas'], series=data['series'])
     else:
         data = response.json()
@@ -253,9 +248,7 @@ def agregar_a_lista_perfil(perfil_id, contenido_id,):
         flash("Debes iniciar sesión para acceder a esta página", 'danger')
         return redirect(url_for('user.login'))
     
-    es_serie = request.form.get('es_serie')
-    
-    response = requests.post(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/lista/{contenido_id}")
+    response = requests.post(f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/lista/{contenido_id}")
     if response.status_code == 201:
         flash("Contenido agregado a la lista", 'success')
     else:
@@ -277,7 +270,7 @@ def eliminar_de_lista_perfil(perfil_id, contenido_id):
         flash("Debes iniciar sesión para acceder a esta página", 'danger')
         return redirect(url_for('user.login'))
     
-    response = requests.delete(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/lista/{contenido_id}")
+    response = requests.delete(f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/lista/{contenido_id}")
     if response.status_code == 200:
         flash("Contenido eliminado de la lista", 'success')
     else:
@@ -292,7 +285,7 @@ def obtener_mi_historial(perfil_id):
         flash("Debes iniciar sesión para acceder a esta página", 'danger')
         return redirect(url_for('user.login'))
     
-    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuario/{usuario_id}/perfiles/{perfil_id}/historial")
+    response = requests.get(f"{userConf.USUARIOS_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/historial")
     # Manejar la respuesta del microservicio
     if response.status_code == 200:
         data = response.json()
@@ -311,8 +304,6 @@ def obtener_mi_historial(perfil_id):
             
         # Se ordena el historial por fecha de visualización
         historial = sorted(historial, key=lambda x: datetime.strptime(x["fecha_visualizacion"], '%d/%m/%Y'), reverse=True)
-            
-        print("El historial es:", historial)
         
         return render_template("mi_historial.html", historial=historial)
     else:
@@ -333,7 +324,7 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
     
     # Se obtiene el contenido correspondiente al contenido_id
     if serie_id and temporada_id:
-        response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/historial/capitulo/{contenido_id}")
+        response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/visualizaciones/capitulos/{contenido_id}")
         if response.status_code == 200:
             actualizar_datos_historial(usuario_id, perfil_id, contenido_id)
         else:
@@ -342,9 +333,7 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
                 'temporada_id': temporada_id,
                 'capitulo_id': contenido_id
             }
-            print("Los datos son: ", data)
-            print("Se va a proceder a agregar el contenido")
-            response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
+            response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/visualizaciones", json=data)
             if response.status_code == 201:
                 flash("Contenido agregado al historial", 'success')
             else:
@@ -355,11 +344,11 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
             'pelicula_id': contenido_id
         }
         # Se busca si el contenido ya está en el historial
-        response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/historial/pelicula/{contenido_id}")
+        response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/visualizaciones/peliculas/{contenido_id}")
         if response.status_code == 200:
             actualizar_datos_historial(usuario_id, perfil_id, contenido_id)
         else:
-            response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion", json=data)
+            response = requests.post(f"{visConf.VISUALIZACIONES_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/visualizaciones", json=data)
             if response.status_code == 201:
                 flash("Contenido agregado al historial", 'success')
             else:
@@ -381,7 +370,7 @@ def eliminar_de_historial_perfil(perfil_id, contenido_id):
         flash("Debes iniciar sesión para acceder a esta página", 'danger')
         return redirect(url_for('user.login'))
     
-    response = requests.delete(f"{visConf.VISUALIZACIONES_BASE_URL}/usuario/{usuario_id}/perfil/{perfil_id}/visualizacion/{contenido_id}")
+    response = requests.delete(f"{visConf.VISUALIZACIONES_BASE_URL}/usuarios/{usuario_id}/perfiles/{perfil_id}/visualizaciones/{contenido_id}")
     if response.status_code == 200:
         flash("Contenido eliminado del historial", 'success')
     else:

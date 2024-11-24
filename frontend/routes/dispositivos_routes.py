@@ -13,10 +13,9 @@ def dispositivos():
             flash("Usuario no autenticado.", 'danger')
             return redirect(url_for('user.login'))
         response = requests.get(
-            f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivos")
+            f"{userConf.USUARIOS_BASE_URL}/usuarios/{user_id}/dispositivos")
         if response.status_code == 200:
             data = response.json()
-            print (data)
             return render_template("dispositivos.html", dispositivos=data)
         else:
             data = response.json()
@@ -36,7 +35,7 @@ def crear_dispositivo():
         user_id = session.get('logged_user_id')
         # Comprobación de que tiene 5 o menos dispositivos
         response = requests.get(
-            f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivos")
+            f"{userConf.USUARIOS_BASE_URL}/usuarios/{user_id}/dispositivos")
         
         if response.status_code == 200:
             data = response.json()
@@ -53,7 +52,7 @@ def crear_dispositivo():
             "tipo_dispositivo": request.form['tipo_dispositivo']
         }
         response = requests.post(
-            f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivo", json=data)
+            f"{userConf.USUARIOS_BASE_URL}/usuarios/{user_id}/dispositivos", json=data)
         if response.status_code == 200:
             flash("Dispositivo creado con éxito", 'success')
             return redirect(url_for('dispositivos.dispositivos'))
@@ -62,7 +61,7 @@ def crear_dispositivo():
             flash(f"Error: {data['message']}", 'danger')
             return redirect(url_for('dispositivos.dispositivos'))
 
-@dispositivos_bp.route("/eliminar_dispositivo/<nombre_dispositivo>/<int:dispositivo_id>", methods=['POST'])
+@dispositivos_bp.route("/eliminar_dispositivo/<nombre_dispositivo>/<dispositivo_id>", methods=['POST'])
 def eliminar_dispositivo(nombre_dispositivo, dispositivo_id):
     if request.method == 'POST':
         # Usar el ID de usuario de la sesión
@@ -71,7 +70,7 @@ def eliminar_dispositivo(nombre_dispositivo, dispositivo_id):
             flash("Error: No se encontró el usuario en la sesión.", 'danger')
             return redirect(url_for('auth.login'))
 
-        url = f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivo/{nombre_dispositivo}/{dispositivo_id}"
+        url = f"{userConf.USUARIOS_BASE_URL}/usuarios/{user_id}/dispositivos/{dispositivo_id}/{nombre_dispositivo}"
         
         # Realizar la solicitud DELETE
         response = requests.delete(url)
@@ -90,7 +89,7 @@ def eliminar_dispositivo(nombre_dispositivo, dispositivo_id):
             flash(f"Error al eliminar el dispositivo: {error_message}", 'danger')
             return redirect(url_for('dispositivos.dispositivos'))
 
-@dispositivos_bp.route("/editar_dispositivo/<nombre_dispositivo>/<int:dispositivo_id>", methods=['GET', 'POST'])
+@dispositivos_bp.route("/editar_dispositivo/<nombre_dispositivo>/<dispositivo_id>", methods=['GET', 'POST'])
 def editar_dispositivo(nombre_dispositivo, dispositivo_id):
     if request.method == 'GET':
         # Pasar datos al template para pre-rellenar el formulario
@@ -111,13 +110,12 @@ def editar_dispositivo(nombre_dispositivo, dispositivo_id):
             flash("Error: Los campos del formulario están vacíos.", 'danger')
             return redirect(url_for('dispositivos.editar_dispositivo', nombre_dispositivo=nombre_dispositivo, dispositivo_id=dispositivo_id))
 
-        print(f"Datos del formulario: {nombre_dispositivo_actualizado}, {tipo_dispositivo_actualizado}")
         data = {
             "nombre_dispositivo": nombre_dispositivo_actualizado,
             "dispositivo_id": tipo_dispositivo_actualizado
         }
 
-        url = f"{userConf.USUARIOS_BASE_URL}/usuario/{user_id}/dispositivo/{nombre_dispositivo}/{dispositivo_id}"
+        url = f"{userConf.USUARIOS_BASE_URL}/usuarios/{user_id}/dispositivos/{dispositivo_id}/{nombre_dispositivo}"
         response = requests.put(url, json=data)
         
         if response.status_code == 200:
