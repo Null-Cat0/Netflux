@@ -87,40 +87,6 @@ paths:
       tags:
       - Dispositivo
       x-openapi-router-controller: openapi_server.controllers.dispositivo_controller
-    # patch:
-    #   description: Actualiza un dispositivo a la lista de dispositivos registrados
-    #     del usuario
-    #   operationId: actualizar_dispositivos
-    #   parameters:
-    #   - description: ID del usuario
-    #     explode: false
-    #     in: path
-    #     name: userId
-    #     required: true
-    #     schema:
-    #       example: 1
-    #       format: int64
-    #       type: integer
-    #     style: simple
-    #   requestBody:
-    #     content:
-    #       application/json:
-    #         schema:
-    #           $ref: '#/components/schemas/actualizarDispositivos_request'
-    #     description: ID del dispositivo a actualizar
-    #     required: true
-    #   responses:
-    #     "204":
-    #       description: Lista actualizada exitosamente
-    #     "404":
-    #       description: Usuario no encontrado
-    #     "500":
-    #       description: Error del servidor
-    #   summary: Actualiza un dispositivo a la lista de dispositivos registrados del
-    #     usuario
-    #   tags:
-    #   - Dispositivo
-    #   x-openapi-router-controller: openapi_server.controllers.dispositivo_controller
   /usuarios/{userId}/dispositivos/{dispositivoId}/{nombreDispositivo}:
     delete:
       description: Elimina un dispositivo de la lista de dispositivos registrados
