@@ -257,6 +257,8 @@ def agregar_a_lista_perfil(perfil_id, contenido_id,):
     referer = request.referrer.split('/')[-1]
     if referer == 'mi_lista':
         return redirect(url_for('perfil.obtener_mi_lista', perfil_id=perfil_id))
+    elif referer.split('?')[0] == 'inicio':
+        return redirect(url_for('pagina_inicio', perfil_id=perfil_id))
     elif referer == 'lista_series':
         return redirect(url_for('serie.obtener_series'))
     else:
