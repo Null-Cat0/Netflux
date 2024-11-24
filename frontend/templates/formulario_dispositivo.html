@@ -20,9 +20,9 @@
                 <label for="tipo" class="form-label text-white">Tipo de Dispositivo</label>
                 <select class="form-select bg-dark text-white border-0 rounded-pill px-3" id="tipo" name="tipo_dispositivo" required>
                     <option value="" disabled {% if not dispositivo_id %}selected{% endif %}>Seleccione el tipo</option>
-                    <option value="1" {% if dispositivo_id == 1 %}selected{% endif %}>PC</option>
-                    <option value="3" {% if dispositivo_id == 3 %}selected{% endif %}>Móvil</option>
-                    <option value="2" {% if dispositivo_id == 2 %}selected{% endif %}>TV</option>
+                    <option value="1" {% if dispositivo_id == '1' %}selected{% endif %}>PC</option>
+                    <option value="3" {% if dispositivo_id == '3' %}selected{% endif %}>Móvil</option>
+                    <option value="2" {% if dispositivo_id == '2' %}selected{% endif %}>TV</option>
                 </select>
             </div>
 
