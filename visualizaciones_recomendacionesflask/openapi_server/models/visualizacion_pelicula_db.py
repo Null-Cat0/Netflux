@@ -5,12 +5,10 @@ class VisualizacionPeliculaDB(db.Document):
 
     id_perfil = db.IntField(required=True)
     pelicula_id = db.ObjectIdField()  
-    fecha_visualizacion = db.DateTimeField()
 
     def to_api_model(self):
         from openapi_server.models.visualizacion_pelicula import VisualizacionPelicula
         return VisualizacionPelicula(
             id_perfil=str(self.id_perfil),
             pelicula_id=str(self.pelicula_id),
-            fecha_visualizacion=self.fecha_visualizacion
         )

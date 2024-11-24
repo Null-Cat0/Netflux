@@ -42,8 +42,6 @@ def actualizar_visualizacion_contenido_perfil(user_id, perfil_id, contenido_id):
     if visualizacion is None:
         return jsonify({"message": "Visualización no encontrada"}), 404
 
-    # Se actualiza la fecha de visualización
-    visualizacion.fecha_visualizacion = datetime.now()
     visualizacion.save()
 
     return jsonify({"message": "Visualización actualizada"}), 200
@@ -75,7 +73,6 @@ def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
         visualizacion_db = VisualizacionPeliculaDB(
             id_perfil=perfil_id,
             pelicula_id=visualizacion["pelicula_id"],
-            fecha_visualizacion=datetime.now()
         )
     elif "serie_id" and "temporada_id" and "capitulo_id" in visualizacion:
         visualizacion_db = VisualizacionCapituloDB(
@@ -83,7 +80,6 @@ def crear_visualizacion_contenido_perfil(user_id, perfil_id):  # noqa: E501
             serie_id=visualizacion["serie_id"],
             temporada_id=visualizacion["temporada_id"],
             capitulo_id=visualizacion["capitulo_id"],
-            fecha_visualizacion=datetime.now()
         )
         es_capitulo = True
     else:

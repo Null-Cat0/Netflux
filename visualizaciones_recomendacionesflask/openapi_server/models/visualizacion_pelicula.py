@@ -9,7 +9,7 @@ class VisualizacionPelicula(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id_perfil=None, pelicula_id=None, fecha_visualizacion=None):  # noqa: E501
+    def __init__(self, id_perfil=None, pelicula_id=None):  # noqa: E501
         """VisualizacionPelicula - a model defined in OpenAPI
 
         :param id_perfil: The id_perfil of this VisualizacionPelicula.  # noqa: E501
@@ -22,18 +22,15 @@ class VisualizacionPelicula(Model):
         self.openapi_types = {
             'id_perfil': int,
             'pelicula_id': str,
-            'fecha_visualizacion': date,
         }
 
         self.attribute_map = {
             'id_perfil': 'id_perfil',
             'pelicula_id': 'pelicula_id',
-            'fecha_visualizacion': 'fecha_visualizacion',
         }
 
         self._id_perfil = id_perfil
         self._pelicula_id = pelicula_id
-        self._fecha_visualizacion = fecha_visualizacion
 
     @classmethod
     def from_dict(cls, dikt) -> 'VisualizacionPelicula':
@@ -87,24 +84,3 @@ class VisualizacionPelicula(Model):
         """
 
         self._pelicula_id = pelicula_id 
-
-    @property
-    def fecha_visualizacion(self) -> date:
-        """Gets the fecha_visualizacion of this VisualizacionPelicula.
-
-
-        :return: The fecha_visualizacion of this VisualizacionPelicula.
-        :rtype: date
-        """
-        return self._fecha_visualizacion
-
-    @fecha_visualizacion.setter
-    def fecha_visualizacion(self, fecha_visualizacion: date):
-        """Sets the fecha_visualizacion of this VisualizacionPelicula.
-
-
-        :param fecha_visualizacion: The fecha_visualizacion of this VisualizacionPelicula.
-        :type fecha_visualizacion: date
-        """
-
-        self._fecha_visualizacion = fecha_visualizacion

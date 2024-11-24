@@ -9,7 +9,7 @@ class VisualizacionCapitulo(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id_perfil=None, serie_id=None, temporada_id=None, capitulo_id=None, fecha_visualizacion=None):  # noqa: E501
+    def __init__(self, id_perfil=None, serie_id=None, temporada_id=None, capitulo_id=None):  # noqa: E501
         """VisualizacionCapitulo - a model defined in OpenAPI
 
         :param id_perfil: The id_perfil of this VisualizacionCapitulo.  # noqa: E501
@@ -24,7 +24,6 @@ class VisualizacionCapitulo(Model):
             'serie_id': str,
             'temporada_id': str,
             'capitulo_id': str,
-            'fecha_visualizacion': date,
         }
 
         self.attribute_map = {
@@ -32,14 +31,12 @@ class VisualizacionCapitulo(Model):
             'serie_id': 'serie_id',
             'temporada_id': 'temporada_id',
             'capitulo_id': 'capitulo_id',
-            'fecha_visualizacion': 'fecha_visualizacion',
         }
 
         self._id_perfil = id_perfil
         self._serie_id = serie_id
         self._temporada_id = temporada_id
         self._capitulo_id = capitulo_id
-        self._fecha_visualizacion = fecha_visualizacion
 
     @classmethod
     def from_dict(cls, dikt) -> 'VisualizacionCapitulo':
@@ -135,24 +132,3 @@ class VisualizacionCapitulo(Model):
         """
 
         self._temporada_id = temporada_id
-
-    @property
-    def fecha_visualizacion(self) -> date:
-        """Gets the fecha_visualizacion of this VisualizacionCapitulo.
-
-
-        :return: The fecha_visualizacion of this VisualizacionCapitulo.
-        :rtype: date
-        """
-        return self._fecha_visualizacion
-
-    @fecha_visualizacion.setter
-    def fecha_visualizacion(self, fecha_visualizacion: date):
-        """Sets the fecha_visualizacion of this VisualizacionCapitulo.
-
-
-        :param fecha_visualizacion: The fecha_visualizacion of this VisualizacionCapitulo.
-        :type fecha_visualizacion: date
-        """
-
-        self._fecha_visualizacion = fecha_visualizacion
