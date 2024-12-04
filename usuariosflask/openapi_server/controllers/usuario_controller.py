@@ -1,12 +1,9 @@
 # Se importa el fichero de configuración de los microservicios
 import os, sys, requests
-app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
-sys.path.append(app_path)
-
-from global_config import ContenidosConfig, UsuariosConfig
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from openapi_server.config import UsuariosConfig
 from openapi_server import app, db
 from flask import request, jsonify
 
@@ -87,7 +84,7 @@ def actualizar_password(user_id):  # noqa: E501
     
     return jsonify({"message": "Contraseña actualizada con éxito", "status": "success"}), 200
 
-@app.route('/usuarios', methods=['GET', 'POST'])
+@app.route('/usuarios', methods=['POST'])
 def crear_usuario():  # noqa: E501
    # Capturar los datos enviados en el JSON
     if request.is_json:

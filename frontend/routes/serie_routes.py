@@ -378,7 +378,7 @@ def crear_capitulo(serie_id, temporada_id):
                 "sinopsis": sinopsis
             }
 
-            response = requests.post(f"{contConf.CONTENIDOS_BASE_URL}/series/{serie_id}/temporadas{temporada_id}/capitulos", json=data)
+            response = requests.post(f"{contConf.CONTENIDOS_BASE_URL}/series/{serie_id}/temporadas/{temporada_id}/capitulos", json=data)
             if response.status_code == 201:
                 flash("Capítulo creado exitosamente.", 'success')
                 return redirect(url_for('serie.obtener_series'))

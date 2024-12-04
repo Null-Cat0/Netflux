@@ -6,7 +6,6 @@ ip = "0.0.0.0"
 class UsuariosConfig:
     USUARIOS_PORT=8080
     USUARIOS_BASE_URL=f"http://{ip}:{USUARIOS_PORT}"
-    # USUARIOS_BASE_URL=f"http://localhost:{USUARIOS_PORT}"
 
 class ContenidosConfig:
     CONTENIDOS_PORT=8081

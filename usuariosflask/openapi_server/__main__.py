@@ -4,6 +4,8 @@ from flask import request, jsonify
 from openapi_server.models.usuario_db import UsuarioDB
 from werkzeug.security import check_password_hash
 
+from openapi_server.config import UsuariosConfig
+
 @app.route('/iniciar_sesion', methods=['POST'])
 def iniciar_sesion():
     """Verifica las credenciales del usuario y responde con un mensaje JSON."""
@@ -41,4 +43,4 @@ if __name__ == '__main__':
         db.create_all()
         util.populate_dispositivosDB()
 
-    connex_app.run(port=8080)
+    connex_app.run(host="0.0.0.0", port=UsuariosConfig.USUARIOS_PORT)
