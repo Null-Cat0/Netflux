@@ -15,7 +15,7 @@ tags:
 - description: Datos sobre las recomendaciones
   name: Recomendacion
 paths:
-  /usuarios/{usuarioId}/perfiles/{perfilId}/recomendaciones:
+  /usuarios/{userId}/perfiles/{perfilId}/recomendaciones:
     delete:
       description: Elimina las recomendaciones de un perfil
       operationId: eliminar_recomendacion_perfil
@@ -33,7 +33,7 @@ paths:
       - description: ID del usuario especificado
         explode: false
         in: path
-        name: usuarioId
+        name: userId
         required: true
         schema:
           example: 1

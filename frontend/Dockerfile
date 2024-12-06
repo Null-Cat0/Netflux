@@ -13,6 +13,6 @@ COPY requirements.txt /usr/src/app/
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Service's port
-EXPOSE 8081
+EXPOSE 5000
 
-CMD ["python3", "-m", "openapi_server"]
+CMD ["python3", "app.py"]

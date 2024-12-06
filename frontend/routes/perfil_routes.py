@@ -2,9 +2,9 @@ import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from datetime import datetime
 
-from global_config import UsuariosConfig as userConf
-from global_config import ContenidosConfig as contConf
-from global_config import VisualizacionesConfig as visConf
+from config import ContenidosConfig as contConf
+from config import UsuariosConfig as userConf
+from config import VisualizacionesConfig as visConf
 
 perfil_bp = Blueprint('perfil', __name__)
 

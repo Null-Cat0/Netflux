@@ -1,7 +1,7 @@
 import requests
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session
 
-from global_config import UsuariosConfig as userConf
+from config import UsuariosConfig as userConf
 
 dispositivos_bp = Blueprint('dispositivos', __name__)
 

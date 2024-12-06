@@ -1,9 +1,9 @@
 import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
-from global_config import ContenidosConfig as contConf
-from global_config import UsuariosConfig as userConf
-from global_config import VisualizacionesConfig
+from config import ContenidosConfig as contConf
+from config import UsuariosConfig as userConf
+from config import VisualizacionesConfig as visConf
 
 pelicula_bp = Blueprint('pelicula', __name__)
 
@@ -217,13 +217,13 @@ def eliminar_pelicula(pelicula_id):
             user_id = perfil["user_id"]
             perfil_id = perfil["perfil_id"]
 
-            response = requests.delete(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/visualizaciones/{pelicula_id}")
+            response = requests.delete(f"{visConf.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/visualizaciones/{pelicula_id}")
             if response.status_code not in [200, 404]:
                 flash(f"Error al eliminar las visualizaciones del perfil {perfil_id}.", 'danger')
                 return redirect(url_for('pelicula.obtener_peliculas'))
 
             # Tras verificar el historial, se verifican las listas de recomendaciones
-            response = requests.get(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/recomendaciones")
+            response = requests.get(f"{visConf.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/recomendaciones")
             if response.status_code != 200:
                 flash(f"Error al obtener las recomendaciones del perfil {perfil_id}.", 'danger')
                 return redirect(url_for('pelicula.obtener_peliculas'))
@@ -232,7 +232,7 @@ def eliminar_pelicula(pelicula_id):
             lista_peliculas = recomendaciones['peliculas']
             if pelicula_id in lista_peliculas:
                 lista_peliculas.remove(pelicula_id)
-                response = requests.patch(f"{VisualizacionesConfig.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/recomendaciones", json={'peliculas_recomendadas': lista_peliculas})
+                response = requests.patch(f"{visConf.VISUALIZACIONES_BASE_URL}/usuarios/{user_id}/perfiles/{perfil_id}/recomendaciones", json={'peliculas_recomendadas': lista_peliculas})
                 if response.status_code != 200:
                     flash(f"Error al eliminar la película {pelicula_id} de las recomendaciones del perfil {perfil_id}.", 'danger')
                     return redirect(url_for('pelicula.obtener_peliculas'))

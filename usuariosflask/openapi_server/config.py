@@ -1,19 +1,22 @@
 from datetime import timedelta
 
-# ip = "localhost"
-ip = "0.0.0.0"
-
 class UsuariosConfig:
     USUARIOS_PORT=8080
-    USUARIOS_BASE_URL=f"http://{ip}:{USUARIOS_PORT}"
+    USUARIOS_CONTAINER_NAME="usuarios"
+    USUARIOS_BASE_URL=f"http://{USUARIOS_CONTAINER_NAME}:{USUARIOS_PORT}"
+    # USUARIOS_BASE_URL=f"http://localhost:{USUARIOS_PORT}"
 
 class ContenidosConfig:
     CONTENIDOS_PORT=8081
-    CONTENIDOS_BASE_URL=f"http://{ip}:{CONTENIDOS_PORT}"
+    CONTENIDOS_CONTAINER_NAME="contenidos"
+    CONTENIDOS_BASE_URL=f"http://{CONTENIDOS_CONTAINER_NAME}:{CONTENIDOS_PORT}"
+    # CONTENIDOS_BASE_URL=f"http://localhost:{CONTENIDOS_PORT}"
 
 class VisualizacionesConfig:
     VISUALIZACIONES_PORT=8082
-    VISUALIZACIONES_BASE_URL=f"http://{ip}:{VISUALIZACIONES_PORT}"
+    VISUALIZACIONES_CONTAINER_NAME="visualizaciones_recomendaciones"
+    VISUALIZACIONES_BASE_URL=f"http://{VISUALIZACIONES_CONTAINER_NAME}:{VISUALIZACIONES_PORT}"
+    # VISUALIZACIONES_BASE_URL=f"http://localhost:{VISUALIZACIONES_PORT}"
 
 class Config:
     USUARIOS = UsuariosConfig

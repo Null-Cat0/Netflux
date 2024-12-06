@@ -1,16 +1,18 @@
-FROM python:3-alpine
+# FROM python:3-alpine
+
+# Testing with lightweight Python image
+FROM python:3.10-slim 
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-COPY requirements.txt /usr/src/app/
-
-RUN pip3 install --no-cache-dir -r requirements.txt
-
 COPY . /usr/src/app
 
-EXPOSE 8080
+# Python dependencies
+COPY requirements.txt /usr/src/app/
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT ["python3"]
+# Service's port
+EXPOSE 8082
 
-CMD ["-m", "openapi_server"]
+CMD ["python3", "-m", "openapi_server"]

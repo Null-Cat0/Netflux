@@ -1,8 +1,7 @@
-import os, sys, requests
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import requests
 
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from global_config import Config
+from config import Config
 from routes import blueprints
 
 app = Flask(__name__)
@@ -80,4 +79,8 @@ def home():
     return redirect(url_for('user.login'))
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )

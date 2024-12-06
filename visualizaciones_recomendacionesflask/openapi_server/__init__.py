@@ -8,7 +8,8 @@ app = connex_app.app  # Asocia la app de Flask con la de Connexion
 app.secret_key = 'mysecretkey'
 app.config["MONGODB_SETTINGS"] = {
     "db": "Netflux_visualizaciones_recomendaciones",
-    "host": "localhost",
+    # "host": "localhost",
+    "host": "mongodb",
     "port": 27017
 }
 

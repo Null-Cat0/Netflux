@@ -2,8 +2,8 @@ import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from datetime import datetime
 
-from global_config import ContenidosConfig as contConf
-from global_config import UsuariosConfig as userConf
+from config import ContenidosConfig as contConf
+from config import UsuariosConfig as userConf
 
 actor_bp = Blueprint('actor', __name__)
 
