@@ -7,7 +7,8 @@ from openapi_server.encoder import CustomJSONEncoder
 connex_app = connexion.App(__name__, specification_dir='./openapi/')
 app = connex_app.app  # Asocia la app de Flask con la de Connexion
 app.secret_key = 'mysecretkey'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@mysql:3306/usuarios_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicialización de la base de datos

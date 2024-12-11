@@ -7,6 +7,7 @@ services:
       - "8080:8080"
     depends_on:
       - sqlite
+      - mysql
 
   contenidos:
     build:
@@ -45,3 +46,15 @@ services:
     image: docker.io/nouchka/sqlite3
     volumes:
       - ./usuariosflask/instance:/data:Z
+
+  mysql:
+    image: docker.io/library/mysql:8.0
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: "usuarios_db"
+    volumes:
+      - ./mysql_data:/var/lib/mysql:Z
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    restart: always

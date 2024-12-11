@@ -1,9 +1,13 @@
-# FROM python:3-alpine
-
 # Testing with lightweight Python image
 FROM python:3.10-slim 
 
-RUN mkdir -p /usr/src/app
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y gcc default-libmysqlclient-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /usr/src/app
+
+# RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 COPY . /usr/src/app

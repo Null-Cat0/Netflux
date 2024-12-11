@@ -25,7 +25,10 @@ jsonschema==4.23.0
 jsonschema-specifications==2024.10.1
 MarkupSafe==3.0.2
 mongoengine==0.29.1
+mysql==0.0.3
+mysqlclient==2.2.6
 pymongo==4.10.1
+PyMySQL==1.1.1
 python-dotenv==1.0.1
 python-multipart==0.0.12
 PyYAML==6.0.2
