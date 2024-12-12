@@ -1,31 +1,59 @@
 version: '3.8'
 services:
+  mongodb:
+    image: docker.io/mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./databases/mongodb/mongodb_data:/data/db:Z # SELinux labeling
+    restart: always
+
+  mysql:
+    image: docker.io/library/mysql:8.0
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: "usuarios_db"
+    volumes:
+      - ./databases/mysql/mysql_data:/var/lib/mysql:Z
+      - ./databases/mysql/mysql-init:/docker-entrypoint-initdb.d
+    restart: always
+
   usuarios:
+    container_name: usuarios
     build:
       context: ./usuariosflask
     ports:
       - "8080:8080"
     depends_on:
-      - sqlite
       - mysql
+    restart: always
 
   contenidos:
+    container_name: contenidos
     build:
       context: ./contenidosflask
     ports:
       - "8081:8081"
     depends_on:
       - mongodb
+    restart: always
 
   visualizaciones_recomendaciones:
+    container_name: visualizaciones_recomendaciones
     build:
       context: ./visualizaciones_recomendacionesflask
     ports:
       - "8082:8082"
     depends_on:
       - mongodb
+    restart: always
 
   frontend:
+    container_name: frontend
     build:
       context: ./frontend
     ports:
@@ -34,27 +62,4 @@ services:
       - usuarios
       - contenidos
       - visualizaciones_recomendaciones
-
-  mongodb:
-    image: docker.io/mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - ./mongodb_data:/data/db:Z # SELinux labeling
-
-  sqlite:
-    image: docker.io/nouchka/sqlite3
-    volumes:
-      - ./usuariosflask/instance:/data:Z
-
-  mysql:
-    image: docker.io/library/mysql:8.0
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: "usuarios_db"
-    volumes:
-      - ./mysql_data:/var/lib/mysql:Z
-      - ./mysql-init:/docker-entrypoint-initdb.d
     restart: always

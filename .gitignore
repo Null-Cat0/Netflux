@@ -1,4 +1,5 @@
 /__pycache__
 /.netflux
-/mongodb_data
-/mysql_data
+/databases/mongodb/mongodb_data
+/databases/mysql/mysql_data
+
