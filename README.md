@@ -2,7 +2,7 @@
 Proyecto de la asignatura ASEE.
 
 # Componentes de la aplicación
-Este proyecto está compuesto por cuatro componentes, tres microservicios y el fronend.
+Este proyecto está compuesto por cuatro componentes, tres microservicios y el frontend.
 
 ## Contenidos
 El microservicio de *contenidos* se encuentra la carpeta **contenidosflask**.
@@ -16,15 +16,18 @@ El microservicio de *visualizaciones y recomendaciones* se encuentra la carpeta 
 ## Frontend
 El frontend es la parte encargada de gestionar la *interfaz de usuario* de la aplicación, encontrándose en la carpeta **frontend**.
 
-# Ejecución
-## Microservicios
-Para ejecutar los distintos microservicios de la aplicación, será necesario navegar a la carpeta del microservicio y ejecutar el siguiente comando:
+# Ejecución con contenedores
+## Creación de los directorios para los datos de las bases de datos
+Debido a que se usa almacenamiento persistente, se tienen asociadas rutas del sistema de archivos de la máquina host al almacenamiento de los datos de las bases de datos. Para asegurar que estas son desplegadas de manera correcta, se recomienda crear estos directorios con los siguientes comandos:
 ```bash
-python -m openapi_server
+# Desde la carpeta raíz del proyecto
+mkdir databases/mongodb/mondodb_data
+mkdir databases/mysql/mysql_data
 ```
 
-## Frontend
-Por otro lado, para iniciar el frontend es necesario navegar a la carpeta del frontend y ejecutar:
+## Despliegue
+Para desplegar el proyecto, desde la carpeta raíz se debe ejecutar el siguiente comando:
 ```bash
-python app.py
+docker-compose build
+docker-compose up -d
 ```
