@@ -1,6 +1,4 @@
-# FROM python:3-alpine
-
-# Testing with lightweight Python image
+# Lightweight Python image
 FROM python:3.10-slim 
 
 RUN mkdir -p /usr/src/app
