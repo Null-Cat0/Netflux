@@ -1,4 +1,4 @@
-# Testing with lightweight Python image
+# Lightweight Python image
 FROM python:3.10-slim 
 
 RUN apt-get update \
@@ -7,7 +7,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /usr/src/app
 
-# RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 COPY . /usr/src/app
