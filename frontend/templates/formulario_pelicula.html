@@ -62,7 +62,7 @@
             <div class="mb-4">
                 <label for="anio_estreno" class="form-label text-white">Año de estreno</label>
                 <input type="number" class="form-control bg-dark text-white border-0 rounded-pill px-3" id="anio_estreno" 
-                       name="anio_estreno" value="{{ pelicula.anio_estreno if pelicula else '' }}" required>
+                       name="anio_estreno" value="{{ pelicula.anio_estreno if pelicula else '' }}" min="1800" required>
             </div>
 
             <div class="mb-4">
