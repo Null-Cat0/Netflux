@@ -10,19 +10,10 @@ app.secret_key = 'mysecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:1234@mysql:3306/usuarios_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# db = SQLAlchemy(app)
-
-# Inicialización de la base de datos
-## Aseguramos que la base de datos esté lista antes de continuar
-i = 0
-while i < 5:
-    try:
-        db = SQLAlchemy(app)
-        break
-    except Exception as e:
-        print(e)
-        i += 1
-        sleep(0.5)
+# Crear la base de datos
+db = SQLAlchemy()
+sleep(2)
+db.init_app(app)
 
 # Usar el codificador personalizado
 app.json_encoder = CustomJSONEncoder
