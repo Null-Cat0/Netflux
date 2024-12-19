@@ -70,6 +70,10 @@ def crear_serie():
             anio = request.form.get('anio_estreno')
             genero = request.form.getlist('generos')
             actores = request.form.getlist('actores')
+
+            # Eliminar actores duplicados
+            actores = list(set(actores))
+
             data={
                 "titulo": nombre,
                 "sinopsis": sinopsis,
@@ -151,6 +155,10 @@ def editar_serie(serie_id):
             anio = request.form.get('anio_estreno')
             genero = request.form.getlist('generos')
             actores = request.form.getlist('actores')
+
+            # Eliminar actores duplicados
+            actores = list(set(actores))
+
             data={
                 "titulo": nombre,
                 "sinopsis": descripcion,

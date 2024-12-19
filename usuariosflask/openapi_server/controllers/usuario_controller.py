@@ -93,9 +93,12 @@ def crear_usuario():  # noqa: E501
 
     if (usuario_api):
         usuario_db = usuario_api.to_db_model()
-        
-        db.session.add(usuario_db)
-        db.session.commit()
+
+        try:
+            db.session.add(usuario_db)
+            db.session.commit()
+        except:
+            return jsonify({"message": "Error al crear el usuario", "status": "error"}), 500
 
         for nombre in usuario_api.dispositivos:
             disp_enc = DispositivoDB.query.filter_by(tipo_dispositivo=nombre).first()

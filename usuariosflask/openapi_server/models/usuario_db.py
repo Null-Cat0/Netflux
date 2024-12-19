@@ -11,7 +11,7 @@ class UsuarioDB(db.Model):
 
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(255), nullable=False)
-    correo_electronico = db.Column(db.String(255))
+    correo_electronico = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
     pais = db.Column(db.String(255))
     plan_suscripcion = db.Column(db.String(255))

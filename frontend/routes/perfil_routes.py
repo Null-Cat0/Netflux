@@ -6,6 +6,8 @@ from config import ContenidosConfig as contConf
 from config import UsuariosConfig as userConf
 from config import VisualizacionesConfig as visConf
 
+import re
+
 perfil_bp = Blueprint('perfil', __name__)
 
 def actualizar_datos_historial(usuario_id, perfil_id, contenido_id):    
@@ -356,8 +358,10 @@ def agregar_a_historial_perfil(perfil_id, contenido_id):
                 data = response.json()
                 flash(f"{data['message']}", 'danger')
 
-    referer = request.referrer.split('/')[-1]
-    if referer.split('?')[0] == 'inicio':
+    referer = request.referrer.split('/')[-2]
+    if referer == 'mi_lista':
+        return redirect(url_for('perfil.obtener_mi_lista', perfil_id=perfil_id))
+    elif referer.split('?')[0] == 'inicio':
         return redirect(url_for('pagina_inicio', perfil_id=perfil_id))
     elif referer == 'lista_series':
         return redirect(url_for('serie.obtener_series'))

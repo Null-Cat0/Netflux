@@ -40,6 +40,9 @@ def crear_pelicula():
             
             # Obtener los IDs de actores seleccionados
             actores = request.form.getlist('actores')
+
+            # Eliminar actores duplicados
+            actores = list(set(actores))
             
             pelicula_data = {
                 'titulo': titulo,
@@ -151,6 +154,9 @@ def editar_pelicula(pelicula_id):
             anio_estreno = request.form.get('anio_estreno')
             duracion = request.form.get('duracion')
             actores = request.form.getlist('actores')
+
+            # Eliminar actores duplicados
+            actores = list(set(actores))
 
             if actores is None: 
                 actores = []    
